@@ -1,0 +1,23 @@
+@sprite-loading-image-index: 11;
+
+    .sprite-loading-container {
+}
+
+.sprite-loading {
+    // Must re-adjust height since the animation icons are ordered top down.
+    height: @sprite-loading-width;
+    margin: 0 auto;
+
+    -webkit-animation: sprite-loading-keyframes 1s steps(@sprite-loading-image-index, end) infinite;
+    animation: sprite-loading-keyframes 1s steps(@sprite-loading-image-index, end) infinite;
+}
+
+@-webkit-keyframes sprite-loading-keyframes {
+    from {background-position: @sprite-loading-background-position-x @sprite-loading-background-position-y;}
+    to {background-position: @sprite-loading-background-position-x @sprite-loading-background-position-y + (-@sprite-loading-width * @sprite-loading-image-index);}
+}
+
+@keyframes sprite-loading-keyframes {
+    from {background-position: @sprite-loading-background-position-x @sprite-loading-background-position-y;}
+    to {background-position: @sprite-loading-background-position-x @sprite-loading-background-position-y + (-@sprite-loading-width * @sprite-loading-image-index);}
+}

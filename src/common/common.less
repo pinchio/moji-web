@@ -1,0 +1,141 @@
+// See https://github.com/neoascetic/compless
+
+@color-black: #000;
+
+@color-darkest-gray: #282b34;
+@color-darker-gray: #393c42;
+@color-dark-gray: #3e4046;
+
+@color-gray: tint(@color-dark-gray, 20%);
+
+@color-gray-3: #999;
+
+@color-light-gray: #d3d3d3;
+@color-light-gray-lightest: #f8f8f8;
+
+@color-light-gray-line: #b1b1b1;
+@box-shadow-color: @color-light-gray-line;
+
+@color-blue-link: #007fff;
+
+@color-green: #009933;
+@color-red: #d14836;
+
+@color-white: #fff;
+
+// Brand colors
+@color-blue-pale: #428bca;
+@color-green-pale: #5cb85c;
+@color-blue-pale-light: #5bc0de;
+@color-orange-pale: #f0ad4e;
+@color-red-pale: #d9534f;
+
+@color-primary: @color-blue-pale;
+@color-success: @color-green-pale;
+@color-info: @color-blue-pale-light;
+@color-warning: @color-orange-pale;
+@color-danger: @color-red-pale;
+
+// z-index
+@page-header-z-index: 100;
+@page-container-higher-z-index: 90;
+@page-container-lower-z-index: 85;
+@pages-container-z-index: 80;
+@menu-header-z-index: 50;
+
+.color-success {color: @color-success;}
+.color-muted {color: @color-gray-3;}
+
+.transform(@transform: @transform) {
+    -webkit-transform: @transform;
+    -moz-transform: @transform;
+    -ms-transform: @transform;
+    -o-transform: @transform;
+    transform: @transform;
+}
+
+.transform-origin(@transform: @transform) {
+    -webkit-transform-origin: @transform;
+    -moz-transform-origin: @transform;
+    -ms-transform-origin: @transform;
+    -o-transform-origin: @transform;
+    transform-origin: @transform;
+}
+
+@default-transition-property: all;
+@default-transition-duration: .2s;
+@default-transition-function: ease-in-out;
+@default-transition-delay: 0;
+
+.transition(@transition, ...) {
+    @transitions: ~`"@{arguments}".replace(/[\[\]]/g, '')`;
+
+    -webkit-transition: @transitions;
+    -moz-transition: @transitions;
+    -o-transition: @transitions;
+    transition: @transitions;
+}
+
+.single-transition(
+    @property: @default-transition-property,
+    @duration: @default-transition-duration,
+    @function: @default-transition-function,
+    @delay: @default-transition-delay
+) {
+    .transition(~"@{property} @{duration} @{function} @{delay}");
+}
+
+
+@border-radius-default: 4px;
+.border-radius (@border-radius: @border-radius-default) {
+    // If 4 values are given they denote: top left, top right, bottom right, bottom left.
+    -webkit-border-radius: @border-radius;
+    -moz-border-radius: @border-radius;
+    border-radius: @border-radius;
+
+    // Prevent clipping
+    // http://css-tricks.com/almanac/properties/b/border-radius/
+    // -webkit-background-clip: padding-box;
+    // -moz-background-clip: padding;
+    // background-clip: padding-box;
+}
+
+.box-sizing (@box-sizing: border-box) {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.clearfix() {
+    *zoom: 1;
+    &:before,
+    &:after {
+        display: table;
+        content: "";
+        // Fixes Opera/contenteditable bug:
+        // http://nicolasgallagher.com/micro-clearfix-hack/#comment-36952
+        line-height: 0;
+    }
+    &:after {
+        clear: both;
+    }
+}
+
+.box-shadow(@arguments) {
+    -webkit-box-shadow: @arguments;
+    -moz-box-shadow: @arguments;
+    box-shadow: @arguments;
+}
+
+.position(@top: 0, @right: 0, @bottom: 0, @left: 0) {
+    top: @top;
+    right: @right;
+    bottom: @bottom;
+    left: @left;
+}
+
+.uppercase {
+    text-transform: uppercase;
+}
+
+@import "font-mixin.less";

@@ -1,0 +1,19 @@
+@import "common.less";
+
+body {
+    // font-family: -apple-system-font, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: @font-family-regular;
+}
+
+.a,
+a {
+    color: @color-blue-link;
+    text-decoration: none;
+    -webkit-tap-highlight-color: rgba(red(@color-blue-link), green(@color-blue-link), blue(@color-blue-link), .1);
+    cursor: pointer;
+
+    &.a-white {
+        color: @color-white;
+    }
+}
+

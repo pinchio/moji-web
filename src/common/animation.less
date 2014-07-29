@@ -1,0 +1,53 @@
+@import "common.less";
+
+.slide-in-from-right {
+    .animate-before & {
+        .transform(translate3d(100%, 0, 0));
+        .single-transition(none);
+        z-index: @page-container-higher-z-index;
+    }
+
+    .animate & {
+        .transform(translate3d(0%, 0, 0));
+        .single-transition(all, .3s, ease-in-out);
+        z-index: @page-container-higher-z-index;
+    }
+}
+
+.slide-in-from-left {
+    .animate-before & {
+        .transform(translate3d(-33%, 0, 0));
+        .single-transition(none);
+        z-index: @page-container-lower-z-index;
+    }
+
+    .animate & {
+        .transform(translate3d(0%, 0, 0));
+        .single-transition(all, .3s, ease-in-out);
+        z-index: @page-container-lower-z-index;
+    }
+}
+
+.slide-out-to-left {
+    .animate-before & {
+        z-index: @page-container-lower-z-index;
+    }
+
+    .animate & {
+        .transform(translate3d(-33%, 0, 0));
+        .single-transition(all, .3s, ease-in-out);
+        z-index: @page-container-lower-z-index;
+    }
+}
+
+.slide-out-to-right {
+    .animate-before & {
+        z-index: @page-container-higher-z-index;
+    }
+
+    .animate & {
+        .transform(translate3d(100%, 0, 0));
+        .single-transition(all, .3s, ease-in-out);
+        z-index: @page-container-higher-z-index;
+    }
+}

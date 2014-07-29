@@ -1,0 +1,4 @@
+public/**/*.* -diff
+private/**/*.* -diff
+npm-shrinkwrap.json -diff
+src/asset/sprite.less -diff

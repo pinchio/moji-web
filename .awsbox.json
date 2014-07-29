@@ -1,0 +1,13 @@
+{
+    "processes": [],
+    "env": {
+         "NODE_PATH": "$HOME/code"
+    },
+    "hooks": {
+        "postcreate": "deploy/awsbox/postcreate.sh",
+        "postdeploy": "deploy/awsbox/postdeploy.sh"
+    },
+    "packages": [
+        "imagemagick"
+    ]
+}

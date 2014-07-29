@@ -1,0 +1,21 @@
+.sprite-gen(@width, @height, @offset-x, @offset-y) {
+  width: @width;
+  height: @height;
+  background-position: @offset-x  @offset-y;
+}
+
+{{#items}}
+@sprite-{{name}}-width: {{px.width}}/2;
+@sprite-{{name}}-height: {{px.height}}/2;
+@sprite-{{name}}-background-position-x: {{px.offset_x}}/2;
+@sprite-{{name}}-background-position-y: {{px.offset_y}}/2;
+@sprite-{{name}}-background-size-width: {{px.total_width}}/2;
+@sprite-{{name}}-background-size-height: {{px.total_height}}/2;
+.sprite-{{name}} {.sprite-gen(@sprite-{{name}}-width, @sprite-{{name}}-height, @sprite-{{name}}-background-position-x, @sprite-{{name}}-background-position-y); }
+
+{{/items}}
+
+.sprite {
+    background-image: url('{{{options.img_path}}}');
+    background-size: {{items.0.px.total_width}}/2 {{items.0.px.total_height}}/2;
+}
