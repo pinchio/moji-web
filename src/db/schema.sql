@@ -1,7 +1,13 @@
-CREATE TABLE user (
-    id              char(36) PRIMARY KEY
-);
+DROP DATABASE mojigram;
+CREATE DATABASE mojigram;
 
-CREATE TABLE emoji (
-    id              char(36) PRIMARY KEY
+\c mojigram;
+
+CREATE TABLE account (
+    id              char(36) PRIMARY KEY,
+    username        varchar(15),
+    password        varchar(128),
+    created_at      timestamptz,
+    born_at         timestamptz,
+    UNIQUE(username)
 );

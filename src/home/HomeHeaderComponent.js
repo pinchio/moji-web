@@ -17,7 +17,7 @@ var HomeHeaderComponent = React.createClass({
                     </div>
                     <div className="page-header-center"
                         onClick ={this.props.scroll_body_to_top}>
-                        <div className="page-header-bloomforex-sprite sprite sprite-bloomforex-white"></div>
+                        <div className=""></div>
                     </div>
                 </div>
             </div>
