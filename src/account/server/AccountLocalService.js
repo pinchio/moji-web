@@ -23,6 +23,14 @@ AccountLocalService.prototype.create_password_hash_salt = thunkify(function(pass
     })
 })
 
+AccountLocalService.prototype.validate_password = thunkify(function(password, expected_password, cb) {
+    var hash_salt = expected_password.split(':')
+
+    easy_pbkdf2.verify(hash_salt[1], hash_salt[0], password, function(err, valid) {
+        return cb(err, valid)
+    })
+})
+
 AccountLocalService.prototype.create = function * (o) {
     // Username regex: ^(\w){1,15}$
     // Max password length.
@@ -67,6 +75,24 @@ AccountLocalService.prototype.create = function * (o) {
       , created_accounts = yield AccountPersistenceService.insert(account)
 
     return (created_accounts && created_accounts.list.length === 1) ? created_accounts.list[0] : null
+}
+
+AccountLocalService.prototype.login = function * (o) {
+    // TODO: validation
+    var users = yield AccountPersistenceService.select_by_username({username: o.username})
+
+    if (!users.list.length) {
+        throw new LocalServiceError(this.ns, 'invalid_login', 'Invalid username or password', 400)
+    }
+
+    var user = users.list[0]
+      , is_valid = yield this.validate_password(o.password, user.password)
+
+    if (is_valid) {
+        return user
+    } else {
+        throw new LocalServiceError(this.ns, 'invalid_login', 'Invalid username or password', 400)
+    }
 }
 
 module.exports = AccountLocalService

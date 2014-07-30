@@ -8,6 +8,7 @@ var AccountHTTPService = function AccountHTTPService() {
 }
 _.extend(AccountHTTPService, StaticMixin)
 _.extend(AccountHTTPService.prototype, HTTPServiceMixin.prototype)
+// TODO: bring back this.req
 
 AccountHTTPService.prototype.get = function() {
     var self = this
@@ -26,7 +27,6 @@ AccountHTTPService.prototype.get = function() {
     }
 }
 
-// TODO: bring back this.req
 AccountHTTPService.prototype.post = function() {
     var self = this
 
@@ -37,6 +37,23 @@ AccountHTTPService.prototype.post = function() {
                   , full_name: this.request.body && this.request.body.full_name
                   , password: this.request.body && this.request.body.password
                   , born_at: this.request.body && this.request.body.born_at
+                })
+
+            self.handle_success(this, {account: account.to_json()}, 'json')
+        } catch(e) {
+            self.handle_exception(this, e)
+        }
+    }
+}
+
+AccountHTTPService.prototype.login = function() {
+    var self = this
+
+    return function * (next) {
+        try {
+            var account = yield AccountLocalService.login({
+                    username: this.request.body && this.request.body.username
+                  , password: this.request.body && this.request.body.password
                 })
 
             self.handle_success(this, {account: account.to_json()}, 'json')

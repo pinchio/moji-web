@@ -35,7 +35,7 @@ Account.from_db = function(o) {
       , username: o.username
       , full_name: o.full_name
       , password: o.password
-      , born_at: new Moment(o.born_at)
+      , born_at: Account.to_moment(o.born_at)
     })
 }
 
