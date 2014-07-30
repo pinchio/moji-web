@@ -5,10 +5,11 @@ CREATE DATABASE mojigram;
 
 CREATE TABLE account (
     id              char(36) PRIMARY KEY,
-    username        varchar(15),
-    password        varchar(128),
     created_at      timestamptz,
     updated_at      timestamptz,
+    username        varchar(15),
+    full_name       varchar(128),
+    password        varchar(512),
     born_at         timestamptz,
     UNIQUE(username)
 );

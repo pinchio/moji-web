@@ -4,4 +4,5 @@ module.exports = {
   , LocalServiceError: require('./server/LocalServiceError')
   , CommonLocalService: require('./server/CommonLocalService')
   , constants: require('./constants')
+  , ModelMixin: require('./ModelMixin')
 }
