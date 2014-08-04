@@ -1,0 +1,31 @@
+[global]
+ApplicationName=moji-web
+ApplicationVersionName=git-8ad590098405edb16da06da98c864572180898c9-1407111011224
+AwsCredentialFile=/Users/charlie/.elasticbeanstalk/aws_credential_file
+DevToolsEndpoint=git.elasticbeanstalk.us-west-1.amazonaws.com
+EnvironmentName=moji-web-env
+EnvironmentTier=WebServer::Standard::1.0
+EnvironmentType=LoadBalanced
+InstanceProfileName=aws-elasticbeanstalk-ec2-role
+OptionSettingFile=/Users/charlie/src/github.com/pinchio/moji-web/.elasticbeanstalk/optionsettings.moji-web-env
+RdsDeletionPolicy=Snapshot
+RdsEnabled=Yes
+RdsSourceSnapshotName=
+Region=us-west-1
+ServiceEndpoint=https://elasticbeanstalk.us-west-1.amazonaws.com
+SolutionStack=64bit Amazon Linux 2014.03 v1.0.0 running Docker 1.0.0
+
+[branches]
+master=moji-web-env
+
+[branch:master]
+ApplicationVersionName=Sample Application
+EnvironmentName=moji-web-env
+EnvironmentTier=WebServer::Standard::1.0
+EnvironmentType=LoadBalanced
+InstanceProfileName=aws-elasticbeanstalk-ec2-role
+OptionSettingFile=/Users/charlie/src/github.com/pinchio/moji-web/.elasticbeanstalk/optionsettings.moji-web-env
+RdsDeletionPolicy=Snapshot
+RdsEnabled=Yes
+RdsSourceSnapshotName=
+

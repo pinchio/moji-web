@@ -9,4 +9,3 @@ config/runtime.json
 public/_/scripts/vendor.js
 public/_/scripts/main.js
 public/_/css/all.css
-.elasticbeanstalk/
