@@ -3,7 +3,7 @@
 FROM ubuntu:12.04
 
 RUN apt-get update
-RUN apt-get install -y nginx zip curl dialog build-essential openssl libssl-dev wget python-software-properties tmux
+RUN apt-get install -y git-core nginx zip curl dialog build-essential openssl libssl-dev wget python-software-properties tmux
 
 # Install Node.js
 RUN \
@@ -21,7 +21,7 @@ RUN \
 
 # Install and run server
 ADD . /var/www
-RUN cd /var/www && npm install
+RUN cd /var/www && npm install && npm run start-dev
 
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf
 RUN curl -o /usr/share/nginx/www/master.zip -L https://codeload.github.com/gabrielecirulli/2048/zip/master
@@ -30,6 +30,6 @@ RUN cd /usr/share/nginx/www/ && unzip master.zip && mv 2048-master/* . && rm -rf
 RUN python --version
 RUN node --version
 
-EXPOSE 80 443 22
+EXPOSE 80 443 22 10000
 
 CMD ["/usr/sbin/nginx", "-c", "/etc/nginx/nginx.conf"]
