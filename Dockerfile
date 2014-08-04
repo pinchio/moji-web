@@ -3,7 +3,7 @@
 FROM ubuntu:12.04
 
 RUN apt-get update
-RUN apt-get install -y nginx zip curl
+RUN apt-get install -y nginx zip curl build-essential openssl libssl-dev
 
 # Install Node.js
 RUN \
