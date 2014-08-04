@@ -2,8 +2,15 @@
 
 FROM ubuntu:12.04
 
+RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
 RUN apt-get update
-RUN apt-get install -y git-core nginx zip curl dialog build-essential openssl libssl-dev wget python-software-properties tmux
+RUN apt-get upgrade -y
+RUN apt-get install -y git-core nginx zip curl dialog build-essential openssl libssl-dev wget python-software-properties tmux openssh-server supervisor
+
+# https://docs.docker.com/articles/using_supervisord/
+RUN mkdir -p /var/run/sshd
+RUN mkdir -p /var/log/supervisor
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Install Node.js
 RUN \
@@ -32,4 +39,4 @@ RUN node --version
 
 EXPOSE 80 443 22 10000
 
-CMD ["/usr/sbin/nginx", "-c", "/etc/nginx/nginx.conf"]
+CMD ["/usr/bin/supervisord"]
