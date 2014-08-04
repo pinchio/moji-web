@@ -20,7 +20,7 @@ RUN \
   echo '\n# Node.js\nexport PATH="node_modules/.bin:$PATH"' >> /root/.bash_profile
 
 # Install and run server
-RUN cd /var/app/current && npm install
+RUN npm install
 
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf
 RUN curl -o /usr/share/nginx/www/master.zip -L https://codeload.github.com/gabrielecirulli/2048/zip/master
