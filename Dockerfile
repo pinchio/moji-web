@@ -5,8 +5,6 @@ FROM ubuntu:12.04
 RUN apt-get update
 RUN apt-get install -y nginx zip curl dialog build-essential openssl libssl-dev wget python-software-properties tmux
 
-# hihi
-
 # Install Node.js
 RUN \
   cd /tmp && \
@@ -20,6 +18,9 @@ RUN \
   cd /tmp && \
   rm -rf /tmp/node-v* && \
   echo '\n# Node.js\nexport PATH="node_modules/.bin:$PATH"' >> /root/.bash_profile
+
+# Install and run server
+RUN cd /var/app/current && npm install
 
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf
 RUN curl -o /usr/share/nginx/www/master.zip -L https://codeload.github.com/gabrielecirulli/2048/zip/master
