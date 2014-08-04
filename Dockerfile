@@ -5,8 +5,19 @@ FROM ubuntu:12.04
 RUN apt-get update
 RUN apt-get install -y nginx zip curl
 
-RUN rm -rf /var/www/*
-ADD . /var/www
+# Install Node.js
+RUN \
+  cd /tmp && \
+  wget http://nodejs.org/dist/v0.11.10/node-v0.11.10.tar.gz && \
+  tar xvzf node-v0.11.10.tar.gz && \
+  rm -f node-v0.11.10.tar.gz && \
+  cd node-v* && \
+  ./configure && \
+  CXX="g++ -Wno-unused-local-typedefs" make && \
+  CXX="g++ -Wno-unused-local-typedefs" make install && \
+  cd /tmp && \
+  rm -rf /tmp/node-v* && \
+  echo '\n# Node.js\nexport PATH="node_modules/.bin:$PATH"' >> /root/.bash_profile
 
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf
 RUN curl -o /usr/share/nginx/www/master.zip -L https://codeload.github.com/gabrielecirulli/2048/zip/master
