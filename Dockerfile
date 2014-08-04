@@ -24,6 +24,8 @@ RUN \
   rm -rf /tmp/node-v* && \
   echo '\n# Node.js\nexport PATH="node_modules/.bin:$PATH"' >> /root/.bash_profile
 
+# please cache
+
 # Install and run server
 # ADD . /var/www
 # RUN cd /var/www && npm install --production && npm run start-dev
