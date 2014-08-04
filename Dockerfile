@@ -2,9 +2,7 @@
 
 FROM ubuntu:12.04
 
-RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
 RUN apt-get update
-RUN apt-get upgrade -y
 RUN apt-get install -y git-core nginx zip curl dialog build-essential openssl libssl-dev wget python-software-properties tmux openssh-server supervisor
 
 # https://docs.docker.com/articles/using_supervisord/
