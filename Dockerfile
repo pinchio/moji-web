@@ -2,9 +2,12 @@
 
 FROM ubuntu:12.04
 
+RUN apt-get update
+RUN apt-get install -y git-core nginx zip curl build-essential openssl libssl-dev python-software-properties openssh-server supervisor
+
 RUN add-apt-repository ppa:chris-lea/node.js-devel
 RUN apt-get update
-RUN apt-get install -y git-core nginx zip curl build-essential openssl libssl-dev python-software-properties openssh-server supervisor nodejs
+RUN apt-get install -y nodejs
 
 # https://docs.docker.com/articles/using_supervisord/
 RUN mkdir -p /var/run/sshd
