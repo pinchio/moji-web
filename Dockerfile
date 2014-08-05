@@ -27,5 +27,5 @@ EXPOSE 80 443 22 10000
 
 #CMD ["/usr/bin/supervisord"]
 #CMD cd /var/www && NODE_PATH=./ node --harmony ./server.js
-sudo python -m SimpleHTTPServer 80
+CMD sudo python -m SimpleHTTPServer 80
 
