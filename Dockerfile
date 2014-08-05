@@ -17,7 +17,7 @@ RUN mkdir -p /var/log/supervisor
 
 # Install and run server
 ADD . /var/www
-RUN cd /var/www && npm install --production
+# RUN cd /var/www && npm install --production
 
 # RUN echo "daemon off;" >> /etc/nginx/nginx.conf
 # RUN curl -o /usr/share/nginx/www/master.zip -L https://codeload.github.com/gabrielecirulli/2048/zip/master
@@ -27,5 +27,5 @@ EXPOSE 80 443 22 10000
 
 #CMD ["/usr/bin/supervisord"]
 #CMD cd /var/www && NODE_ENV=production NODE_PATH=./ node --harmony ./server.js
-CMD sudo python -m SimpleHTTPServer 80
+CMD cd /var/www && python -m SimpleHTTPServer 80
 
