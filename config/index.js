@@ -25,6 +25,13 @@ var config = convict({
       , 'env': 'NODE_PROJECT_PATH'
       , 'arg': 'project_path'
     }
+ , 'server': {
+        'port': {
+            'format': '*'
+          , 'default': '10000'
+          , 'env': 'NODE_PORT'
+        }
+    }
   , 'db': {
         'host': {
             'format': '*'

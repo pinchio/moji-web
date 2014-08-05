@@ -1,5 +1,8 @@
 var server = require('src/server').Server.get_instance()
-  , port = process.env.PORT || process.env.NODE_PORT || 80
+  , config = require('config')
+  , port = config.get('server').port
   , host = '0.0.0.0'
+
+// TODO: if no process.env set do not pass go.
 
 server.listen(port, host)

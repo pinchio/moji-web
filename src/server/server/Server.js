@@ -10,6 +10,7 @@ var koa = require('koa')
   , routes = require('src/common/routes')
   , StaticMixin = require('../../common/StaticMixin')
   , config = require('../../../config')
+  , http = require('http')
 
 var Server = function Server() {
     var self = this
@@ -47,7 +48,12 @@ _.extend(Server, StaticMixin)
 
 Server.prototype.listen = function(port, host) {
     console.log('Starting server on ' + host + ':' + port)
-    this.app.listen.apply(this.app, arguments)
+    this.http_server = http.createServer(this.app.callback()).listen(port, host)
+}
+
+Server.prototype.close = function() {
+    console.log('Stopping server')
+    this.http_server.close()
 }
 
 module.exports = Server

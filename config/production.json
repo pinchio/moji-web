@@ -1,4 +1,7 @@
 {
-    "project_path": "/home/app/code"
+    "project_path": "/var/www"
   , "env": "production"
+  , "server": {
+        "port": 80
+    }
 }
