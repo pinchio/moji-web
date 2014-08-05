@@ -26,6 +26,6 @@ RUN cd /var/www && npm install --production
 EXPOSE 80 443 22 10000
 
 #CMD ["/usr/bin/supervisord"]
-#CMD cd /var/www && NODE_PATH=./ node --harmony ./server.js
+#CMD cd /var/www && NODE_ENV=production NODE_PATH=./ node --harmony ./server.js
 CMD sudo python -m SimpleHTTPServer 80
 
