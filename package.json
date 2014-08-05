@@ -11,9 +11,10 @@
     "test": "mocha --reporter spec src/**/*.test.js",
     "deploy-production": "git push production1 HEAD:master",
     "create-production": "AWS_REGION=us-west-1 ./node_modules/.bin/awsbox create -n production",
-    "schema": "psql -f src/db/schema.sql",
     "sshapp": "ssh -i ~/Downloads/cly-aws.pem app@ec2-54-193-96-81.us-west-1.compute.amazonaws.com",
     "sshadmin": "ssh -i ~/Downloads/cly-aws.pem ec2-user@ec2-54-193-96-81.us-west-1.compute.amazonaws.com",
+    "db:connect": "psql --host=aa1a5ouvvq3742b.cu6qafut7bux.us-west-1.rds.amazonaws.com --port=5432 --username=ebroot --password --dbname=mojigram",
+    "db:schema": "psql --host=aa1a5ouvvq3742b.cu6qafut7bux.us-west-1.rds.amazonaws.com --port=5432 --username=ebroot --password --dbname=mojigram -f src/db/schema.sql",
     "setup": "rm ./.git/hooks/pre-commit; ln -s ../../hook/pre-commit .git/hooks/pre-commit"
   },
   "dependencies": {
