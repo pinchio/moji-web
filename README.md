@@ -11,10 +11,12 @@ ENDPOINTS
 1. Register
 parameters:
 return types: success, duplicate email, duplicate username, empty strings for required fields (we'll check on client side first too)
+notes: sessions should last forever
 
 2. Login
 parameters: username, password
 return types: success, invalid login, empty strings for required fields (we'll check on client side first too)
+notes: sessions should last forever
 
 3a. Retrieve all emojis
 parameters: username, collection_id (optional)
