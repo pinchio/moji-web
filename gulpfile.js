@@ -95,7 +95,6 @@ gulp.task('main', function() {
         .external('underscore')
         .external('backbone')
         .external('hammerjs')
-        .external('d3')
         .bundle({
             debug: (config.get('env') === 'development')
         })
@@ -121,7 +120,6 @@ gulp.task('vendor', function() {
         .require('react/addons')
         .require('underscore')
         .require('hammerjs')
-        .require('d3')
         .require('fastclick')
         .require('cortexjs')
         .bundle({
