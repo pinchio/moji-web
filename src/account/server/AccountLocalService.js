@@ -42,47 +42,37 @@ AccountLocalService.prototype.validate_password = thunkify(function(password, ex
 })
 
 AccountLocalService.prototype.create = function * (o) {
-    // Username regex: ^(\w){1,15}$
-    // Max password length.
-    // password regex:
-    //    function checkPwd(str) {
-    //     if (str.length < 6) {
-    //         return("too_short");
-    //     } else if (str.length > 50) {
-    //         return("too_long");
-    //     } else if (str.search(/\d/) == -1) {
-    //         return("no_num");
-    //     } else if (str.search(/[a-zA-Z]/) == -1) {
-    //         return("no_letter");
-    //     } else if (str.search(/[^a-zA-Z0-9\!\@\#\$\%\^\&\*\(\)\_\+]/) != -1) {
-    //         return("bad_char");
-    //     }
-    //     return("ok");
-    // }
-
-    // username set?
-    // alpha numeric characters for password?
-    // full_name optional
-    // born_at optional
-
-    // console.log(o)
-    // TODO: some validation.
-
-    var account = Account.from_create({
-            username: o.username
-          , full_name: o.full_name
-          , password: hash_salt
-          , born_at: o.born_at
-        })
-
-    var hash_salt = yield this.create_password_hash_salt(o.password)
+    var self = this
       , account = Account.from_create({
             username: o.username
+          , password: o.password
+          , email: o.email
           , full_name: o.full_name
-          , password: hash_salt
           , born_at: o.born_at
         })
-      , created_accounts = yield AccountPersistenceService.insert(account)
+      , hash_salt = yield this.create_password_hash_salt(o.password)
+
+    account.password = hash_salt
+
+    try {
+        var created_accounts = yield AccountPersistenceService.insert(account)
+    } catch (e) {
+        if (e && e.type === 'db_duplicate_key_error') {
+            if (e.detail) {
+                if (e.detail.key === 'username') {
+                    throw new LocalServiceError(self.ns, 'conflict', 'Username is taken.', 409)
+                } else if (e.detail.key === 'email') {
+                    throw new LocalServiceError(self.ns, 'conflict', 'Email is taken.', 409)
+                } else {
+                    throw e
+                }
+            } else {
+                throw e
+            }
+        } else {
+            throw e
+        }
+    }
 
     return (created_accounts && created_accounts.list.length === 1) ? created_accounts.list[0] : null
 }

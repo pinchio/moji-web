@@ -7,6 +7,7 @@ var QueryMixin = function QueryMixin() {}
 
 QueryMixin.prototype.pg = pg
 QueryMixin.prototype.conn_string = config.get('conn_string')
+QueryMixin.prototype.duplicate_key_regex = /\(([^\)]+)\)/
 
 QueryMixin.prototype.query = thunkify(function(req, cb) {
     var self = this
@@ -24,7 +25,15 @@ QueryMixin.prototype.query = thunkify(function(req, cb) {
                 if (e) {
                     console.log(e)
                     if (e.code === '23505') {
-                        return cb(new LocalServiceError(self.ns, 'db_duplicate_key_error', 'Duplicate key error.', 500))
+                        // Duplicate key
+                        var found = e.detail.match(self.duplicate_key_regex)
+                          , detail = {}
+
+                        if (found[1]) {
+                            detail.key = found[1]
+                        }
+
+                        return cb(new LocalServiceError(self.ns, 'db_duplicate_key_error', 'Duplicate key error.', 500, detail))
                     } else {
                         return cb(new LocalServiceError(self.ns, 'db_query_error', 'Error running query.', 500))
                     }

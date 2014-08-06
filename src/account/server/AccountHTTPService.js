@@ -34,8 +34,9 @@ AccountHTTPService.prototype.post = function() {
         try {
             var account = yield AccountLocalService.create({
                     username: this.request.body && this.request.body.username
-                  , full_name: this.request.body && this.request.body.full_name
                   , password: this.request.body && this.request.body.password
+                  , email: this.request.body && this.request.body.email
+                  , full_name: this.request.body && this.request.body.full_name
                   , born_at: this.request.body && this.request.body.born_at
                 })
 

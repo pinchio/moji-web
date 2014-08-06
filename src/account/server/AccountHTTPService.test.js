@@ -18,19 +18,20 @@ describe('AccountHTTPService', function() {
     // after(function() {
     //     server.close()
     // })
-    var username = '__' + Date.now()
+    var username = 'ab' + Date.now()
       , password = 'password'
+      , email = 'a' + Date.now() + '@b.com'
 
     describe('post', function() {
-        it('should create account if unique', function(done) {
+        it('should create account if username and email unique', function(done) {
             this.timeout(10000)
-            request(
-                {
+            request({
                     url: get_url('/_/api/account')
                   , method: 'POST'
                   , json: {
                         username: username
                       , password: password
+                      , email: email
                     }
                 }
               , function(e, d, body) {
@@ -38,9 +39,239 @@ describe('AccountHTTPService', function() {
                     assert.isObject(body, 'body is an object')
                     assert.isDefined(body.account, 'account should be defined')
                     assert.equal(body.account.username, username, 'username should match')
+                    assert.equal(body.account.email, email, 'email should match')
                     assert.isUndefined(body.account.password, 'password should not be defined')
                     done()
-                })
+            })
+        })
+
+        it('should not allow duplicate username', function(done) {
+            this.timeout(10000)
+            request({
+                    url: get_url('/_/api/account')
+                  , method: 'POST'
+                  , json: {
+                        username: username
+                      , password: password
+                      , email: email
+                    }
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 409)
+                    assert.equal(body.type, 'conflict')
+                    assert.equal(body.description, 'Username is taken.')
+                    done()
+            })
+        })
+
+        it('should not allow duplicate email', function(done) {
+            this.timeout(10000)
+            request({
+                    url: get_url('/_/api/account')
+                  , method: 'POST'
+                  , json: {
+                        username: 'ab' + Date.now()
+                      , password: password
+                      , email: email
+                    }
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 409)
+                    assert.equal(body.type, 'conflict')
+                    assert.equal(body.description, 'Email is taken.')
+                    done()
+            })
+        })
+
+        it('should not allow empty usernames', function(done) {
+            request({
+                    url: get_url('/_/api/account')
+                  , method: 'POST'
+                  , json: {
+                        username: null
+                      , password: password
+                    }
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 400)
+                    assert.equal(body.type, 'bad_request')
+                    assert.equal(body.description, 'Username must be between 3 and 15 characters.')
+                    done()
+            })
+        })
+
+        it('should not allow short usernames', function(done) {
+            request({
+                    url: get_url('/_/api/account')
+                  , method: 'POST'
+                  , json: {
+                        username: 'a'
+                      , password: password
+                    }
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 400)
+                    assert.equal(body.type, 'bad_request')
+                    assert.equal(body.description, 'Username must be between 3 and 15 characters.')
+                    done()
+            })
+        })
+
+        it('should not allow long usernames', function(done) {
+            // Date.now() is 13 chars.
+            request({
+                    url: get_url('/_/api/account')
+                  , method: 'POST'
+                  , json: {
+                        username: '1234567890123456'
+                      , password: password
+                    }
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 400)
+                    assert.equal(body.type, 'bad_request')
+                    assert.equal(body.description, 'Username must be between 3 and 15 characters.')
+                    done()
+            })
+        })
+
+        it('should not allow non-alphanumeric characters in username', function(done) {
+            request({
+                    url: get_url('/_/api/account')
+                  , method: 'POST'
+                  , json: {
+                        username: '___'
+                      , password: password
+                    }
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 400)
+                    assert.equal(body.type, 'bad_request')
+                    assert.equal(body.description, 'Username can only contain letters and numbers.')
+                    done()
+            })
+        })
+
+        it('should not allow empty passwords', function(done) {
+            request({
+                    url: get_url('/_/api/account')
+                  , method: 'POST'
+                  , json: {
+                        username: username
+                      , password: null
+                    }
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 400)
+                    assert.equal(body.type, 'bad_request')
+                    assert.equal(body.description, 'Password must be between 8 and 32 characters.')
+                    done()
+            })
+        })
+
+        it('should not allow short passwords', function(done) {
+            request({
+                    url: get_url('/_/api/account')
+                  , method: 'POST'
+                  , json: {
+                        username: username
+                      , password: '1234567'
+                    }
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 400)
+                    assert.equal(body.type, 'bad_request')
+                    assert.equal(body.description, 'Password must be between 8 and 32 characters.')
+                    done()
+            })
+        })
+
+        it('should not allow long passwords', function(done) {
+            request({
+                    url: get_url('/_/api/account')
+                  , method: 'POST'
+                  , json: {
+                        username: username
+                      , password: '123456789012345678901234567890123'
+                    }
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 400)
+                    assert.equal(body.type, 'bad_request')
+                    assert.equal(body.description, 'Password must be between 8 and 32 characters.')
+                    done()
+            })
+        })
+
+        it('should not allow non-alphanumeric characters in password', function(done) {
+            request({
+                    url: get_url('/_/api/account')
+                  , method: 'POST'
+                  , json: {
+                        username: username
+                      , password: '12345670__'
+                    }
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 400)
+                    assert.equal(body.type, 'bad_request')
+                    assert.equal(body.description, 'Password can only contain letters and numbers.')
+                    done()
+            })
+        })
+
+        it('should not allow empty emails', function(done) {
+            request({
+                    url: get_url('/_/api/account')
+                  , method: 'POST'
+                  , json: {
+                        username: username
+                      , password: password
+                      , email: null
+                    }
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 400)
+                    assert.equal(body.type, 'bad_request')
+                    assert.equal(body.description, 'Email is not valid.')
+                    done()
+            })
+        })
+
+        it('should not allow invalid emails', function(done) {
+            request({
+                    url: get_url('/_/api/account')
+                  , method: 'POST'
+                  , json: {
+                        username: username
+                      , password: password
+                      , email: 'a@b'
+                    }
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 400)
+                    assert.equal(body.type, 'bad_request')
+                    assert.equal(body.description, 'Email is not valid.')
+                    done()
+            })
+        })
+
+        it('should not allow invalid emails', function(done) {
+            request({
+                    url: get_url('/_/api/account')
+                  , method: 'POST'
+                  , json: {
+                        username: username
+                      , password: password
+                      , email: '@b.com'
+                    }
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 400)
+                    assert.equal(body.type, 'bad_request')
+                    assert.equal(body.description, 'Email is not valid.')
+                    done()
+            })
         })
     })
 })
