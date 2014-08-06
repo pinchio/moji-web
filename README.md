@@ -24,11 +24,11 @@ parameter: emoji_id
 
 4. Post emoji
 parameters: various metadata as mentioned in spec
-return types: success, fail
+return types: success (return unique id), fail
 
 5. Create collection
 parameters: color, username
-return types: success, fail
+return types: success (return unique id), fail
 
 6. Retrieve collections
 parameters: username
