@@ -5,7 +5,7 @@ var _ = require('underscore')
 
 var AccountPersistenceService = function AccountPersistenceService() {
     this.ns = 'AccountPersistenceService'
-    this.columns = ['id', 'created_at', 'updated_at', 'username', 'full_name', 'password', 'born_at']
+    this.columns = ['id', 'created_at', 'updated_at', 'username', 'email', 'full_name', 'password', 'born_at']
     this.table = 'account'
     this.clazz = Accounts
 }

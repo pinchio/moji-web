@@ -40,7 +40,8 @@
     "string": "1.8.0",
     "thunkify": "0.0.1",
     "underscore": "1.6.0",
-    "URIjs": "1.13.2"
+    "URIjs": "1.13.2",
+    "validator": "3.16.1"
   },
   "devDependencies": {
     "awsbox": "git://github.com/cly/awsbox",
@@ -48,8 +49,6 @@
     "browserify": "4.2.0",
     "chai": "1.9.1",
     "cortexjs": "0.6.0",
-    "cubism": "1.5.0",
-    "d3": "3.3.13",
     "fastclick": "1.0.1",
     "file": "0.2.2",
     "font-awesome": "git://github.com/cly/Font-Awesome.git",

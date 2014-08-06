@@ -8,10 +8,12 @@ CREATE TABLE account (
     created_at      timestamptz,
     updated_at      timestamptz,
     username        varchar(15),
+    email           varchar(128),
     full_name       varchar(128),
     password        varchar(512),
     born_at         timestamptz,
-    UNIQUE(username)
+    UNIQUE(username),
+    UNIQUE(email)
 );
 
 CREATE TABLE moji (

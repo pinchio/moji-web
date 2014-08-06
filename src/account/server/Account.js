@@ -13,7 +13,7 @@ var Account = function(o) {
     })
 }
 _.extend(Account, ModelMixin)
-Account.keys = ['id', 'created_at', 'updated_at', 'username', 'full_name', 'password', 'born_at']
+Account.keys = ['id', 'created_at', 'updated_at', 'username', 'email', 'full_name', 'password', 'born_at']
 
 Account.from_create = function(o) {
     return new Account({
@@ -21,6 +21,7 @@ Account.from_create = function(o) {
       , created_at: 'now()'
       , updated_at: 'now()'
       , username: o.username
+      , email: o.email
       , full_name: o.full_name
       , password: o.password
       , born_at: Account.to_moment(o.born_at)
@@ -33,6 +34,7 @@ Account.from_db = function(o) {
       , created_at: new Moment(o.created_at)
       , updated_at: new Moment(o.updated_at)
       , username: o.username
+      , email: o.email
       , full_name: o.full_name
       , password: o.password
       , born_at: Account.to_moment(o.born_at)
@@ -45,6 +47,7 @@ Account.prototype.to_json = function() {
       , created_at: this.created_at.toISOString()
       , updated_at: this.updated_at.toISOString()
       , username: this.username
+      , email: this.email
       , full_name: this.full_name
       , born_at: this.born_at
     }
@@ -56,6 +59,7 @@ Account.prototype.to_db = function() {
       , created_at: Account.from_moment(this.created_at)
       , updated_at: Account.from_moment(this.updated_at)
       , username: this.username
+      , email: this.email
       , full_name: this.full_name
       , password: this.password
       , born_at: Account.from_moment(this.born_at)
