@@ -2,6 +2,7 @@ var koa = require('koa')
   , koa_body_parser = require('koa-body-parser')
   , koa_compress = require('koa-compress')
   , koa_logger = require('koa-logger')
+  , koa_session = require('koa-session')
   , koa_static = require('koa-static')
   , koa_trie_router = require('koa-trie-router')
   , path = require('path')
@@ -11,13 +12,13 @@ var koa = require('koa')
   , StaticMixin = require('../../common/StaticMixin')
   , config = require('../../../config')
   , http = require('http')
+  , static_folder_name = path.join(process.env.NODE_PATH, '/public')
 
 var Server = function Server() {
     var self = this
+
     this.app = koa()
-
-    var static_folder_name = path.join(process.env.NODE_PATH, '/public')
-
+    this.app.keys = ['m0j1gr@m']
     this.app.use(koa_logger())
 
     if (config.get('env') === 'development') {
@@ -27,6 +28,7 @@ var Server = function Server() {
     }
     this.app.use(koa_body_parser())
     this.app.use(koa_static(static_folder_name, {maxage: 1000 * 60 * 60 * 24 * 365}))
+    this.app.use(koa_session())
     this.app.use(koa_trie_router(this.app))
 
     // API routes

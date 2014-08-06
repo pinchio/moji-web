@@ -1,4 +1,5 @@
 var _ = require('underscore')
+  , validator = require('validator')
   , LocalServiceError = require('src/common').LocalServiceError
   , AccountPersistenceService = require('./AccountPersistenceService').get_instance()
   , StaticMixin = require('../../common/StaticMixin')
@@ -21,12 +22,6 @@ var AccountLocalService = function AccountLocalService() {
 }
 _.extend(AccountLocalService, StaticMixin)
 
-// TODO: Account name cannot be login, logout, username
-// TODO: Should not leak password to client
-
-AccountLocalService.prototype.get_by_id = function * (o) {
-}
-
 AccountLocalService.prototype.create_password_hash_salt = thunkify(function(password, cb) {
     easy_pbkdf2.secureHash(password, function(err, hash, salt) {
         return cb(err, hash + ':' + salt)
@@ -41,7 +36,18 @@ AccountLocalService.prototype.validate_password = thunkify(function(password, ex
     })
 })
 
+AccountLocalService.prototype.get_by_id = function * (o) {
+    if (!validator.isLength(o.id, 10)) {
+        throw new LocalServiceError(this.ns, 'bad_request', 'Account ids contain more than 10 characters.', 400)
+    }
+
+    var accounts = yield AccountPersistenceService.select_by_id({id: o.id})
+
+    return (accounts && accounts.list.length === 1) ? accounts.list[0] : null
+}
+
 AccountLocalService.prototype.create = function * (o) {
+    // TODO: Account name cannot be login, logout, username
     var self = this
       , account = Account.from_create({
             username: o.username

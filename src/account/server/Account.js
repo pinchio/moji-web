@@ -67,6 +67,14 @@ Account.prototype.to_json = function() {
     return {
         id: this.id
       , created_at: this.created_at.toISOString()
+      , username: this.username
+    }
+}
+
+Account.prototype.to_privileged = function() {
+    return {
+        id: this.id
+      , created_at: this.created_at.toISOString()
       , updated_at: this.updated_at.toISOString()
       , username: this.username
       , email: this.email

@@ -210,6 +210,23 @@
         }
       }
     },
+    "koa-session": {
+      "version": "2.0.0",
+      "from": "koa-session@",
+      "resolved": "https://registry.npmjs.org/koa-session/-/koa-session-2.0.0.tgz",
+      "dependencies": {
+        "debug": {
+          "version": "1.0.4",
+          "from": "debug@*",
+          "dependencies": {
+            "ms": {
+              "version": "0.6.2",
+              "from": "ms@0.6.2"
+            }
+          }
+        }
+      }
+    },
     "koa-static": {
       "version": "1.4.3",
       "from": "https://registry.npmjs.org/koa-static/-/koa-static-1.4.3.tgz",
@@ -466,6 +483,16 @@
       "version": "0.0.1",
       "from": "https://registry.npmjs.org/thunkify/-/thunkify-0.0.1.tgz",
       "resolved": "https://registry.npmjs.org/thunkify/-/thunkify-0.0.1.tgz"
+    },
+    "tough-cookie": {
+      "version": "0.12.1",
+      "from": "tough-cookie@",
+      "dependencies": {
+        "punycode": {
+          "version": "1.3.0",
+          "from": "punycode@>=0.2.0"
+        }
+      }
     },
     "underscore": {
       "version": "1.6.0",

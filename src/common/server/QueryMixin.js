@@ -50,6 +50,15 @@ QueryMixin.prototype.columns_string = function() {
     return this.columns.join(', ')
 }
 
+QueryMixin.prototype._select_by_id = function * (req) {
+    var query = 'select * from ' + this.table + ' '
+              + 'where id = $1 '
+      , values = [req.id]
+
+    return yield this.query({query: query, values: values})
+}
+QueryMixin.prototype.select_by_id = QueryMixin.prototype._select_by_id
+
 QueryMixin.prototype._select_all_limit = function * (req) {
     var query = 'select * from ' + this.table + ' limit 1000'
       , values = []

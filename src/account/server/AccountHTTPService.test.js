@@ -21,10 +21,16 @@ describe('AccountHTTPService', function() {
     var username = 'ab' + Date.now()
       , password = 'password'
       , email = 'a' + Date.now() + '@b.com'
+      , stored_account
+      , stored_jar
 
     describe('post', function() {
         it('should create account if username and email unique', function(done) {
             this.timeout(10000)
+            stored_jar = request.jar()
+            // var cookie = request.cookie('a=b')
+            // stored_jar.setCookie(cookie, 'www.mojigram.com')
+
             request({
                     url: get_url('/_/api/account')
                   , method: 'POST'
@@ -33,6 +39,7 @@ describe('AccountHTTPService', function() {
                       , password: password
                       , email: email
                     }
+                  , jar: stored_jar
                 }
               , function(e, d, body) {
                     assert.isDefined(body, 'body should be defined')
@@ -41,6 +48,7 @@ describe('AccountHTTPService', function() {
                     assert.equal(body.account.username, username, 'username should match')
                     assert.equal(body.account.email, email, 'email should match')
                     assert.isUndefined(body.account.password, 'password should not be defined')
+                    stored_account = body.account
                     done()
             })
         })
@@ -270,6 +278,49 @@ describe('AccountHTTPService', function() {
                     assert.equal(d.statusCode, 400)
                     assert.equal(body.type, 'bad_request')
                     assert.equal(body.description, 'Email is not valid.')
+                    done()
+            })
+        })
+    })
+
+    describe('get', function() {
+        it('should get account even if not authd', function(done) {
+            request({
+                    url: get_url('/_/api/account/' + stored_account.id)
+                  , method: 'GET'
+                  , json: true
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.equal(body.account.id, stored_account.id)
+                    assert.isUndefined(body.account.email)
+                    done()
+            })
+        })
+
+        it('should get privileged account if authd', function(done) {
+            request({
+                    url: get_url('/_/api/account/' + stored_account.id)
+                  , method: 'GET'
+                  , json: true
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.equal(body.account.id, stored_account.id)
+                    assert.isDefined(body.account.email)
+                    done()
+            })
+        })
+
+        it('should get 404 if id not valid', function(done) {
+            request({
+                    url: get_url('/_/api/account/' + 'some_invalid_id')
+                  , method: 'GET'
+                  , json: true
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 404)
                     done()
             })
         })
