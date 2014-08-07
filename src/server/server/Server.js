@@ -36,9 +36,9 @@ var Server = function Server() {
     // this.app.route('/_/api/account/username/:username').get(AccountHTTPService.get())
 
     this.app.route('/_/api/account').post(AccountHTTPService.post())
-    this.app.route('/_/api/account/login').post(AccountHTTPService.login())
 
     this.app.route('/_/api/session').post(SessionHTTPService.post())
+    this.app.route('/_/api/session').del(SessionHTTPService.del())
     // this.app.route('/_/api/account/logout').post(AccountHTTPService.logout())
 
     // this.app.route('/_/api/account/:id').put(AccountHTTPService.put())

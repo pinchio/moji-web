@@ -90,6 +90,11 @@ AccountLocalService.prototype.create = function * (o) {
 
     try {
         var created_accounts = yield AccountPersistenceService.insert(account)
+          , account = (created_accounts && created_accounts.list.length === 1) ? created_accounts.list[0] : null
+          , session = yield SessionLocalService.create_by_account_session({
+                account: account
+              , session: o.session
+            })
     } catch (e) {
         if (e && e.type === 'db_duplicate_key_error') {
             if (e.detail) {
@@ -108,25 +113,7 @@ AccountLocalService.prototype.create = function * (o) {
         }
     }
 
-    return (created_accounts && created_accounts.list.length === 1) ? created_accounts.list[0] : null
-}
-
-AccountLocalService.prototype.login = function * (o) {
-    // TODO: validation
-    var users = yield AccountPersistenceService.select_by_username({username: o.username})
-
-    if (!users.list.length) {
-        throw new LocalServiceError(this.ns, 'invalid_login', 'Invalid username or password', 400)
-    }
-
-    var user = users.list[0]
-      , is_valid = yield this.validate_password_hash_salt(o.password, user.password)
-
-    if (is_valid) {
-        return user
-    } else {
-        throw new LocalServiceError(this.ns, 'invalid_login', 'Invalid username or password', 400)
-    }
+    return account
 }
 
 AccountLocalService.prototype.get_by_username_password = function * (o) {
@@ -153,3 +140,5 @@ AccountLocalService.prototype.get_by_username_password = function * (o) {
 }
 
 module.exports = AccountLocalService
+
+var SessionLocalService = require('../../session/server/SessionLocalService').get_instance()

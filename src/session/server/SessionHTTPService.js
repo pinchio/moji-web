@@ -27,4 +27,20 @@ SessionHTTPService.prototype.post = function() {
     }
 }
 
+SessionHTTPService.prototype.del = function() {
+    var self = this
+
+    return function * (next) {
+        try {
+            var account = yield SessionLocalService.del({
+                    that: this
+                })
+
+            self.handle_success(this, {}, 'json')
+        } catch(e) {
+            self.handle_exception(this, e)
+        }
+    }
+}
+
 module.exports = SessionHTTPService

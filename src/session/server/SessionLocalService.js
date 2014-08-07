@@ -14,6 +14,12 @@ SessionLocalService.prototype.create = function * (o) {
           , password: o.password
         })
 
+    return yield this.create_by_account_session({account: account, session: o.session})
+}
+
+SessionLocalService.prototype.create_by_account_session = function * (o) {
+    var account = o.account
+
     if (account) {
         o.session.account_id = account.id
     } else {
@@ -21,6 +27,10 @@ SessionLocalService.prototype.create = function * (o) {
     }
 }
 
+SessionLocalService.prototype.del = function * (o) {
+    o.that.session = null
+}
+
 module.exports = SessionLocalService
 
-var AccountLocalService = require('src/account').AccountLocalService.get_instance()
+var AccountLocalService = require('../../account/server/AccountLocalService').get_instance()

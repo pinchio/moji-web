@@ -47,6 +47,19 @@ describe('AccountHTTPService', function() {
                     assert.equal(body.account.username, username, 'username should match')
                     assert.equal(body.account.email, email, 'email should match')
                     assert.isUndefined(body.account.password, 'password should not be defined')
+
+                    var cookies = stored_jar.getCookieString(get_url())
+                      , cookie_map = {}
+
+                    cookies.split('; ').forEach(function(cookie) {
+                        var key_value = cookie.split('=')
+
+                        cookie_map[key_value[0]] = key_value[1]
+                    })
+
+                    assert.isDefined(cookie_map['koa:sess'])
+                    assert.isDefined(cookie_map['koa:sess.sig'])
+
                     stored_account = body.account
                     done()
             })
