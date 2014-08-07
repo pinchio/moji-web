@@ -21,6 +21,7 @@
   "dependencies": {
     "aws-sdk": "2.0.11",
     "co": "3.0.4",
+    "co-busboy": "1.0.2",
     "convict": "0.4.2",
     "cron": "1.0.3",
     "easy-pbkdf2": "0.1.1",

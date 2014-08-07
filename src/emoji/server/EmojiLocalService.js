@@ -6,127 +6,63 @@ var _ = require('underscore')
   , easy_pbkdf2 = require('easy-pbkdf2')({DEFAULT_HASH_ITERATIONS: 10000, SALT_SIZE: 32, KEY_LENGTH: 256})
   , thunkify = require('thunkify')
   , Emoji = require('./Emoji')
+  , fs = require('fs')
+  , readFile_thunk = thunkify(fs.readFile)
+  , AWS = require('aws-sdk')
+  , config = require('../../../config')
+  , path = require('path')
+  , crypto = require('crypto')
 
 var EmojiLocalService = function EmojiLocalService() {
     this.ns = 'EmojiLocalService'
+    this.s3_bucket = new AWS.S3({params: {Bucket: config.get('s3').bucket}})
+    this.s3_bucket_put_object = thunkify(this.s3_bucket.putObject).bind(this.s3_bucket)
+    this.s3_base_url = this.s3_bucket.endpoint.href + config.get('s3').bucket + '/'
 }
 _.extend(EmojiLocalService, StaticMixin)
 
-EmojiLocalService.prototype.validate_username = function(username) {
-    if (!validator.isLength(username, 3, 15)) {
-        throw new LocalServiceError(this.ns, 'bad_request', 'Username must be between 3 and 15 characters.', 400)
-    }
-
-    if (!validator.isAlphanumeric(username)) {
-        throw new LocalServiceError(this.ns, 'bad_request', 'Username can only contain letters and numbers.', 400)
-    }
+EmojiLocalService.prototype.get_file_sha = function(file_data) {
+    return crypto.createHash('sha1').update(file_data).digest('hex')
 }
-
-EmojiLocalService.prototype.validate_password = function(password) {
-    if (!validator.isLength(password, 8, 32)) {
-        throw new LocalServiceError(this.ns, 'bad_request', 'Password must be between 8 and 32 characters.', 400)
-    }
-
-    if (!validator.isAlphanumeric(password)) {
-        throw new LocalServiceError(this.ns, 'bad_request', 'Password can only contain letters and numbers.', 400)
-    }
-}
-
-EmojiLocalService.prototype.validate_email = function(email) {
-    if (!validator.isEmail(email)) {
-        throw new LocalServiceError(this.ns, 'bad_request', 'Email is not valid.', 400)
-    }
-}
-
-EmojiLocalService.prototype.create_password_hash_salt = thunkify(function(password, cb) {
-    easy_pbkdf2.secureHash(password, function(err, hash, salt) {
-        return cb(err, hash + ':' + salt)
-    })
-})
-
-EmojiLocalService.prototype.validate_password_hash_salt = thunkify(function(password, expected_password, cb) {
-    var hash_salt = expected_password.split(':')
-
-    easy_pbkdf2.verify(hash_salt[1], hash_salt[0], password, function(err, valid) {
-        return cb(err, valid)
-    })
-})
 
 EmojiLocalService.prototype.get_by_id = function * (o) {
     if (!validator.isLength(o.id, 10)) {
         throw new LocalServiceError(this.ns, 'bad_request', 'Emoji ids contain more than 10 characters.', 400)
     }
 
-    var accounts = yield EmojiPersistenceService.select_by_id({id: o.id})
+    var emojis = yield EmojiPersistenceService.select_by_id({id: o.id})
 
-    return (accounts && accounts.list.length === 1) ? accounts.list[0] : null
+    return (emojis && emojis.list.length === 1) ? emojis.list[0] : null
 }
 
 EmojiLocalService.prototype.create = function * (o) {
-    // TODO: Emoji name cannot be login, logout, username
-    this.validate_username(o.username)
-    this.validate_password(o.password)
-    this.validate_email(o.email)
-
     var self = this
-      , hash_salt = yield this.create_password_hash_salt(o.password)
-      , account = Emoji.from_create({
-            username: o.username
-          , password: hash_salt
-          , email: o.email
-          , full_name: o.full_name
-          , born_at: o.born_at
+
+    o.tags = o.tags || []
+    o.privacy = o.privacy || []
+    // TODO: validation
+    // If no session fail
+
+    var file_data = yield readFile_thunk(o.tmp_file_name)
+      , original_file_name_ext = path.extname(o.original_file_name)
+      , s3_file_name = self.get_file_sha(file_data) + original_file_name_ext
+      , put_response = yield this.s3_bucket_put_object({
+            Key: s3_file_name
+          , Body: file_data
         })
 
-    try {
-        var created_accounts = yield EmojiPersistenceService.insert(account)
-          , account = (created_accounts && created_accounts.list.length === 1) ? created_accounts.list[0] : null
-          , session = yield SessionLocalService.create_by_account_session({
-                account: account
-              , session: o.session
-            })
-    } catch (e) {
-        if (e && e.type === 'db_duplicate_key_error') {
-            if (e.detail) {
-                if (e.detail.key === 'username') {
-                    throw new LocalServiceError(self.ns, 'conflict', 'Username is taken.', 409)
-                } else if (e.detail.key === 'email') {
-                    throw new LocalServiceError(self.ns, 'conflict', 'Email is taken.', 409)
-                } else {
-                    throw e
-                }
-            } else {
-                throw e
-            }
-        } else {
-            throw e
-        }
-    }
-
-    return account
-}
-
-EmojiLocalService.prototype.get_by_username_password = function * (o) {
-    // Should not select by username, password because the validate method will probably work against other pw.
-    this.validate_username(o.username)
-    this.validate_password(o.password)
-
-    var accounts = yield EmojiPersistenceService.select_by_username({
-            username: o.username
+    var emoji = Emoji.from_create({
+            slug_name: o.slug_name
+          , display_name: o.display_name
+          , image_url: this.s3_base_url + s3_file_name
+          , tags: o.tags
+          , privacy: o.privacy
+          , created_by: o.session.account_id
         })
+      , created_emojis = yield EmojiPersistenceService.insert(emoji)
+      , emoji = (created_emojis && created_emojis.list.length === 1) ? created_emojis.list[0] : null
 
-    if (!accounts.list.length) {
-        return null
-    }
-
-    var account = accounts.list[0]
-      , is_valid = yield this.validate_password_hash_salt(o.password, account.password)
-
-    if (is_valid) {
-        return account
-    } else {
-        return null
-    }
+    return emoji
 }
 
 module.exports = EmojiLocalService

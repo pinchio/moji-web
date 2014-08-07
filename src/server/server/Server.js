@@ -43,6 +43,8 @@ var Server = function Server() {
 
     // this.app.route('/_/api/account/:id').put(AccountHTTPService.put())
 
+    this.app.route('/_/api/emoji').post(EmojiHTTPService.post())
+
     // URL routes
     routes.forEach(function(route_config) {
         self.app.route(route_config.route).get(HomeHTTPService.get())
@@ -65,3 +67,4 @@ module.exports = Server
 var HomeHTTPService = require('src/home').HomeHTTPService.get_instance()
   , AccountHTTPService = require('src/account').AccountHTTPService.get_instance()
   , SessionHTTPService = require('src/session').SessionHTTPService.get_instance()
+  , EmojiHTTPService = require('src/emoji').EmojiHTTPService.get_instance()

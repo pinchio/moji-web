@@ -2,6 +2,11 @@ var HTTPServiceMixin = require('src/common').HTTPServiceMixin
   , _ = require('underscore')
   , StaticMixin = require('../../common/StaticMixin')
   , EmojiLocalService = require('./EmojiLocalService').get_instance()
+  , co_busboy = require('co-busboy')
+  , fs = require('fs')
+  , uuid = require('node-uuid')
+  , co = require('co')
+  , thunkify = require('thunkify')
 
 var EmojiHTTPService = function EmojiHTTPService() {
     this.ns = 'EmojiHTTPService'
@@ -34,21 +39,47 @@ EmojiHTTPService.prototype.get = function() {
     }
 }
 
+EmojiHTTPService.prototype.part_stream_finish = thunkify(function(part, stream, cb) {
+    stream.on('finish', cb)
+    part.pipe(stream)
+})
+
 EmojiHTTPService.prototype.post = function() {
     var self = this
 
     return function * (next) {
         try {
-            var account = yield EmojiLocalService.create({
-                    username: this.request.body && this.request.body.username
-                  , password: this.request.body && this.request.body.password
-                  , email: this.request.body && this.request.body.email
-                  , full_name: this.request.body && this.request.body.full_name
-                  , born_at: this.request.body && this.request.body.born_at
-                  , session: this.session
-                })
+            var session = this.session
+              , parts = co_busboy(this)
+              , part
+              , body = {}
 
-            self.handle_success(this, {account: account.to_privileged()}, 'json')
+            while (part = yield parts) {
+                if (part.length) {
+                    // Normal fields.
+                    body[part[0]] = part[1]
+                } else {
+                    // File streams.
+                    var tmp_file_name = '/tmp/' + uuid.v4()
+                      , stream = fs.createWriteStream(tmp_file_name)
+                      , original_file_name = part.filename
+
+                    var stream_finished = yield self.part_stream_finish(part, stream)
+                      , emoji = yield EmojiLocalService.create({
+                            slug_name: ''
+                          , display_name: ''
+                          , tags: ['a', 'b']
+                          , privacy: []
+                          , session: session
+                          , tmp_file_name: tmp_file_name
+                          , original_file_name: original_file_name
+                        })
+
+                    return self.handle_success(this, {emoji: emoji.to_privileged()}, 'json')
+
+                }
+            }
+
         } catch(e) {
             self.handle_exception(this, e)
         }

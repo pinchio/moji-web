@@ -43,3 +43,10 @@ return types: success (would delete all emojis in that collection), fail
 
 Note:
 - A collection is a set of emojis. An user can have multiple collections. A collection can be empty.
+
+
+TODO:
+- add csrf
+- add https
+- add http -> https redirect
+- add mojigram.com -> www.mojigram redirect

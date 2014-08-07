@@ -25,8 +25,7 @@ CREATE TABLE emoji (
     image_url       varchar(512),
     tags            varchar(128)[],
     privacy         varchar(128)[],
-    created_by      char(36),
-    UNIQUE(slug_name)
+    created_by      char(36)
 );
 
 CREATE TABLE emoji_stat (
@@ -53,5 +52,5 @@ CREATE TABLE emoji__emoji_collection (
     emoji_id        char(36),
     emoji_collection_id char(36),
     created_at      timestamptz,
-    UNIQUE(moji_id, moji_collection_id)
+    UNIQUE(emoji_id, emoji_collection_id)
 )

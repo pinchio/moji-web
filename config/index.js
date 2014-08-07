@@ -32,6 +32,18 @@ var config = convict({
           , 'env': 'NODE_PORT'
         }
     }
+ , 's3': {
+        'bucket': {
+            'format': '*'
+          , 'default': 'mojigram-uploads-development'
+          , 'env': 'AWS_S3_BUCKET'
+        }
+      , 'base_url': {
+            'format': '*'
+          , 'default': 'mojigram-uploads-development'
+          , 'env': 'AWS_S3_BASE_URL'
+        }
+    }
   , 'db': {
         'host': {
             'format': '*'

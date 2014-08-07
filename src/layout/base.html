@@ -109,7 +109,17 @@
     </head>
 
     <body>
+        <!--
         <div id="app" class="body-container"></div>
+    -->
+
+        <h1>File Upload</h1>
+      <p>Try uploading multiple files at a time.</p>
+      <form action="/_/api/emoji" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" multiple>
+        <input type="text" name="fname">
+        <input type="submit" value="Upload">
+      </form>
 
         <% if (process.env.NODE_ENV === 'development') { %>
         <script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>

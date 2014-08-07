@@ -1,3 +1,7 @@
 {
     "env": "development"
+  , "s3": {
+        "bucket": "mojigram-uploads-development",
+        "base_url": "https://s3.amazonaws.com/mojigram-uploads-development/"
+    }
 }

@@ -2,6 +2,7 @@ var LocalServiceError = require('./LocalServiceError')
   , thunkify = require('thunkify')
   , pg = require('pg.js')
   , config = require('../../../config')
+  , _ = require('underscore')
 
 var QueryMixin = function QueryMixin() {}
 
@@ -79,7 +80,13 @@ QueryMixin.prototype._insert = function * (req) {
               + '(' + this._get_prepared_indices(this.columns).join(', ') + ') '
               + 'returning ' + this.columns_string()
       , req = req.to_db()
-      , values = this.columns.map(function(column) {return req[column]})
+      , values = this.columns.map(function(column) {
+            if (_.isArray(req[column])) {
+                return '{' + req[column].join(',') + '}'
+            } else {
+                return req[column]
+            }
+        })
 
     return yield this.query({query: query, values: values})
 }

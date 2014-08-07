@@ -16,7 +16,7 @@ var EmojiPersistenceService = function EmojiPersistenceService() {
       , 'privacy'
       , 'created_by'
     ]
-    this.table = 'account'
+    this.table = 'emoji'
     this.clazz = Emojis
 }
 _.extend(EmojiPersistenceService, StaticMixin)
