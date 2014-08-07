@@ -69,7 +69,7 @@ EmojiHTTPService.prototype.post = function() {
                             slug_name: ''
                           , display_name: ''
                           , tags: ['a', 'b']
-                          , privacy: []
+                          , scopes: []
                           , session: session
                           , tmp_file_name: tmp_file_name
                           , original_file_name: original_file_name

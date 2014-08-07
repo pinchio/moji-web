@@ -21,6 +21,58 @@ var EmojiCollectionLocalService = function EmojiCollectionLocalService() {
 }
 _.extend(EmojiCollectionLocalService, StaticMixin)
 
+EmojiCollectionLocalService.prototype.validate_session = function(session) {
+    if (!session.account_id) {
+        throw new LocalServiceError(this.ns, 'unauthorized', 'Authentication required.', 401)
+    }
+}
+
+EmojiCollectionLocalService.prototype.valid_display_name_regex = /^[A-Za-z0-9\s\-_,\.;:()]*$/
+
+EmojiCollectionLocalService.prototype.validate_display_name = function(display_name) {
+    if (_.isString(display_name) && display_name.length === 0) {
+        return true
+    }
+
+    if (!validator.isLength(display_name, 0, 128)) {
+        throw new LocalServiceError(this.ns, 'bad_request', 'Display name must be less than 129 characters.', 400)
+    }
+
+    if (!validator.matches(display_name, this.valid_display_name_regex)) {
+        throw new LocalServiceError(this.ns, 'bad_request', 'Display name can only contain letters, numbers and standard punctuation.', 400)
+    }
+}
+
+EmojiCollectionLocalService.prototype.validate_tags = function(tags) {
+    if (!_.isArray(tags)) {
+        throw new LocalServiceError(this.ns, 'bad_request', 'Tags must be an array.', 400)
+    }
+
+    for (var i = 0, ii = tags.length; i < ii; ++i) {
+        var tag = tags[i]
+
+        if (!validator.isAlphanumeric(tag)) {
+            throw new LocalServiceError(this.ns, 'bad_request', 'Tags can only contain letters and numbers.', 400)
+        }
+    }
+}
+
+EmojiCollectionLocalService.prototype.valid_scopes = ['public_read']
+
+EmojiCollectionLocalService.prototype.validate_scopes = function(scopes) {
+    if (!_.isArray(scopes)) {
+        throw new LocalServiceError(this.ns, 'bad_request', 'Scopes must be an array.', 400)
+    }
+
+    for (var i = 0, ii = scopes.length; i < ii; ++i) {
+        var scope = scopes[i]
+
+        if (this.valid_scopes.indexOf(scope) === -1) {
+            throw new LocalServiceError(this.ns, 'bad_request', 'Invalid scope.', 400)
+        }
+    }
+}
+
 EmojiCollectionLocalService.prototype.get_by_id = function * (o) {
     if (!validator.isLength(o.id, 10)) {
         throw new LocalServiceError(this.ns, 'bad_request', 'EmojiCollection ids contain more than 10 characters.', 400)
@@ -32,18 +84,21 @@ EmojiCollectionLocalService.prototype.get_by_id = function * (o) {
 }
 
 EmojiCollectionLocalService.prototype.create = function * (o) {
-    var self = this
-
+    o.display_name = o.display_name || ''
     o.tags = o.tags || []
-    o.privacy = o.privacy || []
-    // TODO: validation
-    // If no session fail
+    o.scopes = o.scopes || []
+    o.scopes = _.unique(o.scopes)
+
+    this.validate_session(o.session)
+    this.validate_display_name(o.display_name)
+    this.validate_tags(o.tags)
+    this.validate_scopes(o.scopes)
 
     var emoji_collection = EmojiCollection.from_create({
             slug_name: ''
           , display_name: o.display_name
           , tags: o.tags
-          , privacy: o.privacy
+          , scopes: o.scopes
           , created_by: o.session.account_id
         })
       , created_emoji_collections = yield EmojiCollectionPersistenceService.insert(emoji_collection)

@@ -24,7 +24,7 @@ CREATE TABLE emoji (
     display_name    varchar(128),
     image_url       varchar(512),
     tags            varchar(128)[],
-    privacy         varchar(128)[],
+    scopes          varchar(128)[],
     created_by      char(36)
 );
 
@@ -42,6 +42,6 @@ CREATE TABLE emoji_collection (
     slug_name       varchar(128),
     display_name    varchar(128),
     tags            varchar(128)[],
-    privacy         varchar(128)[],
+    scopes          varchar(128)[],
     created_by      char(36)
 );

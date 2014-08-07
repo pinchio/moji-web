@@ -12,7 +12,7 @@ var EmojiCollectionPersistenceService = function EmojiCollectionPersistenceServi
       , 'slug_name'
       , 'display_name'
       , 'tags'
-      , 'privacy'
+      , 'scopes'
       , 'created_by'
     ]
     this.table = 'emoji_collection'

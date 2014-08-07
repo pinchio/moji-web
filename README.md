@@ -52,3 +52,4 @@ TODO:
 - should shrinkwrap as part of the pre-commit hook
 - use 201 for POST success
 - sessions should be forever
+- Need to add tags_lower for search purposes.

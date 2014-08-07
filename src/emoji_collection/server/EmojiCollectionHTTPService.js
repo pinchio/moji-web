@@ -22,7 +22,7 @@ EmojiCollectionHTTPService.prototype.post = function() {
             var emoji_collection = yield EmojiCollectionLocalService.create({
                     display_name: this.request.body && this.request.body.display_name
                   , tags: this.request.body && this.request.body.tags
-                  , privacy: this.request.body && this.request.body.privacy
+                  , scopes: this.request.body && this.request.body.scopes
                   , session: this.session
                 })
 
@@ -34,7 +34,6 @@ EmojiCollectionHTTPService.prototype.post = function() {
 }
 
 // TODO: if PUT and created_at
-
 EmojiCollectionHTTPService.prototype.get = function() {
     var self = this
 

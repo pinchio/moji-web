@@ -21,7 +21,7 @@ EmojiCollection.keys = [
   , 'slug_name'
   , 'display_name'
   , 'tags'
-  , 'privacy'
+  , 'scopes'
   , 'created_by'
 ]
 
@@ -33,7 +33,7 @@ EmojiCollection.from_create = function(o) {
       , slug_name: o.slug_name
       , display_name: o.display_name
       , tags: o.tags
-      , privacy: o.privacy
+      , scopes: o.scopes
       , created_by: o.created_by
     })
 }
@@ -46,7 +46,7 @@ EmojiCollection.from_db = function(o) {
       , slug_name: o.slug_name
       , display_name: o.display_name
       , tags: o.tags
-      , privacy: o.privacy
+      , scopes: o.scopes
       , created_by: o.created_by
     })
 }
@@ -59,7 +59,7 @@ EmojiCollection.prototype.to_privileged = function() {
       , slug_name: this.slug_name
       , display_name: this.display_name
       , tags: this.tags
-      , privacy: this.privacy
+      , scopes: this.scopes
       , created_by: this.created_by
     }
 }
@@ -72,7 +72,7 @@ EmojiCollection.prototype.to_db = function() {
       , slug_name: this.slug_name
       , display_name: this.display_name
       , tags: this.tags
-      , privacy: this.privacy
+      , scopes: this.scopes
       , created_by: this.created_by
     }
 }

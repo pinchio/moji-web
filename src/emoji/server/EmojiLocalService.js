@@ -39,7 +39,7 @@ EmojiLocalService.prototype.create = function * (o) {
     var self = this
 
     o.tags = o.tags || []
-    o.privacy = o.privacy || []
+    o.scopes = o.scopes || []
     // TODO: validation
     // If no session fail
 
@@ -56,7 +56,7 @@ EmojiLocalService.prototype.create = function * (o) {
           , display_name: o.display_name
           , image_url: this.s3_base_url + s3_file_name
           , tags: o.tags
-          , privacy: o.privacy
+          , scopes: o.scopes
           , created_by: o.session.account_id
         })
       , created_emojis = yield EmojiPersistenceService.insert(emoji)
