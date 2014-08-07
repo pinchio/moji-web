@@ -206,7 +206,5 @@ describe('SessionHTTPService', function() {
                 }
             )
         })
-
-        // it should delete if session not exist
     })
 })
