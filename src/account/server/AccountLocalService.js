@@ -3,7 +3,7 @@ var _ = require('underscore')
   , LocalServiceError = require('src/common').LocalServiceError
   , AccountPersistenceService = require('./AccountPersistenceService').get_instance()
   , StaticMixin = require('../../common/StaticMixin')
-  , easy_pbkdf2 = require('easy-pbkdf2')({DEFAULT_HASH_ITERATIONS: 100000, SALT_SIZE: 32, KEY_LENGTH: 256})
+  , easy_pbkdf2 = require('easy-pbkdf2')({DEFAULT_HASH_ITERATIONS: 10000, SALT_SIZE: 32, KEY_LENGTH: 256})
   , thunkify = require('thunkify')
   , Account = require('./Account')
 
