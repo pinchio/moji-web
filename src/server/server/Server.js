@@ -37,6 +37,8 @@ var Server = function Server() {
 
     this.app.route('/_/api/account').post(AccountHTTPService.post())
     this.app.route('/_/api/account/login').post(AccountHTTPService.login())
+
+    this.app.route('/_/api/session').post(SessionHTTPService.post())
     // this.app.route('/_/api/account/logout').post(AccountHTTPService.logout())
 
     // this.app.route('/_/api/account/:id').put(AccountHTTPService.put())
@@ -62,3 +64,4 @@ module.exports = Server
 
 var HomeHTTPService = require('src/home').HomeHTTPService.get_instance()
   , AccountHTTPService = require('src/account').AccountHTTPService.get_instance()
+  , SessionHTTPService = require('src/session').SessionHTTPService.get_instance()

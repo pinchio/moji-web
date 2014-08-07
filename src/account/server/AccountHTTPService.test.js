@@ -26,7 +26,6 @@ describe('AccountHTTPService', function() {
 
     describe('post', function() {
         it('should create account if username and email unique', function(done) {
-            this.timeout(10000)
             stored_jar = request.jar()
             // var cookie = request.cookie('a=b')
             // stored_jar.setCookie(cookie, 'www.mojigram.com')
@@ -54,7 +53,6 @@ describe('AccountHTTPService', function() {
         })
 
         it('should not allow duplicate username', function(done) {
-            this.timeout(10000)
             request({
                     url: get_url('/_/api/account')
                   , method: 'POST'
@@ -73,7 +71,6 @@ describe('AccountHTTPService', function() {
         })
 
         it('should not allow duplicate email', function(done) {
-            this.timeout(10000)
             request({
                     url: get_url('/_/api/account')
                   , method: 'POST'

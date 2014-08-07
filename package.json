@@ -39,6 +39,7 @@
     "request": "2.34.0",
     "string": "1.8.0",
     "thunkify": "0.0.1",
+    "tough-cookie": "0.12.1",
     "underscore": "1.6.0",
     "URIjs": "1.13.2",
     "validator": "3.16.1"
