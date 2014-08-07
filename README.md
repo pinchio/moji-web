@@ -49,4 +49,6 @@ TODO:
 - add csrf
 - add https
 - add http -> https redirect
-- add mojigram.com -> www.mojigram redirect
+- add mojigram.com -> www.mojigram redirecGot
+- should shrinkwrap as part of the pre-commit hook
+- use 201 for POST success

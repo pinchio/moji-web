@@ -49,6 +49,11 @@ describe('SessionHTTPService', function() {
                           , jar: stored_jar
                         }
                       , function(e, d, body) {
+                            assert.equal(d.statusCode, 200)
+                            assert.isDefined(body.account)
+                            assert.equal(body.account.username, username)
+                            assert.equal(body.account.email, email)
+
                             var cookies = stored_jar.getCookieString(get_url())
                               , cookie_map = {}
 

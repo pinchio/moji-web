@@ -25,6 +25,8 @@ SessionLocalService.prototype.create_by_account_session = function * (o) {
     } else {
         throw new LocalServiceError(this.ns, 'access_denied', 'Invalid username or password', 403)
     }
+
+    return account
 }
 
 SessionLocalService.prototype.del = function * (o) {

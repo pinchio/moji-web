@@ -51,7 +51,6 @@ describe('EmojiHTTPService', function() {
                   , jar: stored_jar
                 }
               , function(e, d, body) {
-                    console.log(body)
                     done()
                 }
             )

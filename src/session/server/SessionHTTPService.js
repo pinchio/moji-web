@@ -20,7 +20,7 @@ SessionHTTPService.prototype.post = function() {
                   , session: this.session
                 })
 
-            self.handle_success(this, {}, 'json')
+            self.handle_success(this, {account: account.to_privileged()}, 'json')
         } catch(e) {
             self.handle_exception(this, e)
         }
