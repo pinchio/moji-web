@@ -1,29 +1,29 @@
 var assert = require('assert')
   , _ = require('underscore')
   , Moment = require('moment')
-  , Emoji = require('./Emoji')
+  , EmojiCollection = require('./EmojiCollection')
 
-var Emojis = function(o) {
+var EmojiCollections = function(o) {
     var self = this
 
-    this.ns = 'Emojis'
-    Emojis.keys.forEach(function(key) {
+    this.ns = 'EmojiCollections'
+    EmojiCollections.keys.forEach(function(key) {
         self[key] = o[key]
     })
 }
-Emojis.keys = ['list']
+EmojiCollections.keys = ['list']
 
-Emojis.from_db = function(raw) {
+EmojiCollections.from_db = function(raw) {
     var results = []
 
     for (var i = 0, ii = raw.length; i < ii; ++i) {
         var o = raw[i]
-          , result = Emoji.from_db(o)
+          , result = EmojiCollection.from_db(o)
 
         results.push(result)
     }
 
-    return new Emojis({list: results})
+    return new EmojiCollections({list: results})
 }
 
-module.exports = Emojis
+module.exports = EmojiCollections

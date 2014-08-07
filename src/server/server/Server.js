@@ -32,25 +32,20 @@ var Server = function Server() {
     this.app.use(koa_trie_router(this.app))
 
     // API routes
-    this.app.route('/_/api/account/:id').get(AccountHTTPService.get())
-    // this.app.route('/_/api/account/username/:username').get(AccountHTTPService.get())
-
     this.app.route('/_/api/account').post(AccountHTTPService.post())
+    this.app.route('/_/api/account/:id').get(AccountHTTPService.get())
 
     this.app.route('/_/api/session').post(SessionHTTPService.post())
     this.app.route('/_/api/session').del(SessionHTTPService.del())
-    // this.app.route('/_/api/account/logout').post(AccountHTTPService.logout())
-
-    // this.app.route('/_/api/account/:id').put(AccountHTTPService.put())
-
-    this.app.route('/_/api/emoji').post(EmojiHTTPService.post())
 
     this.app.route('/_/api/emoji_collection').post(EmojiCollectionHTTPService.post())
-    this.app.route('/_/api/emoji_collection').get(EmojiCollectionHTTPService.list())
+    // this.app.route('/_/api/emoji_collection').get(EmojiCollectionHTTPService.list())
 
-    this.app.route('/_/api/emoji_collection/:id').put(EmojiCollectionHTTPService.put())
-    this.app.route('/_/api/emoji_collection/:id').get(EmojiCollectionHTTPService.get())
-    this.app.route('/_/api/emoji_collection/:id').del(EmojiCollectionHTTPService.del())
+    // this.app.route('/_/api/emoji_collection/:id').put(EmojiCollectionHTTPService.put())
+    // this.app.route('/_/api/emoji_collection/:id').get(EmojiCollectionHTTPService.get())
+    // this.app.route('/_/api/emoji_collection/:id').del(EmojiCollectionHTTPService.del())
+
+    this.app.route('/_/api/emoji').post(EmojiHTTPService.post())
 
     // URL routes
     routes.forEach(function(route_config) {
