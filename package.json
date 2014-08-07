@@ -19,6 +19,7 @@
     "setup": "rm ./.git/hooks/pre-commit; ln -s ../../hook/pre-commit .git/hooks/pre-commit"
   },
   "dependencies": {
+    "aws-sdk": "2.0.11",
     "co": "3.0.4",
     "convict": "0.4.2",
     "cron": "1.0.3",
