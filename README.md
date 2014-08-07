@@ -17,7 +17,6 @@ docs: see `src/account/server/AccountHTTPService.test.js`
 2. Login
 parameters: username, password
 return types: success, invalid login, empty strings for required fields (we'll check on client side first too)
-notes: sessions should last forever
 
 3. Post emoji
 parameters: various metadata as mentioned in spec
@@ -52,3 +51,4 @@ TODO:
 - add mojigram.com -> www.mojigram redirecGot
 - should shrinkwrap as part of the pre-commit hook
 - use 201 for POST success
+- sessions should be forever

@@ -45,6 +45,13 @@ var Server = function Server() {
 
     this.app.route('/_/api/emoji').post(EmojiHTTPService.post())
 
+    this.app.route('/_/api/emoji_collection').post(EmojiCollectionHTTPService.post())
+    this.app.route('/_/api/emoji_collection').get(EmojiCollectionHTTPService.list())
+
+    this.app.route('/_/api/emoji_collection/:id').put(EmojiCollectionHTTPService.put())
+    this.app.route('/_/api/emoji_collection/:id').get(EmojiCollectionHTTPService.get())
+    this.app.route('/_/api/emoji_collection/:id').del(EmojiCollectionHTTPService.del())
+
     // URL routes
     routes.forEach(function(route_config) {
         self.app.route(route_config.route).get(HomeHTTPService.get())
@@ -68,3 +75,4 @@ var HomeHTTPService = require('src/home').HomeHTTPService.get_instance()
   , AccountHTTPService = require('src/account').AccountHTTPService.get_instance()
   , SessionHTTPService = require('src/session').SessionHTTPService.get_instance()
   , EmojiHTTPService = require('src/emoji').EmojiHTTPService.get_instance()
+  , EmojiCollectionHTTPService = require('src/emoji_collection').EmojiCollectionHTTPService.get_instance()

@@ -43,14 +43,5 @@ CREATE TABLE emoji_collection (
     display_name    varchar(128),
     tags            varchar(128)[],
     privacy         varchar(128)[],
-    created_by      char(36),
-    UNIQUE(slug_name)
+    created_by      char(36)
 );
-
-CREATE TABLE emoji__emoji_collection (
-    id              char(36) PRIMARY KEY,
-    emoji_id        char(36),
-    emoji_collection_id char(36),
-    created_at      timestamptz,
-    UNIQUE(emoji_id, emoji_collection_id)
-)
