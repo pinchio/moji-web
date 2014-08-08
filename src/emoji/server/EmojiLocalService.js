@@ -174,7 +174,7 @@ EmojiLocalService.prototype._update = function * (o) {
       , updated_emojis = yield EmojiPersistenceService.update_by_id(emoji)
       , updated_emoji = updated_emojis.first()
 
-      return updated_emoji_collection
+      return updated_emoji
 }
 
 EmojiLocalService.prototype.upsert = function * (o) {

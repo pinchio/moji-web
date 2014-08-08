@@ -252,6 +252,19 @@ describe('EmojiCollectionHTTPService', function() {
             })
         })
 
+        it('should get 404 if emoji collection does not exist', function(done) {
+            request({
+                    url: get_url('/_/api/emoji_collection/' + uuid.v4())
+                  , method: 'GET'
+                  , json: true
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 404)
+                    done()
+            })
+        })
+
         it('should get emoji collection even if not logged in when public_read is set', function(done) {
             request({
                     url: get_url('/_/api/emoji_collection/' + stored_emoji_collection.id)
@@ -335,7 +348,7 @@ describe('EmojiCollectionHTTPService', function() {
             })
         })
 
-        it('should get empty emoji collection no emoji collections', function(done) {
+        it('should get empty emoji collection if no emoji collections', function(done) {
             request({
                     url: get_url('/_/api/emoji_collection')
                   , method: 'GET'

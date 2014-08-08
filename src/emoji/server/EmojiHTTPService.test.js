@@ -1,4 +1,5 @@
 var assert = require('chai').assert
+  , _ = require('underscore')
   , fs = require('fs')
   , server = require('src/server').Server.get_instance()
   , config = require('config')
@@ -6,6 +7,7 @@ var assert = require('chai').assert
   , port = config.get('server').port
   , request = require('request')
   , path = require('path')
+  , uuid = require('node-uuid')
 
 var get_url = function(args) {
     return 'http://' + host + ':' + port + path.join.apply(path, Array.prototype.slice.call(arguments))
@@ -170,5 +172,399 @@ describe('EmojiHTTPService', function() {
         })
 
         it.skip('should only allow create if user owns it')
+    })
+
+    describe('get', function() {
+        var username = Math.floor(Math.random() * 1000000000)
+          , password = 'password'
+          , email = uuid.v4().substring(0, 15) + '@b.com'
+          , stored_emoji_collection
+          , stored_emoji
+          , stored_jar = request.jar()
+
+        it('should create account', function(done) {
+            request({
+                    url: get_url('/_/api/account')
+                  , method: 'POST'
+                  , json: {
+                        username: username
+                      , password: password
+                      , email: email
+                    }
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    done()
+            })
+        })
+
+        it('should create emoji collection', function(done) {
+            request({
+                    url: get_url('/_/api/emoji_collection')
+                  , method: 'POST'
+                  , json: {
+                        tags: ['cats', 'dogs']
+                      , scopes: ['public_read']
+                    }
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    stored_emoji_collection = body.emoji_collection
+                    done()
+            })
+        })
+
+        it('should create emoji', function(done) {
+            var display_name = 'Super emoji'
+              , tags = ['cats', 'dogs']
+            var req = request(
+                {
+                    url: get_url('/_/api/emoji')
+                  , method: 'POST'
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    body = JSON.parse(body)
+                    assert.equal(d.statusCode, 200)
+                    stored_emoji = body.emoji
+                    done()
+                }
+            )
+
+            var form = req.form()
+            form.append('emoji_collection_id', stored_emoji_collection.id)
+            form.append('display_name', display_name)
+            form.append('tags[]', tags[0])
+            form.append('tags[]', tags[1])
+            form.append('scopes[]', 'public_read')
+            form.append('asset', fs.createReadStream(path.join(__dirname, '../panda-dog.jpg')))
+        })
+
+        it('should get 404 if emoji does not exist', function(done) {
+            request({
+                    url: get_url('/_/api/emoji/' + uuid.v4())
+                  , method: 'GET'
+                  , json: true
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 404)
+                    done()
+            })
+        })
+
+        it('should get emoji ', function(done) {
+            request({
+                    url: get_url('/_/api/emoji/' + stored_emoji.id)
+                  , method: 'GET'
+                  , json: true
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.isDefined(body.emoji)
+                    assert.deepEqual(body.emoji, stored_emoji)
+                    done()
+            })
+        })
+
+        it('should get emoji even if not logged in when public_read is set', function(done) {
+            request({
+                    url: get_url('/_/api/emoji/' + stored_emoji.id)
+                  , method: 'GET'
+                  , json: true
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.isDefined(body.emoji)
+                    assert.deepEqual(body.emoji, stored_emoji)
+                    done()
+            })
+        })
+
+        it('should create emoji with no scopes', function(done) {
+            var display_name = 'Super emoji'
+              , tags = ['cats', 'dogs']
+            var req = request(
+                {
+                    url: get_url('/_/api/emoji')
+                  , method: 'POST'
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    body = JSON.parse(body)
+                    assert.equal(d.statusCode, 200)
+                    stored_emoji = body.emoji
+                    done()
+                }
+            )
+
+            var form = req.form()
+            form.append('emoji_collection_id', stored_emoji_collection.id)
+            form.append('display_name', display_name)
+            form.append('tags[]', tags[0])
+            form.append('tags[]', tags[1])
+            form.append('asset', fs.createReadStream(path.join(__dirname, '../panda-dog.jpg')))
+        })
+
+        it('should get emoji if creator even without scope', function(done) {
+            request({
+                    url: get_url('/_/api/emoji/' + stored_emoji.id)
+                  , method: 'GET'
+                  , json: true
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.isDefined(body.emoji)
+                    assert.deepEqual(body.emoji, stored_emoji)
+                    done()
+            })
+        })
+
+        it('should not get emoji if not logged in when public_read is not set', function(done) {
+            request({
+                    url: get_url('/_/api/emoji/' + stored_emoji.id)
+                  , method: 'GET'
+                  , json: true
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 404)
+                    done()
+            })
+        })
+    })
+
+    describe('list', function() {
+        var username = Math.floor(Math.random() * 1000000000)
+          , password = 'password'
+          , email = uuid.v4().substring(0, 15) + '@b.com'
+          , stored_emoji_collection
+          , stored_emoji_collection2
+          , stored_emoji
+          , stored_emoji2
+          , stored_emoji3
+          , stored_jar = request.jar()
+
+        it('should create account', function(done) {
+            request({
+                    url: get_url('/_/api/account')
+                  , method: 'POST'
+                  , json: {
+                        username: username
+                      , password: password
+                      , email: email
+                    }
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    done()
+            })
+        })
+
+        it('should get empty emojis if no emojis', function(done) {
+            request({
+                    url: get_url('/_/api/emoji')
+                  , method: 'GET'
+                  , json: true
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.isDefined(body.emojis)
+                    assert.lengthOf(body.emojis, 0)
+                    done()
+            })
+        })
+
+        it('should create emoji collection', function(done) {
+            request({
+                    url: get_url('/_/api/emoji_collection')
+                  , method: 'POST'
+                  , json: {
+                        display_name: 'First collection'
+                      , tags: ['cats', 'dogs']
+                      , scopes: ['public_read']
+                    }
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.isDefined(body.emoji_collection.id)
+                    stored_emoji_collection = body.emoji_collection
+                    done()
+            })
+        })
+
+        it('should create another emoji collection', function(done) {
+            request({
+                    url: get_url('/_/api/emoji_collection')
+                  , method: 'POST'
+                  , json: {
+                        display_name: 'Second collection'
+                      , tags: ['cats', 'dogs']
+                      , scopes: ['public_read']
+                    }
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.isDefined(body.emoji_collection.id)
+                    stored_emoji_collection2 = body.emoji_collection
+                    done()
+            })
+        })
+
+        it('should create emoji in first collection', function(done) {
+            var display_name = 'Super emoji'
+              , tags = ['cats', 'dogs']
+            var req = request(
+                {
+                    url: get_url('/_/api/emoji')
+                  , method: 'POST'
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    body = JSON.parse(body)
+                    assert.equal(d.statusCode, 200)
+                    stored_emoji = body.emoji
+                    done()
+                }
+            )
+
+            var form = req.form()
+            form.append('emoji_collection_id', stored_emoji_collection.id)
+            form.append('display_name', display_name)
+            form.append('tags[]', tags[0])
+            form.append('tags[]', tags[1])
+            form.append('asset', fs.createReadStream(path.join(__dirname, '../panda-dog.jpg')))
+        })
+
+        it('should create another emoji in first collection', function(done) {
+            var display_name = 'Super emoji 2'
+              , tags = ['cats', 'dogs']
+            var req = request(
+                {
+                    url: get_url('/_/api/emoji')
+                  , method: 'POST'
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    body = JSON.parse(body)
+                    assert.equal(d.statusCode, 200)
+                    stored_emoji2 = body.emoji
+                    done()
+                }
+            )
+
+            var form = req.form()
+            form.append('emoji_collection_id', stored_emoji_collection.id)
+            form.append('display_name', display_name)
+            form.append('tags[]', tags[0])
+            form.append('tags[]', tags[1])
+            form.append('asset', fs.createReadStream(path.join(__dirname, '../panda-dog.jpg')))
+        })
+
+        it('should create emoji in second collection', function(done) {
+            var display_name = 'Super emoji 3'
+              , tags = ['cats', 'dogs']
+            var req = request(
+                {
+                    url: get_url('/_/api/emoji')
+                  , method: 'POST'
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    body = JSON.parse(body)
+                    assert.equal(d.statusCode, 200)
+                    stored_emoji3 = body.emoji
+                    done()
+                }
+            )
+
+            var form = req.form()
+            form.append('emoji_collection_id', stored_emoji_collection2.id)
+            form.append('display_name', display_name)
+            form.append('tags[]', tags[0])
+            form.append('tags[]', tags[1])
+            form.append('asset', fs.createReadStream(path.join(__dirname, '../panda-dog.jpg')))
+        })
+
+        it('should get three emojis if no filter', function(done) {
+            request({
+                    url: get_url('/_/api/emoji')
+                  , method: 'GET'
+                  , json: true
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.isDefined(body.emojis)
+                    assert.lengthOf(body.emojis, 3)
+
+                    var emoji_ids = body.emojis.map(function(emoji) { return emoji.id })
+                      , unique_emoji_ids = _.unique(emoji_ids).sort()
+                      , expected_emoji_ids = [stored_emoji.id, stored_emoji2.id, stored_emoji3.id].sort()
+
+                    assert.deepEqual(unique_emoji_ids, expected_emoji_ids)
+                    done()
+            })
+        })
+
+        it('should get two emojis if filter by first collection', function(done) {
+            request({
+                    url: get_url('/_/api/emoji?emoji_collection_id=' + stored_emoji_collection.id)
+                  , method: 'GET'
+                  , json: true
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.isDefined(body.emojis)
+                    assert.lengthOf(body.emojis, 2)
+
+                    var emoji_ids = body.emojis.map(function(emoji) { return emoji.id })
+                      , unique_emoji_ids = _.unique(emoji_ids).sort()
+                      , expected_emoji_ids = [stored_emoji.id, stored_emoji2.id].sort()
+
+                    assert.deepEqual(unique_emoji_ids, expected_emoji_ids)
+                    done()
+            })
+        })
+
+        it('should delete emoji', function(done) {
+            request({
+                    url: get_url('/_/api/emoji/' + stored_emoji2.id)
+                  , method: 'DELETE'
+                  , json: true
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    done()
+            })
+        })
+
+        it('should get one emoji collection in array', function(done) {
+            request({
+                    url: get_url('/_/api/emoji?emoji_collection_id=' + stored_emoji_collection.id)
+                  , method: 'GET'
+                  , json: true
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.isDefined(body.emojis)
+                    assert.lengthOf(body.emojis, 1)
+
+                    var emoji_ids = body.emojis.map(function(emoji) { return emoji.id })
+                      , unique_emoji_ids = _.unique(emoji_ids).sort()
+                      , expected_emoji_ids = [stored_emoji.id]
+
+                    assert.deepEqual(unique_emoji_ids, expected_emoji_ids)
+                    done()
+            })
+        })
     })
 })

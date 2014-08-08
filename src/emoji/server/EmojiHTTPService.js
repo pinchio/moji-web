@@ -81,7 +81,7 @@ EmojiHTTPService.prototype.get = function() {
 
     return function * (next) {
         try {
-            var emoji = yield EmojiHTTPService.get_by_id({
+            var emoji = yield EmojiLocalService.get_by_id({
                     req: this.request
                   , id: this.params.id
                   , session: this.session
@@ -108,13 +108,13 @@ EmojiHTTPService.prototype.list = function() {
     return function * (next) {
         try {
             if (this.query.emoji_collection_id) {
-                var emojis = yield EmojiHTTPService.get_by_created_by__emoji_collection_id({
+                var emojis = yield EmojiLocalService.get_by_created_by__emoji_collection_id({
                         emoji_collection_id: this.query.emoji_collection_id
                       , req: this.request
                       , session: this.session
                     })
             } else {
-                var emojis = yield EmojiHTTPService.get_by_created_by({
+                var emojis = yield EmojiLocalService.get_by_created_by({
                         req: this.request
                       , session: this.session
                     })
@@ -136,7 +136,7 @@ EmojiHTTPService.prototype.del = function() {
 
     return function * (next) {
         try {
-            var emoji = yield EmojiHTTPService.delete_by_id({
+            var emoji = yield EmojiLocalService.delete_by_id({
                     req: this.request
                   , id: this.params.id
                   , session: this.session
