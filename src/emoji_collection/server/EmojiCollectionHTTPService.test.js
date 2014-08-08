@@ -14,9 +14,9 @@ var get_url = function(args) {
 
 describe('EmojiCollectionHTTPService', function() {
     describe('post', function() {
-       var username = 'ab' + Date.now()
+        var username = Math.floor(Math.random() * 1000000000)
           , password = 'password'
-          , email = 'a' + Date.now() + '@b.com'
+          , email = uuid.v4().substring(0, 15) + '@b.com'
           , stored_emoji_collection
           , stored_jar = request.jar()
 
@@ -197,9 +197,9 @@ describe('EmojiCollectionHTTPService', function() {
     })
 
     describe('get', function() {
-        var username = 'ab' + Date.now()
+        var username = Math.floor(Math.random() * 1000000000)
           , password = 'password'
-          , email = 'a' + Date.now() + '@b.com'
+          , email = uuid.v4().substring(0, 15) + '@b.com'
           , stored_emoji_collection
           , stored_jar = request.jar()
 
@@ -312,9 +312,9 @@ describe('EmojiCollectionHTTPService', function() {
     })
 
     describe('put', function() {
-        var username = 'ab' + Date.now()
+        var username = Math.floor(Math.random() * 1000000000)
           , password = 'password'
-          , email = 'a' + Date.now() + '@b.com'
+          , email = uuid.v4().substring(0, 15) + '@b.com'
           , stored_emoji_collection
           , stored_jar = request.jar()
           , stored_account
@@ -413,9 +413,9 @@ describe('EmojiCollectionHTTPService', function() {
         })
 
         it('should not update emoji collection if different user logged in', function(done) {
-            var username = 'ab' + Date.now()
+            var username = Math.floor(Math.random() * 1000000000)
               , password = 'password'
-              , email = 'a' + Date.now() + '@b.com'
+              , email = uuid.v4().substring(0, 15) + '@b.com'
               , now = (new Date).toISOString()
               , stored_jar2 = request.jar()
 
@@ -452,9 +452,9 @@ describe('EmojiCollectionHTTPService', function() {
         })
 
         it('should not update emoji collection if different user logged in 2', function(done) {
-            var username = 'ab' + Date.now()
+            var username = Math.floor(Math.random() * 1000000000)
               , password = 'password'
-              , email = 'a' + Date.now() + '@b.com'
+              , email = uuid.v4().substring(0, 15) + '@b.com'
               , now = (new Date).toISOString()
               , stored_jar2 = request.jar()
 
@@ -487,6 +487,106 @@ describe('EmojiCollectionHTTPService', function() {
                             assert.equal(d.statusCode, 404)
                             done()
                     })
+            })
+        })
+
+        it.skip('same original as db', function() {})
+        it.skip('stale version', function() {})
+    })
+
+    describe.only('del', function() {
+        var username = Math.floor(Math.random() * 1000000000)
+          , password = 'password'
+          , email = uuid.v4().substring(0, 15) + '@b.com'
+          , stored_emoji_collection
+          , stored_jar = request.jar()
+          , stored_account
+
+        it('should not delete emoji collection if not logged in', function(done) {
+            var id = uuid.v4()
+              , now = (new Date).toISOString()
+
+            request({
+                    url: get_url('/_/api/emoji_collection/' + id)
+                  , method: 'DELETE'
+                  , json: true
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 401)
+                    assert.equal(body.description, 'Authentication required.')
+                    done()
+            })
+        })
+
+        it('should create account', function(done) {
+            request({
+                    url: get_url('/_/api/account')
+                  , method: 'POST'
+                  , json: {
+                        username: username
+                      , password: password
+                      , email: email
+                    }
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    stored_account = body.account
+                    done()
+            })
+        })
+
+        it('should create emoji collection if id is generated client side', function(done) {
+            var id = uuid.v4()
+              , now = (new Date).toISOString()
+
+            request({
+                    url: get_url('/_/api/emoji_collection/' + id)
+                  , method: 'PUT'
+                  , json: {
+                        id: id
+                      , created_at: now
+                      , updated_at: now
+                      , display_name: 'Awesome Emoji Collection'
+                      , tags: ['cats', 'dogs']
+                      , scopes: ['public_read']
+                      , created_by: stored_account.id
+                    }
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.isDefined(body.emoji_collection)
+                    assert.equal(body.emoji_collection.id, id)
+
+                    stored_emoji_collection = body.emoji_collection
+                    done()
+            })
+        })
+
+        it('should delete emoji collection', function(done) {
+            request({
+                    url: get_url('/_/api/emoji_collection/' + stored_emoji_collection.id)
+                  , method: 'DELETE'
+                  , json: true
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    done()
+            })
+        })
+
+        it('should re-delete emoji collection', function(done) {
+            request({
+                    url: get_url('/_/api/emoji_collection/' + stored_emoji_collection.id)
+                  , method: 'DELETE'
+                  , json: true
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    done()
             })
         })
     })

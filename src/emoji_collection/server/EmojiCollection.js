@@ -40,6 +40,20 @@ EmojiCollection.from_create = function(o) {
     })
 }
 
+EmojiCollection.from_update = function(o) {
+    return new EmojiCollection({
+        id: o.id || uuid.v4()
+      , created_at: o.created_at || 'now()'
+      , updated_at: o.updated_at || 'now()'
+      , deleted_at: o.deleted_at || null
+      , slug_name: o.slug_name
+      , display_name: o.display_name
+      , tags: o.tags
+      , scopes: o.scopes
+      , created_by: o.created_by
+    })
+}
+
 EmojiCollection.from_db = function(o) {
     return new EmojiCollection({
         id: o.id

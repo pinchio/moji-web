@@ -33,9 +33,6 @@ EmojiCollectionHTTPService.prototype.post = function() {
     }
 }
 
-// TODO: if PUT and created_at
-// if does not exist
-// if it does exist, make sure same owner
 EmojiCollectionHTTPService.prototype.put = function() {
     var self = this
 
@@ -76,6 +73,28 @@ EmojiCollectionHTTPService.prototype.get = function() {
                 } else {
                     return self.handle_success(this, {emoji_collection: emoji_collection.to_json()}, 'json')
                 }
+            } else {
+                return self.handle_success(this, null)
+            }
+        } catch(e) {
+            self.handle_exception(this, e)
+        }
+    }
+}
+
+EmojiCollectionHTTPService.prototype.del = function() {
+    var self = this
+
+    return function * (next) {
+        try {
+            var emoji_collection = yield EmojiCollectionLocalService.delete_by_id({
+                    req: this.request
+                  , id: this.params.id
+                  , session: this.session
+                })
+
+            if (emoji_collection) {
+                return self.handle_success(this, {}, 'json')
             } else {
                 return self.handle_success(this, null)
             }

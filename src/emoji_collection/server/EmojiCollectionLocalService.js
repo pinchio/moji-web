@@ -12,6 +12,7 @@ var _ = require('underscore')
   , config = require('../../../config')
   , path = require('path')
   , crypto = require('crypto')
+  , Moment = require('moment')
 
 var EmojiCollectionLocalService = function EmojiCollectionLocalService() {
     this.ns = 'EmojiCollectionLocalService'
@@ -114,6 +115,25 @@ EmojiCollectionLocalService.prototype.create = function * (o) {
     return emoji_collection
 }
 
+EmojiCollectionLocalService.prototype._update = function * (o) {
+    // Updating from the same original as db. Allow.
+    var emoji_collection = EmojiCollection.from_update({
+            id: o.id
+          , created_at: o.created_at
+          , updated_at: 'now()'
+          , deleted_at: o.deleted_at
+          , slug_name: ''
+          , display_name: o.display_name
+          , tags: o.tags
+          , scopes: o.scopes
+          , created_by: o.session.account_id
+        })
+      , updated_emoji_collections = yield EmojiCollectionPersistenceService.update_by_id(emoji_collection)
+      , updated_emoji_collection = updated_emoji_collections.first()
+
+      return updated_emoji_collection
+}
+
 EmojiCollectionLocalService.prototype.upsert = function * (o) {
     o.display_name = o.display_name || ''
     o.tags = o.tags || []
@@ -141,19 +161,21 @@ EmojiCollectionLocalService.prototype.upsert = function * (o) {
         }
 
         if (o.updated_at === db_emoji_collection.updated_at) {
-            // Updating from the same original as db. Allow.
-            var emoji_collection = EmojiCollection.from_create({
-                    id: o.id
-                  , slug_name: ''
-                  , display_name: o.display_name
-                  , tags: o.tags
-                  , scopes: o.scopes
-                  , created_by: o.session.account_id
-                })
-              , updated_emoji_collections = yield EmojiCollectionPersistenceService.update_by_id(emoji_collection)
-              , updated_emoji_collection = updated_emoji_collections.first()
+            o.created_at = db_emoji_collection.created_at
+            return this._update(o)
+            // // Updating from the same original as db. Allow.
+            // var emoji_collection = EmojiCollection.from_create({
+            //         id: o.id
+            //       , slug_name: ''
+            //       , display_name: o.display_name
+            //       , tags: o.tags
+            //       , scopes: o.scopes
+            //       , created_by: o.session.account_id
+            //     })
+            //   , updated_emoji_collections = yield EmojiCollectionPersistenceService.update_by_id(emoji_collection)
+            //   , updated_emoji_collection = updated_emoji_collections.first()
 
-              return updated_emoji_collection
+            //   return updated_emoji_collection
         } else {
             // Updating from a stale version. Disallow. Return, db version.
             return db_emoji_collection
@@ -179,7 +201,7 @@ EmojiCollectionLocalService.prototype.get_by_id = function * (o) {
     this.validate_id(o.id)
 
     var emoji_collections = yield EmojiCollectionPersistenceService.select_by_id({id: o.id})
-      , emoji_collection = (emoji_collections && emoji_collections.list.length === 1) ? emoji_collections.list[0] : null
+      , emoji_collection = emoji_collections.first()
 
     if (emoji_collection) {
         if (o.session.account_id === emoji_collection.created_by) {
@@ -189,6 +211,31 @@ EmojiCollectionLocalService.prototype.get_by_id = function * (o) {
         } else {
             return null
         }
+    } else {
+        return null
+    }
+}
+
+EmojiCollectionLocalService.prototype.delete_by_id = function * (o) {
+    this.validate_id(o.id)
+    this.validate_session(o.session)
+
+    var emoji_collections = yield EmojiCollectionPersistenceService.select_by_id({id: o.id})
+      , emoji_collection = emoji_collections.first()
+
+    if (emoji_collection) {
+        if (emoji_collection.deleted_at) {
+            return emoji_collection
+        }
+
+        // Cannot delete someone else's.
+        if (emoji_collection.created_by !== o.session.account_id) {
+            throw new LocalServiceError(this.ns, 'not_found', 'Not found.', 404)
+        }
+
+        emoji_collection.deleted_at = 'now()'
+
+        return this._update(emoji_collection)
     } else {
         return null
     }
