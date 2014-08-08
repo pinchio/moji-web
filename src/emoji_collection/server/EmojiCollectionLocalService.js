@@ -73,14 +73,10 @@ EmojiCollectionLocalService.prototype.validate_scopes = function(scopes) {
     }
 }
 
-EmojiCollectionLocalService.prototype.get_by_id = function * (o) {
-    if (!validator.isLength(o.id, 10)) {
-        throw new LocalServiceError(this.ns, 'bad_request', 'EmojiCollection ids contain more than 10 characters.', 400)
+EmojiCollectionLocalService.prototype.validate_id = function(id) {
+    if (!validator.isLength(id, 10)) {
+        throw new LocalServiceError(this.ns, 'bad_request', 'Emoji collection ids contain more than 10 characters.', 400)
     }
-
-    var emoji_collections = yield EmojiCollectionPersistenceService.select_by_id({id: o.id})
-
-    return (emoji_collections && emoji_collections.list.length === 1) ? emoji_collections.list[0] : null
 }
 
 EmojiCollectionLocalService.prototype.create = function * (o) {
@@ -105,6 +101,25 @@ EmojiCollectionLocalService.prototype.create = function * (o) {
       , emoji_collection = (created_emoji_collections && created_emoji_collections.list.length === 1) ? created_emoji_collections.list[0] : null
 
     return emoji_collection
+}
+
+EmojiCollectionLocalService.prototype.get_by_id = function * (o) {
+    this.validate_id(o.id)
+
+    var emoji_collections = yield EmojiCollectionPersistenceService.select_by_id({id: o.id})
+      , emoji_collection = (emoji_collections && emoji_collections.list.length === 1) ? emoji_collections.list[0] : null
+
+    if (emoji_collection) {
+        if (o.session.account_id === emoji_collection.created_by) {
+            return emoji_collection
+        } else if (emoji_collection.scopes.indexOf('public_read') > -1) {
+            return emoji_collection
+        } else {
+            return null
+        }
+    } else {
+        return null
+    }
 }
 
 module.exports = EmojiCollectionLocalService

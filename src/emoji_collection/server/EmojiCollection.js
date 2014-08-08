@@ -51,6 +51,19 @@ EmojiCollection.from_db = function(o) {
     })
 }
 
+EmojiCollection.prototype.to_json = function() {
+    return {
+        id: this.id
+      , created_at: this.created_at.toISOString()
+      , updated_at: this.updated_at.toISOString()
+      , slug_name: this.slug_name
+      , display_name: this.display_name
+      , tags: this.tags
+      , scopes: this.scopes
+      , created_by: this.created_by
+    }
+}
+
 EmojiCollection.prototype.to_privileged = function() {
     return {
         id: this.id

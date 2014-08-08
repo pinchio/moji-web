@@ -62,10 +62,14 @@ AccountLocalService.prototype.validate_password_hash_salt = thunkify(function(pa
     })
 })
 
-AccountLocalService.prototype.get_by_id = function * (o) {
-    if (!validator.isLength(o.id, 10)) {
+AccountLocalService.prototype.validate_id = function(id) {
+    if (!validator.isLength(id, 10)) {
         throw new LocalServiceError(this.ns, 'bad_request', 'Account ids contain more than 10 characters.', 400)
     }
+}
+
+AccountLocalService.prototype.get_by_id = function * (o) {
+    this.validate_id(o.id)
 
     var accounts = yield AccountPersistenceService.select_by_id({id: o.id})
 

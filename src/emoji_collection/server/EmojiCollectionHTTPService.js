@@ -34,21 +34,41 @@ EmojiCollectionHTTPService.prototype.post = function() {
 }
 
 // TODO: if PUT and created_at
+EmojiCollectionHTTPService.prototype.post = function() {
+    var self = this
+
+    return function * (next) {
+        try {
+            var emoji_collection = yield EmojiCollectionLocalService.create({
+                    display_name: this.request.body && this.request.body.display_name
+                  , tags: this.request.body && this.request.body.tags
+                  , scopes: this.request.body && this.request.body.scopes
+                  , session: this.session
+                })
+
+            self.handle_success(this, {emoji_collection: emoji_collection.to_privileged()}, 'json')
+        } catch(e) {
+            self.handle_exception(this, e)
+        }
+    }
+}
+
 EmojiCollectionHTTPService.prototype.get = function() {
     var self = this
 
     return function * (next) {
         try {
-            var account = yield EmojiCollectionLocalService.get_by_id({
+            var emoji_collection = yield EmojiCollectionLocalService.get_by_id({
                     req: this.request
                   , id: this.params.id
+                  , session: this.session
                 })
 
-            if (account) {
-                if (this.session.account_id === account.id) {
-                    return self.handle_success(this, {account: account.to_privileged()}, 'json')
+            if (emoji_collection) {
+                if (this.session.account_id === emoji_collection.created_by) {
+                    return self.handle_success(this, {emoji_collection: emoji_collection.to_privileged()}, 'json')
                 } else {
-                    return self.handle_success(this, {account: account.to_json()}, 'json')
+                    return self.handle_success(this, {emoji_collection: emoji_collection.to_json()}, 'json')
                 }
             } else {
                 return self.handle_success(this, null)

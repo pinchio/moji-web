@@ -53,3 +53,5 @@ TODO:
 - use 201 for POST success
 - sessions should be forever
 - Need to add tags_lower for search purposes.
+- Need to honor deleted_at flag
+- Need to update updated_at flag when things update

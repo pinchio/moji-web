@@ -16,7 +16,7 @@ describe('EmojiCollectionHTTPService', function() {
        var username = 'ab' + Date.now()
           , password = 'password'
           , email = 'a' + Date.now() + '@b.com'
-          , stored_account
+          , stored_emoji_collection
           , stored_jar = request.jar()
 
         it('should not create emoji collection if not logged in', function(done) {
@@ -190,6 +190,121 @@ describe('EmojiCollectionHTTPService', function() {
                     assert.isDefined(body.emoji_collection.id)
                     assert.lengthOf(body.emoji_collection.scopes, 1)
                     assert.equal(body.emoji_collection.scopes[0], 'public_read')
+                    done()
+            })
+        })
+    })
+
+    describe('get', function() {
+       var username = 'ab' + Date.now()
+          , password = 'password'
+          , email = 'a' + Date.now() + '@b.com'
+          , stored_emoji_collection
+          , stored_jar = request.jar()
+
+        it('should create account', function(done) {
+            request({
+                    url: get_url('/_/api/account')
+                  , method: 'POST'
+                  , json: {
+                        username: username
+                      , password: password
+                      , email: email
+                    }
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    done()
+            })
+        })
+
+        it('should create emoji collection if display_name is empty', function(done) {
+            request({
+                    url: get_url('/_/api/emoji_collection')
+                  , method: 'POST'
+                  , json: {
+                        tags: ['cats', 'dogs']
+                      , scopes: ['public_read']
+                    }
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.isDefined(body.emoji_collection.id)
+                    stored_emoji_collection = body.emoji_collection
+                    done()
+            })
+        })
+
+        it('should get emoji collection', function(done) {
+            request({
+                    url: get_url('/_/api/emoji_collection/' + stored_emoji_collection.id)
+                  , method: 'GET'
+                  , json: true
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.isDefined(body.emoji_collection)
+                    assert.deepEqual(body.emoji_collection, stored_emoji_collection)
+                    done()
+            })
+        })
+
+        it('should get emoji collection even if not logged in when public_read is set', function(done) {
+            request({
+                    url: get_url('/_/api/emoji_collection/' + stored_emoji_collection.id)
+                  , method: 'GET'
+                  , json: true
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.isDefined(body.emoji_collection)
+                    assert.deepEqual(body.emoji_collection, stored_emoji_collection)
+                    done()
+            })
+        })
+
+        it('should create emoji collection with no scopes', function(done) {
+            request({
+                    url: get_url('/_/api/emoji_collection')
+                  , method: 'POST'
+                  , json: {
+                        tags: ['cats', 'dogs']
+                    }
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.isDefined(body.emoji_collection.id)
+                    stored_emoji_collection = body.emoji_collection
+                    done()
+            })
+        })
+
+        it('should get emoji collection if creator even without scope', function(done) {
+            request({
+                    url: get_url('/_/api/emoji_collection/' + stored_emoji_collection.id)
+                  , method: 'GET'
+                  , json: true
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.isDefined(body.emoji_collection)
+                    assert.deepEqual(body.emoji_collection, stored_emoji_collection)
+                    done()
+            })
+        })
+
+        it('should not get emoji collection if not logged in when public_read is not set', function(done) {
+            request({
+                    url: get_url('/_/api/emoji_collection/' + stored_emoji_collection.id)
+                  , method: 'GET'
+                  , json: true
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 404)
                     done()
             })
         })
