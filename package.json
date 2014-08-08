@@ -14,7 +14,7 @@
     "create-production": "AWS_REGION=us-west-1 ./node_modules/.bin/awsbox create -n production",
     "ssh:production": "ssh -i ~/Downloads/mojigram-ssh-2.pem ec2-user@ec2-54-183-150-96.us-west-1.compute.amazonaws.com",
     "db:connect": "psql --host=aa1a5ouvvq3742b.cu6qafut7bux.us-west-1.rds.amazonaws.com --port=5432 --username=ebroot --password --dbname=mojigram",
-    "db:schema": "psql --host=aa1a5ouvvq3742b.cu6qafut7bux.us-west-1.rds.amazonaws.com --port=5432 --username=ebroot --password --dbname=test -f src/db/schema.sql",
+    "db:schema:production": "psql --host=aa1a5ouvvq3742b.cu6qafut7bux.us-west-1.rds.amazonaws.com --port=5432 --username=ebroot --password --dbname=test -f src/db/schema.sql",
     "db:schema:development": "psql -f src/db/schema.sql",
     "setup": "rm ./.git/hooks/pre-commit; ln -s ../../hook/pre-commit .git/hooks/pre-commit"
   },

@@ -2,13 +2,13 @@ var assert = require('chai').assert
   , fs = require('fs')
   , server = require('src/server').Server.get_instance()
   , config = require('config')
+  , host = config.get('server').host
   , port = config.get('server').port
-  , host = '0.0.0.0'
   , request = require('request')
   , path = require('path')
 
 var get_url = function(args) {
-    return 'http://localhost:' + port + path.join.apply(path, Array.prototype.slice.call(arguments))
+    return 'http://' + host + ':' + port + path.join.apply(path, Array.prototype.slice.call(arguments))
 }
 
 describe('EmojiCollectionHTTPService', function() {
@@ -196,7 +196,7 @@ describe('EmojiCollectionHTTPService', function() {
     })
 
     describe('get', function() {
-       var username = 'ab' + Date.now()
+        var username = 'ab' + Date.now()
           , password = 'password'
           , email = 'a' + Date.now() + '@b.com'
           , stored_emoji_collection

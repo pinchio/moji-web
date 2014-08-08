@@ -3,6 +3,11 @@ CREATE DATABASE mojigram;
 
 \c mojigram;
 
+DROP TABLE account;
+DROP TABLE emoji;
+DROP TABLE emoji_stat;
+DROP TABLE emoji_collection;
+
 CREATE TABLE account (
     id              char(36) PRIMARY KEY,
     created_at      timestamptz,

@@ -2,7 +2,8 @@
     "project_path": "/var/www"
   , "env": "production"
   , "server": {
-        "port": 80
+        "host": "www.mojigram.com"
+      , "port": 80
     }
   , "s3": {
         "bucket": "mojigram-uploads-production"

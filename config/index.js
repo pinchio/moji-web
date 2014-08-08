@@ -31,6 +31,11 @@ var config = convict({
           , 'default': '10000'
           , 'env': 'NODE_PORT'
         }
+      , 'host': {
+            'format': '*'
+          , 'default': '0.0.0.0'
+          , 'env': 'NODE_HOST'
+        }
     }
  , 's3': {
         'bucket': {

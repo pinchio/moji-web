@@ -1,16 +1,13 @@
 var assert = require('chai').assert
   , server = require('src/server').Server.get_instance()
   , config = require('config')
+  , host = config.get('server').host
   , port = config.get('server').port
-  , host = '0.0.0.0'
   , request = require('request')
   , path = require('path')
-  // , tough_cookie = require('tough-cookie')
-  // , Cookie = tough_cookie.Cookie
-  // , CookieJar = tough_cookie.CookieJar
 
 var get_url = function(args) {
-    return 'http://localhost:' + port + path.join.apply(path, Array.prototype.slice.call(arguments))
+    return 'http://' + host + ':' + port + path.join.apply(path, Array.prototype.slice.call(arguments))
 }
 
 describe('SessionHTTPService', function() {
