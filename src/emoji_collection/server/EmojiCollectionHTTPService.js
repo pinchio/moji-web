@@ -34,15 +34,21 @@ EmojiCollectionHTTPService.prototype.post = function() {
 }
 
 // TODO: if PUT and created_at
-EmojiCollectionHTTPService.prototype.post = function() {
+// if does not exist
+// if it does exist, make sure same owner
+EmojiCollectionHTTPService.prototype.put = function() {
     var self = this
 
     return function * (next) {
         try {
-            var emoji_collection = yield EmojiCollectionLocalService.create({
-                    display_name: this.request.body && this.request.body.display_name
+            var emoji_collection = yield EmojiCollectionLocalService.upsert({
+                    id: this.request.body && this.request.body.id
+                  , created_at: this.request.body && this.request.body.created_at
+                  , updated_at: this.request.body && this.request.body.updated_at
+                  , display_name: this.request.body && this.request.body.display_name
                   , tags: this.request.body && this.request.body.tags
                   , scopes: this.request.body && this.request.body.scopes
+                  , created_by: this.request.body && this.request.body.created_by
                   , session: this.session
                 })
 

@@ -44,6 +44,7 @@ CREATE TABLE emoji_collection (
     id              char(36) PRIMARY KEY,
     created_at      timestamptz,
     updated_at      timestamptz,
+    deleted_at      timestamptz,
     slug_name       varchar(128),
     display_name    varchar(128),
     tags            varchar(128)[],

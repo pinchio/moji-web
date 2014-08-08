@@ -27,7 +27,8 @@ EmojiCollectionLocalService.prototype.validate_session = function(session) {
     }
 }
 
-EmojiCollectionLocalService.prototype.valid_display_name_regex = /^[A-Za-z0-9\s\-_,\.;:()]*$/
+// EmojiCollectionLocalService.prototype.valid_display_name_regex = /^[A-Za-z0-9\s\-_,\.;:()]*$/
+EmojiCollectionLocalService.prototype.valid_display_name_regex = /.*/
 
 EmojiCollectionLocalService.prototype.validate_display_name = function(display_name) {
     if (_.isString(display_name) && display_name.length === 0) {
@@ -101,6 +102,62 @@ EmojiCollectionLocalService.prototype.create = function * (o) {
       , emoji_collection = (created_emoji_collections && created_emoji_collections.list.length === 1) ? created_emoji_collections.list[0] : null
 
     return emoji_collection
+}
+
+EmojiCollectionLocalService.prototype.upsert = function * (o) {
+    o.display_name = o.display_name || ''
+    o.tags = o.tags || []
+    o.scopes = o.scopes || []
+    o.scopes = _.unique(o.scopes)
+
+    this.validate_id(o.id)
+    this.validate_session(o.session)
+    this.validate_display_name(o.display_name)
+    this.validate_tags(o.tags)
+    this.validate_scopes(o.scopes)
+
+    var db_emoji_collections = yield EmojiCollectionPersistenceService.select_by_id({id: o.id})
+      , db_emoji_collection = db_emoji_collections.first()
+
+    if (db_emoji_collection) {
+        // Update.
+        if (db_emoji_collection.deleted_at) {
+            throw new LocalServiceError(this.ns, 'conflict', 'Cannot update deleted emoji collection.', 409)
+        }
+
+        if (o.updated_at === db_emoji_collection.updated_at) {
+            // Updating from the same original as db. Allow.
+            var emoji_collection = EmojiCollection.from_create({
+                    id: o.id
+                  , slug_name: ''
+                  , display_name: o.display_name
+                  , tags: o.tags
+                  , scopes: o.scopes
+                  , created_by: o.session.account_id
+                })
+              , updated_emoji_collections = yield EmojiCollectionPersistenceService.update_by_id(emoji_collection)
+              , updated_emoji_collection = updated_emoji_collections.first()
+
+              return updated_emoji_collection
+        } else {
+            // Updating from a stale version. Disallow. Return, db version.
+            return db_emoji_collection
+        }
+    } else {
+        // Create.
+        var emoji_collection = EmojiCollection.from_create({
+                id: o.id
+              , slug_name: ''
+              , display_name: o.display_name
+              , tags: o.tags
+              , scopes: o.scopes
+              , created_by: o.session.account_id
+            })
+          , created_emoji_collections = yield EmojiCollectionPersistenceService.insert(emoji_collection)
+          , created_emoji_collection = created_emoji_collections.first()
+
+        return created_emoji_collection
+    }
 }
 
 EmojiCollectionLocalService.prototype.get_by_id = function * (o) {

@@ -9,6 +9,7 @@ var EmojiCollectionPersistenceService = function EmojiCollectionPersistenceServi
         'id'
       , 'created_at'
       , 'updated_at'
+      , 'deleted_at'
       , 'slug_name'
       , 'display_name'
       , 'tags'

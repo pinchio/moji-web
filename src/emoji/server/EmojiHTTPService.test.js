@@ -41,6 +41,7 @@ describe('EmojiHTTPService', function() {
         })
 
         it('should allow upload of emoji', function(done) {
+            this.timeout(10000)
             var req = request(
                 {
                     url: get_url('/_/api/emoji')

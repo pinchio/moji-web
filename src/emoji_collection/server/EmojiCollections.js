@@ -26,4 +26,8 @@ EmojiCollections.from_db = function(raw) {
     return new EmojiCollections({list: results})
 }
 
+EmojiCollections.prototype.first = function() {
+    return (this.list.length === 1) ? this.list[0] : null
+}
+
 module.exports = EmojiCollections
