@@ -140,6 +140,10 @@ EmojiLocalService.prototype.create = function * (o) {
         throw new LocalServiceError(this.ns, 'bad_request', 'Invalid emoji collection id.', 400)
     }
 
+    if (emoji_collection.created_by !== o.session.account_id) {
+        throw new LocalServiceError(this.ns, 'access_denied', 'Not authorized to create emoji in this collection.', 403)
+    }
+
     var file_data = yield readFile_thunk(o.local_file_name)
       , original_file_name_ext = path.extname(o.original_file_name)
       , s3_file_name = this.get_file_sha(file_data) + original_file_name_ext

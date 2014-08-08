@@ -168,5 +168,7 @@ describe('EmojiHTTPService', function() {
             form.append('tags[]', tags[1])
             form.append('asset', fs.createReadStream(path.join(__dirname, '../panda-dog.jpg')))
         })
+
+        it.skip('should only allow create if user owns it')
     })
 })
