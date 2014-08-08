@@ -55,3 +55,5 @@ TODO:
 - Need to add tags_lower for search purposes.
 - Need to honor deleted_at flag
 - Need to update updated_at flag when things update
+- Need to store arbitrary json
+- Need to put back regex for emoji collection title

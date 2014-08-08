@@ -6,6 +6,7 @@ var assert = require('chai').assert
   , port = config.get('server').port
   , request = require('request')
   , path = require('path')
+  , uuid = require('node-uuid')
 
 var get_url = function(args) {
     return 'http://' + host + ':' + port + path.join.apply(path, Array.prototype.slice.call(arguments))
@@ -306,6 +307,186 @@ describe('EmojiCollectionHTTPService', function() {
               , function(e, d, body) {
                     assert.equal(d.statusCode, 404)
                     done()
+            })
+        })
+    })
+
+    describe('put', function() {
+        var username = 'ab' + Date.now()
+          , password = 'password'
+          , email = 'a' + Date.now() + '@b.com'
+          , stored_emoji_collection
+          , stored_jar = request.jar()
+          , stored_account
+
+        it('should not create emoji collection if not logged in', function(done) {
+            var id = uuid.v4()
+              , now = (new Date).toISOString()
+
+            request({
+                    url: get_url('/_/api/emoji_collection/' + id)
+                  , method: 'PUT'
+                  , json: {
+                        id: id
+                      , created_at: now
+                      , updated_at: now
+                      , display_name: 'Awesome Emoji Collection'
+                      , tags: ['cats', 'dogs']
+                      , scopes: ['public_read']
+                      , created_by: 'abcdefg'
+                    }
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 401)
+                    assert.equal(body.description, 'Authentication required.')
+                    done()
+            })
+        })
+
+        it('should create account', function(done) {
+            request({
+                    url: get_url('/_/api/account')
+                  , method: 'POST'
+                  , json: {
+                        username: username
+                      , password: password
+                      , email: email
+                    }
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    stored_account = body.account
+                    done()
+            })
+        })
+
+        it('should create emoji collection if id is generated client side', function(done) {
+            var id = uuid.v4()
+              , now = (new Date).toISOString()
+
+            request({
+                    url: get_url('/_/api/emoji_collection/' + id)
+                  , method: 'PUT'
+                  , json: {
+                        id: id
+                      , created_at: now
+                      , updated_at: now
+                      , display_name: 'Awesome Emoji Collection'
+                      , tags: ['cats', 'dogs']
+                      , scopes: ['public_read']
+                      , created_by: stored_account.id
+                    }
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.isDefined(body.emoji_collection)
+                    assert.equal(body.emoji_collection.id, id)
+
+                    stored_emoji_collection = body.emoji_collection
+                    done()
+            })
+        })
+
+        it('should not create emoji collection if id is not provided', function(done) {
+            var id = uuid.v4()
+              , now = (new Date).toISOString()
+
+            request({
+                    url: get_url('/_/api/emoji_collection/' + id)
+                  , method: 'PUT'
+                  , json: {
+                        created_at: now
+                      , updated_at: now
+                      , display_name: 'Awesome Emoji Collection'
+                      , tags: ['cats', 'dogs']
+                      , scopes: ['public_read']
+                      , created_by: stored_account.id
+                    }
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 400)
+                    done()
+            })
+        })
+
+        it('should not update emoji collection if different user logged in', function(done) {
+            var username = 'ab' + Date.now()
+              , password = 'password'
+              , email = 'a' + Date.now() + '@b.com'
+              , now = (new Date).toISOString()
+              , stored_jar2 = request.jar()
+
+            request({
+                    url: get_url('/_/api/account')
+                  , method: 'POST'
+                  , json: {
+                        username: username
+                      , password: password
+                      , email: email
+                    }
+                  , jar: stored_jar2
+                }
+              , function(e, d, body) {
+                    request({
+                            url: get_url('/_/api/emoji_collection/' + stored_emoji_collection.id)
+                          , method: 'PUT'
+                          , json: {
+                                id: stored_emoji_collection.id
+                              , created_at: now
+                              , updated_at: now
+                              , display_name: 'Awesome Emoji Collection'
+                              , tags: ['cats', 'dogs']
+                              , scopes: ['public_read']
+                              , created_by: stored_account.id
+                            }
+                          , jar: stored_jar2
+                        }
+                      , function(e, d, body) {
+                            assert.equal(d.statusCode, 404)
+                            done()
+                    })
+            })
+        })
+
+        it('should not update emoji collection if different user logged in 2', function(done) {
+            var username = 'ab' + Date.now()
+              , password = 'password'
+              , email = 'a' + Date.now() + '@b.com'
+              , now = (new Date).toISOString()
+              , stored_jar2 = request.jar()
+
+            request({
+                    url: get_url('/_/api/account')
+                  , method: 'POST'
+                  , json: {
+                        username: username
+                      , password: password
+                      , email: email
+                    }
+                  , jar: stored_jar2
+                }
+              , function(e, d, body) {
+                    request({
+                            url: get_url('/_/api/emoji_collection/' + stored_emoji_collection.id)
+                          , method: 'PUT'
+                          , json: {
+                                id: stored_emoji_collection.id
+                              , created_at: now
+                              , updated_at: now
+                              , display_name: 'Awesome Emoji Collection'
+                              , tags: ['cats', 'dogs']
+                              , scopes: ['public_read']
+                              , created_by: body.account.id
+                            }
+                          , jar: stored_jar2
+                        }
+                      , function(e, d, body) {
+                            assert.equal(d.statusCode, 404)
+                            done()
+                    })
             })
         })
     })

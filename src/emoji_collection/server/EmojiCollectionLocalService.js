@@ -80,6 +80,16 @@ EmojiCollectionLocalService.prototype.validate_id = function(id) {
     }
 }
 
+EmojiCollectionLocalService.prototype.validate_created_by = function(id, session) {
+    if (!validator.isLength(id, 10)) {
+        throw new LocalServiceError(this.ns, 'bad_request', 'Emoji collection created by ids contain more than 10 characters.', 400)
+    }
+
+    if (id !== session.account_id) {
+        throw new LocalServiceError(this.ns, 'not_found', 'Not found.', 404)
+    }
+}
+
 EmojiCollectionLocalService.prototype.create = function * (o) {
     o.display_name = o.display_name || ''
     o.tags = o.tags || []
@@ -115,6 +125,7 @@ EmojiCollectionLocalService.prototype.upsert = function * (o) {
     this.validate_display_name(o.display_name)
     this.validate_tags(o.tags)
     this.validate_scopes(o.scopes)
+    this.validate_created_by(o.created_by, o.session)
 
     var db_emoji_collections = yield EmojiCollectionPersistenceService.select_by_id({id: o.id})
       , db_emoji_collection = db_emoji_collections.first()
@@ -123,6 +134,10 @@ EmojiCollectionLocalService.prototype.upsert = function * (o) {
         // Update.
         if (db_emoji_collection.deleted_at) {
             throw new LocalServiceError(this.ns, 'conflict', 'Cannot update deleted emoji collection.', 409)
+        }
+
+        if (db_emoji_collection.created_by !== o.session.account_id) {
+            throw new LocalServiceError(this.ns, 'not_found', 'Not found.', 404)
         }
 
         if (o.updated_at === db_emoji_collection.updated_at) {
