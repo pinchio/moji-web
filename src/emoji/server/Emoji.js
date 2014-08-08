@@ -18,53 +18,94 @@ Emoji.keys = [
     'id'
   , 'created_at'
   , 'updated_at'
+  , 'deleted_at'
   , 'slug_name'
   , 'display_name'
   , 'image_url'
   , 'tags'
   , 'scopes'
   , 'created_by'
+  , 'image_url'
+  , 'emoji_collection_id'
 ]
 
 Emoji.from_create = function(o) {
     return new Emoji({
-        id: uuid.v4()
+        id: o.id || uuid.v4()
       , created_at: 'now()'
       , updated_at: 'now()'
+      , deleted_at: null
       , slug_name: o.slug_name
       , display_name: o.display_name
-      , image_url: o.image_url
       , tags: o.tags
       , scopes: o.scopes
       , created_by: o.created_by
+      , image_url: o.image_url
+      , emoji_collection_id: o.emoji_collection_id
+    })
+}
+
+Emoji.from_update = function(o) {
+    return new Emoji({
+        id: o.id || uuid.v4()
+      , created_at: o.created_at || 'now()'
+      , updated_at: o.updated_at || 'now()'
+      , deleted_at: o.deleted_at || null
+      , slug_name: o.slug_name
+      , display_name: o.display_name
+      , tags: o.tags
+      , scopes: o.scopes
+      , created_by: o.created_by
+      , image_url: o.image_url
+      , emoji_collection_id: o.emoji_collection_id
     })
 }
 
 Emoji.from_db = function(o) {
     return new Emoji({
         id: o.id
-      , created_at: new Moment(o.created_at)
-      , updated_at: new Moment(o.updated_at)
+      , created_at: Emoji.to_moment(o.created_at)
+      , updated_at: Emoji.to_moment(o.updated_at)
+      , deleted_at: Emoji.to_moment(o.deleted_at)
       , slug_name: o.slug_name
       , display_name: o.display_name
-      , image_url: o.image_url
       , tags: o.tags
       , scopes: o.scopes
       , created_by: o.created_by
+      , image_url: o.image_url
+      , emoji_collection_id: o.emoji_collection_id
     })
+}
+
+Emoji.prototype.to_json = function() {
+    return {
+        id: this.id
+      , created_at: Emoji.from_moment(this.created_at)
+      , updated_at: Emoji.from_moment(this.updated_at)
+      , deleted_at: Emoji.from_moment(this.deleted_at)
+      , slug_name: this.slug_name
+      , display_name: this.display_name
+      , tags: this.tags
+      , scopes: this.scopes
+      , created_by: this.created_by
+      , image_url: this.image_url
+      , emoji_collection_id: this.emoji_collection_id
+    }
 }
 
 Emoji.prototype.to_privileged = function() {
     return {
         id: this.id
-      , created_at: this.created_at.toISOString()
-      , updated_at: this.updated_at.toISOString()
+      , created_at: Emoji.from_moment(this.created_at)
+      , updated_at: Emoji.from_moment(this.updated_at)
+      , deleted_at: Emoji.from_moment(this.deleted_at)
       , slug_name: this.slug_name
       , display_name: this.display_name
-      , image_url: this.image_url
       , tags: this.tags
       , scopes: this.scopes
       , created_by: this.created_by
+      , image_url: this.image_url
+      , emoji_collection_id: this.emoji_collection_id
     }
 }
 
@@ -73,12 +114,14 @@ Emoji.prototype.to_db = function() {
         id: this.id
       , created_at: Emoji.from_moment(this.created_at)
       , updated_at: Emoji.from_moment(this.updated_at)
+      , deleted_at: Emoji.from_moment(this.deleted_at)
       , slug_name: this.slug_name
       , display_name: this.display_name
-      , image_url: this.image_url
       , tags: this.tags
       , scopes: this.scopes
       , created_by: this.created_by
+      , image_url: this.image_url
+      , emoji_collection_id: this.emoji_collection_id
     }
 }
 

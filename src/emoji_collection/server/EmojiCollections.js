@@ -1,7 +1,6 @@
-var assert = require('assert')
-  , _ = require('underscore')
-  , Moment = require('moment')
+var _ = require('underscore')
   , EmojiCollection = require('./EmojiCollection')
+  , CollectionMixin = require('../../common/CollectionMixin')
 
 var EmojiCollections = function(o) {
     var self = this
@@ -12,32 +11,8 @@ var EmojiCollections = function(o) {
     })
 }
 EmojiCollections.keys = ['list']
-
-EmojiCollections.from_db = function(raw) {
-    var results = []
-
-    for (var i = 0, ii = raw.length; i < ii; ++i) {
-        var o = raw[i]
-          , result = EmojiCollection.from_db(o)
-
-        results.push(result)
-    }
-
-    return new EmojiCollections({list: results})
-}
-
-EmojiCollections.prototype.first = function() {
-    return (this.list.length === 1) ? this.list[0] : null
-}
-
-EmojiCollections.prototype.to_json = function() {
-    var result = []
-
-    for (var i = 0, ii = this.list.length; i < ii; ++i) {
-        result.push(this.list[i].to_json())
-    }
-
-    return result
-}
+EmojiCollections.model = EmojiCollection
+_.extend(EmojiCollections, CollectionMixin)
+_.extend(EmojiCollections.prototype, CollectionMixin.prototype)
 
 module.exports = EmojiCollections

@@ -25,12 +25,14 @@ CREATE TABLE emoji (
     id              char(36) PRIMARY KEY,
     created_at      timestamptz,
     updated_at      timestamptz,
+    deleted_at      timestamptz,
     slug_name       varchar(128),
     display_name    varchar(128),
-    image_url       varchar(512),
     tags            varchar(128)[],
     scopes          varchar(128)[],
-    created_by      char(36)
+    created_by      char(36),
+    image_url       varchar(512),
+    emoji_collection_id char(36)
 );
 
 CREATE TABLE emoji_stat (

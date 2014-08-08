@@ -1,7 +1,6 @@
-var assert = require('assert')
-  , _ = require('underscore')
-  , Moment = require('moment')
+var _ = require('underscore')
   , Emoji = require('./Emoji')
+  , CollectionMixin = require('../../common/CollectionMixin')
 
 var Emojis = function(o) {
     var self = this
@@ -12,18 +11,8 @@ var Emojis = function(o) {
     })
 }
 Emojis.keys = ['list']
-
-Emojis.from_db = function(raw) {
-    var results = []
-
-    for (var i = 0, ii = raw.length; i < ii; ++i) {
-        var o = raw[i]
-          , result = Emoji.from_db(o)
-
-        results.push(result)
-    }
-
-    return new Emojis({list: results})
-}
+Emojis.model = Emoji
+_.extend(Emojis, CollectionMixin)
+_.extend(Emojis.prototype, CollectionMixin.prototype)
 
 module.exports = Emojis
