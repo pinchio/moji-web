@@ -57,3 +57,4 @@ TODO:
 - Need to update updated_at flag when things update
 - Need to store arbitrary json
 - Need to put back regex for emoji collection title
+- Need to validate uuid v4 coming from client see uuid.parse()

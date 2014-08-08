@@ -21,11 +21,10 @@ Emoji.keys = [
   , 'deleted_at'
   , 'slug_name'
   , 'display_name'
-  , 'image_url'
   , 'tags'
   , 'scopes'
   , 'created_by'
-  , 'image_url'
+  , 'asset_url'
   , 'emoji_collection_id'
 ]
 
@@ -40,7 +39,7 @@ Emoji.from_create = function(o) {
       , tags: o.tags
       , scopes: o.scopes
       , created_by: o.created_by
-      , image_url: o.image_url
+      , asset_url: o.asset_url
       , emoji_collection_id: o.emoji_collection_id
     })
 }
@@ -56,7 +55,7 @@ Emoji.from_update = function(o) {
       , tags: o.tags
       , scopes: o.scopes
       , created_by: o.created_by
-      , image_url: o.image_url
+      , asset_url: o.asset_url
       , emoji_collection_id: o.emoji_collection_id
     })
 }
@@ -72,7 +71,7 @@ Emoji.from_db = function(o) {
       , tags: o.tags
       , scopes: o.scopes
       , created_by: o.created_by
-      , image_url: o.image_url
+      , asset_url: o.asset_url
       , emoji_collection_id: o.emoji_collection_id
     })
 }
@@ -88,7 +87,7 @@ Emoji.prototype.to_json = function() {
       , tags: this.tags
       , scopes: this.scopes
       , created_by: this.created_by
-      , image_url: this.image_url
+      , asset_url: this.asset_url
       , emoji_collection_id: this.emoji_collection_id
     }
 }
@@ -104,7 +103,7 @@ Emoji.prototype.to_privileged = function() {
       , tags: this.tags
       , scopes: this.scopes
       , created_by: this.created_by
-      , image_url: this.image_url
+      , asset_url: this.asset_url
       , emoji_collection_id: this.emoji_collection_id
     }
 }
@@ -120,7 +119,7 @@ Emoji.prototype.to_db = function() {
       , tags: this.tags
       , scopes: this.scopes
       , created_by: this.created_by
-      , image_url: this.image_url
+      , asset_url: this.asset_url
       , emoji_collection_id: this.emoji_collection_id
     }
 }

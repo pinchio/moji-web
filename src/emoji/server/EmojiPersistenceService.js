@@ -15,7 +15,7 @@ var EmojiPersistenceService = function EmojiPersistenceService() {
       , 'tags'
       , 'scopes'
       , 'created_by'
-      , 'image_url'
+      , 'asset_url'
       , 'emoji_collection_id'
     ]
     this.table = 'emoji'

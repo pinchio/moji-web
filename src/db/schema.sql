@@ -31,7 +31,7 @@ CREATE TABLE emoji (
     tags            varchar(128)[],
     scopes          varchar(128)[],
     created_by      char(36),
-    image_url       varchar(512),
+    asset_url       varchar(512),
     emoji_collection_id char(36)
 );
 

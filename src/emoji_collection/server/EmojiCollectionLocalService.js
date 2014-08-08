@@ -106,7 +106,7 @@ EmojiCollectionLocalService.prototype.create = function * (o) {
           , created_by: o.session.account_id
         })
       , created_emoji_collections = yield EmojiCollectionPersistenceService.insert(emoji_collection)
-      , emoji_collection = (created_emoji_collections && created_emoji_collections.list.length === 1) ? created_emoji_collections.list[0] : null
+      , emoji_collection = created_emoji_collections.first()
 
     return emoji_collection
 }
