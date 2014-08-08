@@ -49,6 +49,23 @@ EmojiHTTPService.prototype.post = function() {
 
     return function * (next) {
         try {
+            var emoji_collection = yield EmojiCollectionLocalService.create({
+                    display_name: this.request.body && this.request.body.display_name
+                  , tags: this.request.body && this.request.body.tags
+                  , scopes: this.request.body && this.request.body.scopes
+                  , session: this.session
+                })
+
+            self.handle_success(this, {emoji_collection: emoji_collection.to_privileged()}, 'json')
+        } catch(e) {
+            self.handle_exception(this, e)
+        }
+    }
+
+    var self = this
+
+    return function * (next) {
+        try {
             var session = this.session
               , parts = co_busboy(this)
               , part
@@ -59,24 +76,23 @@ EmojiHTTPService.prototype.post = function() {
                     // Normal fields.
                     body[part[0]] = part[1]
                 } else {
+                    console.log(part)
                     // File streams.
-                    var tmp_file_name = '/tmp/' + uuid.v4()
-                      , stream = fs.createWriteStream(tmp_file_name)
+                    var local_file_name = '/tmp/' + uuid.v4()
+                      , stream = fs.createWriteStream(local_file_name)
                       , original_file_name = part.filename
-
-                    var stream_finished = yield self.part_stream_finish(part, stream)
+                      , stream_finished = yield self.part_stream_finish(part, stream)
                       , emoji = yield EmojiLocalService.create({
-                            slug_name: ''
-                          , display_name: ''
-                          , tags: ['a', 'b']
-                          , scopes: []
-                          , session: session
-                          , tmp_file_name: tmp_file_name
+                          , display_name: body.display_name
+                          , tags: body.tags
+                          , scopes: body.scopes
+                          , local_file_name: local_file_name
                           , original_file_name: original_file_name
+                          , emoji_collection_id: body.emoji_collection_id
+                          , session: session
                         })
 
                     return self.handle_success(this, {emoji: emoji.to_privileged()}, 'json')
-
                 }
             }
 

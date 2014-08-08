@@ -43,7 +43,7 @@ EmojiLocalService.prototype.create = function * (o) {
     // TODO: validation
     // If no session fail
 
-    var file_data = yield readFile_thunk(o.tmp_file_name)
+    var file_data = yield readFile_thunk(o.local_file_name)
       , original_file_name_ext = path.extname(o.original_file_name)
       , s3_file_name = self.get_file_sha(file_data) + original_file_name_ext
       , put_response = yield this.s3_bucket_put_object({

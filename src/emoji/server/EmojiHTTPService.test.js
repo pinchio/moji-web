@@ -12,7 +12,7 @@ var get_url = function(args) {
 }
 
 describe('EmojiHTTPService', function() {
-    describe('post', function() {
+    describe.only('post', function() {
         var username = 'ab' + Date.now()
           , password = 'password'
           , email = 'a' + Date.now() + '@b.com'
