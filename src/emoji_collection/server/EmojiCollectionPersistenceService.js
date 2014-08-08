@@ -22,4 +22,13 @@ var EmojiCollectionPersistenceService = function EmojiCollectionPersistenceServi
 _.extend(EmojiCollectionPersistenceService, StaticMixin)
 _.extend(EmojiCollectionPersistenceService.prototype, QueryMixin.prototype)
 
+EmojiCollectionPersistenceService.prototype.select_by_created_by__not_deleted = function * (req) {
+    var query = 'select * '
+              + 'from ' + this.table + ' '
+              + 'where created_by = $1 and deleted_at is null'
+      , values = [req.created_by]
+
+    return yield this.query({query: query, values: values})
+}
+
 module.exports = EmojiCollectionPersistenceService

@@ -82,6 +82,28 @@ EmojiCollectionHTTPService.prototype.get = function() {
     }
 }
 
+// TODO: probably refactor to not pass in session and instead account_id EVERYWHERE
+EmojiCollectionHTTPService.prototype.list = function() {
+    var self = this
+
+    return function * (next) {
+        try {
+            var emoji_collections = yield EmojiCollectionLocalService.get_by_created_by({
+                    req: this.request
+                  , session: this.session
+                })
+
+            if (emoji_collections) {
+                return self.handle_success(this, {emoji_collections: emoji_collections.to_json()}, 'json')
+            } else {
+                return self.handle_success(this, null)
+            }
+        } catch(e) {
+            self.handle_exception(this, e)
+        }
+    }
+}
+
 EmojiCollectionHTTPService.prototype.del = function() {
     var self = this
 

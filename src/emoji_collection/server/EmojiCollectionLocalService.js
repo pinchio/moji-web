@@ -81,13 +81,9 @@ EmojiCollectionLocalService.prototype.validate_id = function(id) {
     }
 }
 
-EmojiCollectionLocalService.prototype.validate_created_by = function(id, session) {
+EmojiCollectionLocalService.prototype.validate_created_by = function(id) {
     if (!validator.isLength(id, 10)) {
         throw new LocalServiceError(this.ns, 'bad_request', 'Emoji collection created by ids contain more than 10 characters.', 400)
-    }
-
-    if (id !== session.account_id) {
-        throw new LocalServiceError(this.ns, 'not_found', 'Not found.', 404)
     }
 }
 
@@ -145,7 +141,11 @@ EmojiCollectionLocalService.prototype.upsert = function * (o) {
     this.validate_display_name(o.display_name)
     this.validate_tags(o.tags)
     this.validate_scopes(o.scopes)
-    this.validate_created_by(o.created_by, o.session)
+    this.validate_created_by(o.created_by)
+
+    if (o.created_by !== o.session.account_id) {
+        throw new LocalServiceError(this.ns, 'not_found', 'Not found.', 404)
+    }
 
     var db_emoji_collections = yield EmojiCollectionPersistenceService.select_by_id({id: o.id})
       , db_emoji_collection = db_emoji_collections.first()
@@ -162,7 +162,7 @@ EmojiCollectionLocalService.prototype.upsert = function * (o) {
 
         if (o.updated_at === db_emoji_collection.updated_at) {
             o.created_at = db_emoji_collection.created_at
-            return this._update(o)
+            return yield this._update(o)
             // // Updating from the same original as db. Allow.
             // var emoji_collection = EmojiCollection.from_create({
             //         id: o.id
@@ -204,7 +204,9 @@ EmojiCollectionLocalService.prototype.get_by_id = function * (o) {
       , emoji_collection = emoji_collections.first()
 
     if (emoji_collection) {
-        if (o.session.account_id === emoji_collection.created_by) {
+        if (emoji_collection.deleted_at) {
+            return null
+        } else if (o.session.account_id === emoji_collection.created_by) {
             return emoji_collection
         } else if (emoji_collection.scopes.indexOf('public_read') > -1) {
             return emoji_collection
@@ -214,6 +216,16 @@ EmojiCollectionLocalService.prototype.get_by_id = function * (o) {
     } else {
         return null
     }
+}
+
+EmojiCollectionLocalService.prototype.get_by_created_by = function * (o) {
+    this.validate_session(o.session)
+
+    var emoji_collections = yield EmojiCollectionPersistenceService.select_by_created_by__not_deleted({
+        created_by: o.session.account_id
+    })
+
+    return emoji_collections
 }
 
 EmojiCollectionLocalService.prototype.delete_by_id = function * (o) {
@@ -234,8 +246,9 @@ EmojiCollectionLocalService.prototype.delete_by_id = function * (o) {
         }
 
         emoji_collection.deleted_at = 'now()'
+        emoji_collection.session = o.session
 
-        return this._update(emoji_collection)
+        return yield this._update(emoji_collection)
     } else {
         return null
     }

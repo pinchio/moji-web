@@ -30,4 +30,14 @@ EmojiCollections.prototype.first = function() {
     return (this.list.length === 1) ? this.list[0] : null
 }
 
+EmojiCollections.prototype.to_json = function() {
+    var result = []
+
+    for (var i = 0, ii = this.list.length; i < ii; ++i) {
+        result.push(this.list[i].to_json())
+    }
+
+    return result
+}
+
 module.exports = EmojiCollections

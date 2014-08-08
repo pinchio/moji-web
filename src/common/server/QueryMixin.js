@@ -103,6 +103,7 @@ QueryMixin.prototype._update_by_id = function * (req) {
         + 'set (' + this._get_non_id_columns().join(', ') + ') '
         + '= (' + this._get_prepared_indices(this._get_non_id_columns()).join(', ') + ') '
         + 'where id=$' + this.columns.length
+        + 'returning ' + this.columns_string()
       , req = req.to_db()
       , values = this.columns.map(function(column) {
             if (_.isArray(req[column])) {
@@ -112,7 +113,10 @@ QueryMixin.prototype._update_by_id = function * (req) {
             }
         })
 
-    return yield this.query({query: query, values: values}, cb)
+    // Put id at the very end.
+    values.push(values.shift())
+
+    return yield this.query({query: query, values: values})
 }
 QueryMixin.prototype.update_by_id = QueryMixin.prototype._update_by_id
 
