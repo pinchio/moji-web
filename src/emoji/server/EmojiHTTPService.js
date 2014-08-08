@@ -15,31 +15,6 @@ var EmojiHTTPService = function EmojiHTTPService() {
 _.extend(EmojiHTTPService, StaticMixin)
 _.extend(EmojiHTTPService.prototype, HTTPServiceMixin.prototype)
 
-EmojiHTTPService.prototype.get = function() {
-    var self = this
-
-    return function * (next) {
-        try {
-            var account = yield EmojiLocalService.get_by_id({
-                    req: this.request
-                  , id: this.params.id
-                })
-
-            if (account) {
-                if (this.session.account_id === account.id) {
-                    return self.handle_success(this, {account: account.to_privileged()}, 'json')
-                } else {
-                    return self.handle_success(this, {account: account.to_json()}, 'json')
-                }
-            } else {
-                return self.handle_success(this, null)
-            }
-        } catch(e) {
-            self.handle_exception(this, e)
-        }
-    }
-}
-
 EmojiHTTPService.prototype.part_stream_finish = thunkify(function(part, stream, cb) {
     stream.on('finish', cb)
     part.pipe(stream)
@@ -84,8 +59,6 @@ EmojiHTTPService.prototype.post = function() {
                 throw new LocalServiceError(this.ns, 'bad_request', 'Emojis must include an asset.', 400)
             }
 
-            console.log('###', body)
-
             var emoji = yield EmojiLocalService.create({
                     display_name: body.display_name
                   , tags: body.tags
@@ -97,6 +70,83 @@ EmojiHTTPService.prototype.post = function() {
                 })
 
             return self.handle_success(this, {emoji: emoji.to_privileged()}, 'json')
+        } catch(e) {
+            self.handle_exception(this, e)
+        }
+    }
+}
+
+EmojiHTTPService.prototype.get = function() {
+    var self = this
+
+    return function * (next) {
+        try {
+            var emoji = yield EmojiHTTPService.get_by_id({
+                    req: this.request
+                  , id: this.params.id
+                  , session: this.session
+                })
+
+            if (emoji) {
+                if (this.session.account_id === emoji.created_by) {
+                    return self.handle_success(this, {emoji: emoji.to_privileged()}, 'json')
+                } else {
+                    return self.handle_success(this, {emoji: emoji.to_json()}, 'json')
+                }
+            } else {
+                return self.handle_success(this, null)
+            }
+        } catch(e) {
+            self.handle_exception(this, e)
+        }
+    }
+}
+
+EmojiHTTPService.prototype.list = function() {
+    var self = this
+
+    return function * (next) {
+        try {
+            if (this.query.emoji_collection_id) {
+                var emojis = yield EmojiHTTPService.get_by_created_by__emoji_collection_id({
+                        emoji_collection_id: this.query.emoji_collection_id
+                      , req: this.request
+                      , session: this.session
+                    })
+            } else {
+                var emojis = yield EmojiHTTPService.get_by_created_by({
+                        req: this.request
+                      , session: this.session
+                    })
+            }
+
+            if (emojis) {
+                return self.handle_success(this, {emojis: emojis.to_json()}, 'json')
+            } else {
+                return self.handle_success(this, null)
+            }
+        } catch(e) {
+            self.handle_exception(this, e)
+        }
+    }
+}
+
+EmojiHTTPService.prototype.del = function() {
+    var self = this
+
+    return function * (next) {
+        try {
+            var emoji = yield EmojiHTTPService.delete_by_id({
+                    req: this.request
+                  , id: this.params.id
+                  , session: this.session
+                })
+
+            if (emoji) {
+                return self.handle_success(this, {}, 'json')
+            } else {
+                return self.handle_success(this, null)
+            }
         } catch(e) {
             self.handle_exception(this, e)
         }

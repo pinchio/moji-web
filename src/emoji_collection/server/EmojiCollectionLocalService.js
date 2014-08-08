@@ -112,7 +112,6 @@ EmojiCollectionLocalService.prototype.create = function * (o) {
 }
 
 EmojiCollectionLocalService.prototype._update = function * (o) {
-    // Updating from the same original as db. Allow.
     var emoji_collection = EmojiCollection.from_update({
             id: o.id
           , created_at: o.created_at

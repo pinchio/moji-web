@@ -24,11 +24,20 @@ var EmojiPersistenceService = function EmojiPersistenceService() {
 _.extend(EmojiPersistenceService, StaticMixin)
 _.extend(EmojiPersistenceService.prototype, QueryMixin.prototype)
 
-EmojiPersistenceService.prototype.select_by_username = function * (req) {
+EmojiPersistenceService.prototype.select_by_created_by__not_deleted = function * (req) {
     var query = 'select * '
               + 'from ' + this.table + ' '
-              + 'where username = $1 '
-      , values = [req.username]
+              + 'where created_by = $1 and deleted_at is null'
+      , values = [req.created_by]
+
+    return yield this.query({query: query, values: values})
+}
+
+EmojiPersistenceService.prototype.select_by_created_by__emoji_collection_id__not_deleted = function * (req) {
+    var query = 'select * '
+              + 'from ' + this.table + ' '
+              + 'where created_by = $1 and emoji_collection_id = $2 and deleted_at is null'
+      , values = [req.created_by, req.emoji_collection_id]
 
     return yield this.query({query: query, values: values})
 }

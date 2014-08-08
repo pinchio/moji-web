@@ -109,14 +109,6 @@ EmojiLocalService.prototype.get_file_sha = function(file_data) {
     return crypto.createHash('sha1').update(file_data).digest('hex')
 }
 
-EmojiLocalService.prototype.get_by_id = function * (o) {
-    this.validate_id(o.id)
-
-    var emojis = yield EmojiPersistenceService.select_by_id({id: o.id})
-
-    return emojis.first()
-}
-
 EmojiLocalService.prototype.create = function * (o) {
     o.display_name = o.display_name || ''
     o.tags = o.tags || []
@@ -165,6 +157,147 @@ EmojiLocalService.prototype.create = function * (o) {
       , emoji = created_emojis.first()
 
     return emoji
+}
+
+EmojiLocalService.prototype._update = function * (o) {
+    var emoji = Emoji.from_update({
+            id: o.id
+          , created_at: o.created_at
+          , updated_at: 'now()'
+          , deleted_at: o.deleted_at
+          , slug_name: ''
+          , display_name: o.display_name
+          , tags: o.tags
+          , scopes: o.scopes
+          , created_by: o.session.account_id
+        })
+      , updated_emojis = yield EmojiPersistenceService.update_by_id(emoji)
+      , updated_emoji = updated_emojis.first()
+
+      return updated_emoji_collection
+}
+
+EmojiLocalService.prototype.upsert = function * (o) {
+    o.display_name = o.display_name || ''
+    o.tags = o.tags || []
+    o.scopes = o.scopes || []
+    o.scopes = _.unique(o.scopes)
+
+    this.validate_id(o.id)
+    this.validate_session(o.session)
+    this.validate_display_name(o.display_name)
+    this.validate_tags(o.tags)
+    this.validate_scopes(o.scopes)
+    this.validate_created_by(o.created_by)
+
+    if (o.created_by !== o.session.account_id) {
+        throw new LocalServiceError(this.ns, 'not_found', 'Not found.', 404)
+    }
+
+    var db_emojis = yield EmojiPersistenceService.select_by_id({id: o.id})
+      , db_emoji = db_emojis.first()
+
+    if (db_emoji) {
+        // Update.
+        if (db_emoji.deleted_at) {
+            throw new LocalServiceError(this.ns, 'conflict', 'Cannot update deleted emoji.', 409)
+        }
+
+        if (db_emoji.created_by !== o.session.account_id) {
+            throw new LocalServiceError(this.ns, 'not_found', 'Not found.', 404)
+        }
+
+        if (db_emoji.updated_at.isSame(o.updated_at)) {
+            o.created_at = db_emoji_collection.created_at
+            return yield this._update(o)
+        } else {
+            // Updating from a stale version. Disallow. Return, db version.
+            return db_emoji
+        }
+    } else {
+        // Create.
+        var emoji = Emoji.from_create({
+                id: o.id
+              , slug_name: ''
+              , display_name: o.display_name
+              , tags: o.tags
+              , scopes: o.scopes
+              , created_by: o.session.account_id
+            })
+          , created_emojis = yield EmojiPersistenceService.insert(emoji)
+          , created_emoji = created_emojis.first()
+
+        return created_emoji
+    }
+}
+
+EmojiLocalService.prototype.get_by_id = function * (o) {
+    this.validate_id(o.id)
+
+    var emojis = yield EmojiPersistenceService.select_by_id({id: o.id})
+      , emoji = emojis.first()
+
+    if (emoji) {
+        if (emoji.deleted_at) {
+            return null
+        } else if (o.session.account_id === emoji.created_by) {
+            return emoji
+        } else if (emoji.scopes.indexOf('public_read') > -1) {
+            return emoji
+        } else {
+            return null
+        }
+    } else {
+        return null
+    }
+}
+
+EmojiLocalService.prototype.get_by_created_by = function * (o) {
+    this.validate_session(o.session)
+
+    var emojis = yield EmojiPersistenceService.select_by_created_by__not_deleted({
+        created_by: o.session.account_id
+    })
+
+    return emojis
+}
+
+EmojiLocalService.prototype.get_by_created_by__emoji_collection_id = function * (o) {
+    this.validate_session(o.session)
+    this.validate_emoji_collection_id(o.emoji_collection_id)
+
+    var emojis = yield EmojiPersistenceService.select_by_created_by__emoji_collection_id__not_deleted({
+        created_by: o.session.account_id
+      , emoji_collection_id: o.emoji_collection_id
+    })
+
+    return emojis
+}
+
+EmojiLocalService.prototype.delete_by_id = function * (o) {
+    this.validate_id(o.id)
+    this.validate_session(o.session)
+
+    var emojis = yield EmojiPersistenceService.select_by_id({id: o.id})
+      , emoji = emojis.first()
+
+    if (emoji) {
+        if (emoji.deleted_at) {
+            return emoji
+        }
+
+        // Cannot delete someone else's.
+        if (emoji.created_by !== o.session.account_id) {
+            throw new LocalServiceError(this.ns, 'not_found', 'Not found.', 404)
+        }
+
+        emoji.deleted_at = 'now()'
+        emoji.session = o.session
+
+        return yield this._update(emoji)
+    } else {
+        return null
+    }
 }
 
 module.exports = EmojiLocalService
