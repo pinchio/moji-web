@@ -160,22 +160,9 @@ EmojiCollectionLocalService.prototype.upsert = function * (o) {
             throw new LocalServiceError(this.ns, 'not_found', 'Not found.', 404)
         }
 
-        if (o.updated_at === db_emoji_collection.updated_at) {
+        if (db_emoji_collection.updated_at.isSame(o.updated_at)) {
             o.created_at = db_emoji_collection.created_at
             return yield this._update(o)
-            // // Updating from the same original as db. Allow.
-            // var emoji_collection = EmojiCollection.from_create({
-            //         id: o.id
-            //       , slug_name: ''
-            //       , display_name: o.display_name
-            //       , tags: o.tags
-            //       , scopes: o.scopes
-            //       , created_by: o.session.account_id
-            //     })
-            //   , updated_emoji_collections = yield EmojiCollectionPersistenceService.update_by_id(emoji_collection)
-            //   , updated_emoji_collection = updated_emoji_collections.first()
-
-            //   return updated_emoji_collection
         } else {
             // Updating from a stale version. Disallow. Return, db version.
             return db_emoji_collection

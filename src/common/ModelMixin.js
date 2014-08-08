@@ -8,7 +8,7 @@ ModelMixin.from_moment = function(value) {
 
 ModelMixin.to_moment = function(value) {
     // TODO: hack-ish
-    if (value && value.length > 10) {
+    if (value !== null) {
         var maybe_moment = new Moment(value)
         if (maybe_moment.isValid()) {
             return maybe_moment

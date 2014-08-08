@@ -452,6 +452,7 @@ describe('EmojiCollectionHTTPService', function() {
           , password = 'password'
           , email = uuid.v4().substring(0, 15) + '@b.com'
           , stored_emoji_collection
+          , stored_emoji_collection2
           , stored_jar = request.jar()
           , stored_account
 
@@ -519,8 +520,68 @@ describe('EmojiCollectionHTTPService', function() {
                     assert.equal(d.statusCode, 200)
                     assert.isDefined(body.emoji_collection)
                     assert.equal(body.emoji_collection.id, id)
+                    assert.notEqual(body.emoji_collection.created_at, now)
+                    assert.notEqual(body.emoji_collection.updated_at, now)
+                    assert.equal(body.emoji_collection.created_at, body.emoji_collection.updated_at)
 
                     stored_emoji_collection = body.emoji_collection
+                    done()
+            })
+        })
+
+        it('should update emoji collection if no conflict', function(done) {
+            var display_name = 'Updated Emoji Collection'
+            request({
+                    url: get_url('/_/api/emoji_collection/' + stored_emoji_collection.id)
+                  , method: 'PUT'
+                  , json: {
+                        id: stored_emoji_collection.id
+                      , created_at: stored_emoji_collection.created_at
+                      , updated_at: stored_emoji_collection.updated_at
+                      , display_name: display_name
+                      , tags: stored_emoji_collection.tags
+                      , scopes: stored_emoji_collection.scopes
+                      , created_by: stored_emoji_collection.created_by
+                    }
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.isDefined(body.emoji_collection)
+                    assert.equal(body.emoji_collection.id, stored_emoji_collection.id)
+                    assert.equal(body.emoji_collection.display_name, display_name)
+                    assert.equal(body.emoji_collection.created_at, stored_emoji_collection.created_at)
+                    assert.notEqual(body.emoji_collection.updated_at, stored_emoji_collection.updated_at)
+                    assert.notEqual(body.emoji_collection.created_at, body.emoji_collection.updated_at)
+
+                    stored_emoji_collection2 = body.emoji_collection
+                    done()
+            })
+        })
+
+        it('should not update emoji collection if conflict, but dont return error', function(done) {
+            var display_name = 'Updated Again Emoji Collection'
+            request({
+                    url: get_url('/_/api/emoji_collection/' + stored_emoji_collection.id)
+                  , method: 'PUT'
+                  , json: {
+                        id: stored_emoji_collection.id
+                      , created_at: stored_emoji_collection.created_at
+                      , updated_at: stored_emoji_collection.updated_at
+                      , display_name: display_name
+                      , tags: stored_emoji_collection.tags
+                      , scopes: stored_emoji_collection.scopes
+                      , created_by: stored_emoji_collection.created_by
+                    }
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.isDefined(body.emoji_collection)
+                    assert.equal(body.emoji_collection.id, stored_emoji_collection.id)
+                    assert.equal(body.emoji_collection.display_name, stored_emoji_collection2.display_name)
+                    assert.equal(body.emoji_collection.created_at, stored_emoji_collection2.created_at)
+                    assert.equal(body.emoji_collection.updated_at, stored_emoji_collection2.updated_at)
                     done()
             })
         })
@@ -625,9 +686,6 @@ describe('EmojiCollectionHTTPService', function() {
                     })
             })
         })
-
-        it.skip('same original as db', function() {})
-        it.skip('stale version', function() {})
     })
 
     describe('del', function() {
