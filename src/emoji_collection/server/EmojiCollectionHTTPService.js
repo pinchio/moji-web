@@ -82,7 +82,6 @@ EmojiCollectionHTTPService.prototype.get = function() {
     }
 }
 
-// TODO: probably refactor to not pass in session and instead account_id EVERYWHERE
 EmojiCollectionHTTPService.prototype.list = function() {
     var self = this
 

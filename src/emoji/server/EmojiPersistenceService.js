@@ -9,12 +9,14 @@ var EmojiPersistenceService = function EmojiPersistenceService() {
         'id'
       , 'created_at'
       , 'updated_at'
+      , 'deleted_at'
       , 'slug_name'
       , 'display_name'
-      , 'image_url'
       , 'tags'
       , 'scopes'
       , 'created_by'
+      , 'image_url'
+      , 'emoji_collection_id'
     ]
     this.table = 'emoji'
     this.clazz = Emojis
