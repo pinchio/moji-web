@@ -98,11 +98,11 @@ EmojiCollectionLocalService.prototype.validate_extra_data = function(extra_data)
         }
 
         if (key === 'background_color_light') {
-            if (!_.isNumber(extra_data[key])) {
+            if (!_.isString(extra_data[key])) {
                 throw new LocalServiceError(this.ns, 'bad_request', 'Invalid value for background_color_light.', 400)
             }
         } else if (key === 'background_color_dark') {
-            if (!_.isNumber(extra_data[key])) {
+            if (!_.isString(extra_data[key])) {
                 throw new LocalServiceError(this.ns, 'bad_request', 'Invalid value for background_color_dark.', 400)
             }
         }

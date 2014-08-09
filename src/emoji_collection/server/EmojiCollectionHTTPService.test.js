@@ -107,8 +107,8 @@ describe('EmojiCollectionHTTPService', function() {
 
         it('should create emoji collection with extra_data background_color_*', function(done) {
             var extra_data = {
-                background_color_light: 123
-              , background_color_dark: 245
+                background_color_light: '123'
+              , background_color_dark: '245'
             }
 
             request({
