@@ -13,6 +13,7 @@ var koa = require('koa')
   , config = require('../../../config')
   , http = require('http')
   , static_folder_name = path.join(process.env.NODE_PATH, '/public')
+  , Moment = require('moment')
 
 var Server = function Server() {
     var self = this
@@ -28,7 +29,9 @@ var Server = function Server() {
     }
     this.app.use(koa_body_parser())
     this.app.use(koa_static(static_folder_name, {maxage: 1000 * 60 * 60 * 24 * 365}))
-    this.app.use(koa_session())
+    this.app.use(koa_session({
+        expires: (new Moment()).add(10, 'year').toDate()
+    }))
     this.app.use(function * (next) {
         console.log('method', this.request.method)
         console.log('url', this.request.url)
