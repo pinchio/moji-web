@@ -119,8 +119,8 @@ EmojiLocalService.prototype.create = function * (o) {
     this.validate_display_name(o.display_name)
     this.validate_tags(o.tags)
     this.validate_scopes(o.scopes)
-    this.validate_emoji_collection_id(o.emoji_collection_id)
     this.validate_file_name(o.original_file_name)
+    this.validate_emoji_collection_id(o.emoji_collection_id)
 
     // Make sure emoji collection exists.
     var emoji_collection = yield EmojiCollectionLocalService.get_by_id({
@@ -170,6 +170,8 @@ EmojiLocalService.prototype._update = function * (o) {
           , tags: o.tags
           , scopes: o.scopes
           , created_by: o.session.account_id
+          , asset_url: o.asset_url
+          , emoji_collection_id: o.emoji_collection_id
         })
       , updated_emojis = yield EmojiPersistenceService.update_by_id(emoji)
       , updated_emoji = updated_emojis.first()
@@ -183,17 +185,34 @@ EmojiLocalService.prototype.upsert = function * (o) {
     o.scopes = o.scopes || []
     o.scopes = _.unique(o.scopes)
 
-    this.validate_id(o.id)
     this.validate_session(o.session)
+    this.validate_id(o.id)
     this.validate_display_name(o.display_name)
     this.validate_tags(o.tags)
     this.validate_scopes(o.scopes)
     this.validate_created_by(o.created_by)
+    this.validate_file_name(o.original_file_name)
+    this.validate_emoji_collection_id(o.emoji_collection_id)
 
     if (o.created_by !== o.session.account_id) {
         throw new LocalServiceError(this.ns, 'not_found', 'Not found.', 404)
     }
 
+    // Make sure emoji collection exists.
+    var emoji_collection = yield EmojiCollectionLocalService.get_by_id({
+            id: o.emoji_collection_id
+          , session: o.session
+        })
+
+    if (!emoji_collection) {
+        throw new LocalServiceError(this.ns, 'bad_request', 'Invalid emoji collection id.', 400)
+    }
+
+    if (emoji_collection.created_by !== o.session.account_id) {
+        throw new LocalServiceError(this.ns, 'access_denied', 'Not authorized to update emoji in this collection.', 403)
+    }
+
+    // Make sure emoji exists.
     var db_emojis = yield EmojiPersistenceService.select_by_id({id: o.id})
       , db_emoji = db_emojis.first()
 
@@ -207,8 +226,21 @@ EmojiLocalService.prototype.upsert = function * (o) {
             throw new LocalServiceError(this.ns, 'not_found', 'Not found.', 404)
         }
 
+        if (db_emoji.emoji_collection_id !== o.emoji_collection_id) {
+            throw new LocalServiceError(this.ns, 'not_authoried', 'Cannot modify emoji collection id.', 403)
+        }
+
         if (db_emoji.updated_at.isSame(o.updated_at)) {
-            o.created_at = db_emoji_collection.created_at
+            var file_data = yield readFile_thunk(o.local_file_name)
+              , original_file_name_ext = path.extname(o.original_file_name)
+              , s3_file_name = this.get_file_sha(file_data) + original_file_name_ext
+              , put_response = yield this.s3_bucket_put_object({
+                    Key: s3_file_name
+                  , Body: file_data
+                })
+
+            o.created_at = db_emoji.created_at
+            o.asset_url = this.s3_base_url + s3_file_name
             return yield this._update(o)
         } else {
             // Updating from a stale version. Disallow. Return, db version.
@@ -216,18 +248,28 @@ EmojiLocalService.prototype.upsert = function * (o) {
         }
     } else {
         // Create.
+        var file_data = yield readFile_thunk(o.local_file_name)
+          , original_file_name_ext = path.extname(o.original_file_name)
+          , s3_file_name = this.get_file_sha(file_data) + original_file_name_ext
+          , put_response = yield this.s3_bucket_put_object({
+                Key: s3_file_name
+              , Body: file_data
+            })
+
         var emoji = Emoji.from_create({
                 id: o.id
-              , slug_name: ''
+              , slug_name: o.slug_name
               , display_name: o.display_name
               , tags: o.tags
               , scopes: o.scopes
               , created_by: o.session.account_id
+              , asset_url: this.s3_base_url + s3_file_name
+              , emoji_collection_id: o.emoji_collection_id
             })
           , created_emojis = yield EmojiPersistenceService.insert(emoji)
-          , created_emoji = created_emojis.first()
+          , emoji = created_emojis.first()
 
-        return created_emoji
+        return emoji
     }
 }
 

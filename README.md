@@ -58,3 +58,6 @@ TODO:
 - Need to store arbitrary json
 - Need to put back regex for emoji collection title
 - Need to validate uuid v4 coming from client see uuid.parse()
+
+- If S3 put fails should fail with 500
+- Should not 404 if different user logs in and PUTs

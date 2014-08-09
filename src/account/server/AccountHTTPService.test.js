@@ -182,7 +182,7 @@ describe('AccountHTTPService', function() {
               , function(e, d, body) {
                     assert.equal(d.statusCode, 400)
                     assert.equal(body.type, 'bad_request')
-                    assert.equal(body.description, 'Password must be between 8 and 32 characters.')
+                    assert.equal(body.description, 'Password must be between 6 and 32 characters.')
                     done()
             })
         })
@@ -193,13 +193,13 @@ describe('AccountHTTPService', function() {
                   , method: 'POST'
                   , json: {
                         username: username
-                      , password: '1234567'
+                      , password: '12345'
                     }
                 }
               , function(e, d, body) {
                     assert.equal(d.statusCode, 400)
                     assert.equal(body.type, 'bad_request')
-                    assert.equal(body.description, 'Password must be between 8 and 32 characters.')
+                    assert.equal(body.description, 'Password must be between 6 and 32 characters.')
                     done()
             })
         })
@@ -216,7 +216,7 @@ describe('AccountHTTPService', function() {
               , function(e, d, body) {
                     assert.equal(d.statusCode, 400)
                     assert.equal(body.type, 'bad_request')
-                    assert.equal(body.description, 'Password must be between 8 and 32 characters.')
+                    assert.equal(body.description, 'Password must be between 6 and 32 characters.')
                     done()
             })
         })
