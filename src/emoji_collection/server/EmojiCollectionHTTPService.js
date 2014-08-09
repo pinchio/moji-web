@@ -23,6 +23,7 @@ EmojiCollectionHTTPService.prototype.post = function() {
                     display_name: this.request.body && this.request.body.display_name
                   , tags: this.request.body && this.request.body.tags
                   , scopes: this.request.body && this.request.body.scopes
+                  , extra_data: this.request.body && this.request.body.extra_data
                   , session: this.session
                 })
 
@@ -46,6 +47,7 @@ EmojiCollectionHTTPService.prototype.put = function() {
                   , tags: this.request.body && this.request.body.tags
                   , scopes: this.request.body && this.request.body.scopes
                   , created_by: this.request.body && this.request.body.created_by
+                  , extra_data: this.request.body && this.request.body.extra_data
                   , session: this.session
                 })
 

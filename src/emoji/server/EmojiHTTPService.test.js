@@ -771,6 +771,7 @@ describe('EmojiHTTPService', function() {
         })
 
         it('should create emoji in first collection', function(done) {
+            this.timeout(10000)
             var display_name = 'Super emoji'
               , tags = ['cats', 'dogs']
             var req = request(
@@ -798,6 +799,7 @@ describe('EmojiHTTPService', function() {
         })
 
         it('should create another emoji in first collection', function(done) {
+            this.timeout(10000)
             var display_name = 'Super emoji 2'
               , tags = ['cats', 'dogs']
             var req = request(
@@ -825,6 +827,7 @@ describe('EmojiHTTPService', function() {
         })
 
         it('should create emoji in second collection', function(done) {
+            this.timeout(10000)
             var display_name = 'Super emoji 3'
               , tags = ['cats', 'dogs']
             var req = request(

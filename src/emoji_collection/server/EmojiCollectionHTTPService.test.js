@@ -105,6 +105,52 @@ describe('EmojiCollectionHTTPService', function() {
             })
         })
 
+        it('should create emoji collection with extra_data background_color_*', function(done) {
+            var extra_data = {
+                background_color_light: 123
+              , background_color_dark: 245
+            }
+
+            request({
+                    url: get_url('/_/api/emoji_collection')
+                  , method: 'POST'
+                  , json: {
+                        tags: ['cats', 'dogs']
+                      , scopes: ['public_read']
+                      , extra_data: extra_data
+                    }
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.isDefined(body.emoji_collection.id)
+                    assert.deepEqual(body.emoji_collection.extra_data, extra_data)
+                    done()
+            })
+        })
+
+        it('should not create emoji collection with garbage extra_data', function(done) {
+            var extra_data = {
+                garbage: true
+            }
+
+            request({
+                    url: get_url('/_/api/emoji_collection')
+                  , method: 'POST'
+                  , json: {
+                        tags: ['cats', 'dogs']
+                      , scopes: ['public_read']
+                      , extra_data: extra_data
+                    }
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 400)
+                    assert.equal(body.description, 'Invalid extra_data.')
+                    done()
+            })
+        })
+
         it('should create emoji collection if display_name has normal punctuation', function(done) {
             request({
                     url: get_url('/_/api/emoji_collection')

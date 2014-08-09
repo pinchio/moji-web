@@ -87,6 +87,28 @@ EmojiCollectionLocalService.prototype.validate_created_by = function(id) {
     }
 }
 
+EmojiCollectionLocalService.prototype.valid_extra_data_keys = ['background_color_light', 'background_color_dark']
+EmojiCollectionLocalService.prototype.validate_extra_data = function(extra_data) {
+    var keys = Object.keys(extra_data)
+
+    for (var i = 0, ii = keys.length; i < ii; ++i) {
+        var key = keys[i]
+        if (this.valid_extra_data_keys.indexOf(key) === -1) {
+            throw new LocalServiceError(this.ns, 'bad_request', 'Invalid extra_data.', 400)
+        }
+
+        if (key === 'background_color_light') {
+            if (!_.isNumber(extra_data[key])) {
+                throw new LocalServiceError(this.ns, 'bad_request', 'Invalid extra_data.', 400)
+            }
+        } else if (key === 'background_color_dark') {
+            if (!_.isNumber(extra_data[key])) {
+                throw new LocalServiceError(this.ns, 'bad_request', 'Invalid extra_data.', 400)
+            }
+        }
+    }
+}
+
 EmojiCollectionLocalService.prototype.create = function * (o) {
     o.display_name = o.display_name || ''
     o.tags = o.tags || []
@@ -98,6 +120,7 @@ EmojiCollectionLocalService.prototype.create = function * (o) {
     this.validate_display_name(o.display_name)
     this.validate_tags(o.tags)
     this.validate_scopes(o.scopes)
+    this.validate_extra_data(o.extra_data)
 
     var emoji_collection = EmojiCollection.from_create({
             slug_name: ''
@@ -145,6 +168,7 @@ EmojiCollectionLocalService.prototype.upsert = function * (o) {
     this.validate_tags(o.tags)
     this.validate_scopes(o.scopes)
     this.validate_created_by(o.created_by)
+    this.validate_extra_data(o.extra_data)
 
     if (o.created_by !== o.session.account_id) {
         throw new LocalServiceError(this.ns, 'not_found', 'Not found.', 404)
