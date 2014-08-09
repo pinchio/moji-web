@@ -75,6 +75,8 @@ describe('EmojiHTTPService', function() {
             )
 
             var form = req.form()
+            form.append('id', uuid.v4())
+            form.append('created_by', stored_account.id)
             form.append('asset', fs.createReadStream(path.join(__dirname, '../panda-dog.jpg')))
         })
 
@@ -94,6 +96,8 @@ describe('EmojiHTTPService', function() {
             )
 
             var form = req.form()
+            form.append('id', uuid.v4())
+            form.append('created_by', stored_account.id)
             form.append('emoji_collection_id', 'some_id_not_exist')
             form.append('asset', fs.createReadStream(path.join(__dirname, '../panda-dog.bad')))
         })
@@ -114,6 +118,8 @@ describe('EmojiHTTPService', function() {
             )
 
             var form = req.form()
+            form.append('id', uuid.v4())
+            form.append('created_by', stored_account.id)
             form.append('emoji_collection_id', 'some_id_not_exist')
             form.append('asset', fs.createReadStream(path.join(__dirname, '../panda-dog.jpg')))
         })
@@ -165,6 +171,8 @@ describe('EmojiHTTPService', function() {
             )
 
             var form = req.form()
+            form.append('id', uuid.v4())
+            form.append('created_by', stored_account.id)
             form.append('emoji_collection_id', stored_emoji_collection.id)
             form.append('display_name', display_name)
             form.append('tags[]', tags[0])
@@ -517,6 +525,7 @@ describe('EmojiHTTPService', function() {
           , email = uuid.v4().substring(0, 15) + '@b.com'
           , stored_emoji_collection
           , stored_emoji
+          , stored_account
           , stored_jar = request.jar()
 
         it('should create account', function(done) {
@@ -531,6 +540,7 @@ describe('EmojiHTTPService', function() {
                   , jar: stored_jar
                 }
               , function(e, d, body) {
+                    stored_account = body.account
                     done()
             })
         })
@@ -571,6 +581,8 @@ describe('EmojiHTTPService', function() {
             )
 
             var form = req.form()
+            form.append('id', uuid.v4())
+            form.append('created_by', stored_account.id)
             form.append('emoji_collection_id', stored_emoji_collection.id)
             form.append('display_name', display_name)
             form.append('tags[]', tags[0])
@@ -639,6 +651,8 @@ describe('EmojiHTTPService', function() {
             )
 
             var form = req.form()
+            form.append('id', uuid.v4())
+            form.append('created_by', stored_account.id)
             form.append('emoji_collection_id', stored_emoji_collection.id)
             form.append('display_name', display_name)
             form.append('tags[]', tags[0])
@@ -683,6 +697,7 @@ describe('EmojiHTTPService', function() {
           , stored_emoji
           , stored_emoji2
           , stored_emoji3
+          , stored_account
           , stored_jar = request.jar()
 
         it('should create account', function(done) {
@@ -697,6 +712,7 @@ describe('EmojiHTTPService', function() {
                   , jar: stored_jar
                 }
               , function(e, d, body) {
+                    stored_account = body.account
                     done()
             })
         })
@@ -772,6 +788,8 @@ describe('EmojiHTTPService', function() {
             )
 
             var form = req.form()
+            form.append('id', uuid.v4())
+            form.append('created_by', stored_account.id)
             form.append('emoji_collection_id', stored_emoji_collection.id)
             form.append('display_name', display_name)
             form.append('tags[]', tags[0])
@@ -797,6 +815,8 @@ describe('EmojiHTTPService', function() {
             )
 
             var form = req.form()
+            form.append('id', uuid.v4())
+            form.append('created_by', stored_account.id)
             form.append('emoji_collection_id', stored_emoji_collection.id)
             form.append('display_name', display_name)
             form.append('tags[]', tags[0])
@@ -822,6 +842,8 @@ describe('EmojiHTTPService', function() {
             )
 
             var form = req.form()
+            form.append('id', uuid.v4())
+            form.append('created_by', stored_account.id)
             form.append('emoji_collection_id', stored_emoji_collection2.id)
             form.append('display_name', display_name)
             form.append('tags[]', tags[0])

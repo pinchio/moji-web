@@ -45,7 +45,7 @@ var Server = function Server() {
     this.app.route('/_/api/emoji_collection/:id').get(EmojiCollectionHTTPService.get())
     this.app.route('/_/api/emoji_collection/:id').del(EmojiCollectionHTTPService.del())
 
-    this.app.route('/_/api/emoji').post(EmojiHTTPService.post())
+    this.app.route('/_/api/emoji').post(EmojiHTTPService.put())
     this.app.route('/_/api/emoji').get(EmojiHTTPService.list())
 
     this.app.route('/_/api/emoji/:id').put(EmojiHTTPService.put())
