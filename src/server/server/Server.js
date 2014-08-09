@@ -27,6 +27,10 @@ var Server = function Server() {
         this.app.use(koa_gzip())
     }
     this.app.use(koa_body_parser())
+    this.app.use(function * (next) {
+        console.log(this.request.method, this.request.url, this.request.body)
+        yield next
+    })
     this.app.use(koa_static(static_folder_name, {maxage: 1000 * 60 * 60 * 24 * 365}))
     this.app.use(koa_session())
     this.app.use(koa_trie_router(this.app))

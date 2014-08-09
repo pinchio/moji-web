@@ -146,7 +146,7 @@ describe('EmojiCollectionHTTPService', function() {
                 }
               , function(e, d, body) {
                     assert.equal(d.statusCode, 400)
-                    assert.equal(body.description, 'Invalid extra_data.')
+                    assert.equal(body.description, 'Extra_data garbage is not allowed.')
                     done()
             })
         })
