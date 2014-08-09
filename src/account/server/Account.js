@@ -14,7 +14,17 @@ var Account = function(o) {
     })
 }
 _.extend(Account, ModelMixin)
-Account.keys = ['id', 'created_at', 'updated_at', 'username', 'email', 'full_name', 'password', 'born_at']
+Account.keys = [
+    'id'
+  , 'created_at'
+  , 'updated_at'
+  , 'username'
+  , 'email'
+  , 'full_name'
+  , 'password'
+  , 'born_at'
+  , 'extra_data'
+]
 
 Account.from_create = function(o) {
     return new Account({
@@ -26,6 +36,7 @@ Account.from_create = function(o) {
       , full_name: o.full_name
       , password: o.password
       , born_at: Account.to_moment(o.born_at)
+      , extra_data: o.extra_data
     })
 }
 
@@ -39,6 +50,7 @@ Account.from_db = function(o) {
       , full_name: o.full_name
       , password: o.password
       , born_at: Account.to_moment(o.born_at)
+      , extra_data: Account.text_to_json(o.extra_data)
     })
 }
 
@@ -59,6 +71,7 @@ Account.prototype.to_privileged = function() {
       , email: this.email
       , full_name: this.full_name
       , born_at: this.born_at
+      , extra_data: this.extra_data
     }
 }
 
@@ -72,6 +85,7 @@ Account.prototype.to_db = function() {
       , full_name: this.full_name
       , password: this.password
       , born_at: Account.from_moment(this.born_at)
+      , extra_data: Account.json_to_text(this.extra_data)
     }
 }
 

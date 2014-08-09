@@ -77,6 +77,8 @@ AccountLocalService.prototype.get_by_id = function * (o) {
 }
 
 AccountLocalService.prototype.create = function * (o) {
+    o.extra_data = o.extra_data || {}
+
     // TODO: Account name cannot be login, logout, username
     this.validate_username(o.username)
     this.validate_password(o.password)
@@ -90,6 +92,7 @@ AccountLocalService.prototype.create = function * (o) {
           , email: o.email
           , full_name: o.full_name
           , born_at: o.born_at
+          , extra_data: o.extra_data
         })
 
     try {

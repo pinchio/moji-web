@@ -137,6 +137,7 @@ describe('EmojiHTTPService', function() {
         })
 
         it('should create emoji', function(done) {
+            this.timeout(10000)
             var display_name = 'Super emoji'
               , tags = ['cats', 'dogs']
             var req = request(

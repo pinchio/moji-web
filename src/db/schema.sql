@@ -17,6 +17,7 @@ CREATE TABLE account (
     full_name       varchar(128),
     password        varchar(512),
     born_at         timestamptz,
+    extra_data      text,
     UNIQUE(username),
     UNIQUE(email)
 );
@@ -32,7 +33,8 @@ CREATE TABLE emoji (
     scopes          varchar(128)[],
     created_by      char(36),
     asset_url       varchar(512),
-    emoji_collection_id char(36)
+    emoji_collection_id char(36),
+    extra_data      text
 );
 
 CREATE TABLE emoji_stat (
@@ -51,5 +53,6 @@ CREATE TABLE emoji_collection (
     display_name    varchar(128),
     tags            varchar(128)[],
     scopes          varchar(128)[],
-    created_by      char(36)
+    created_by      char(36),
+    extra_data      text
 );

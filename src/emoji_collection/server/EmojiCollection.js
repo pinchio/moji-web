@@ -24,6 +24,7 @@ EmojiCollection.keys = [
   , 'tags'
   , 'scopes'
   , 'created_by'
+  , 'extra_data'
 ]
 
 EmojiCollection.from_create = function(o) {
@@ -37,6 +38,7 @@ EmojiCollection.from_create = function(o) {
       , tags: o.tags
       , scopes: o.scopes
       , created_by: o.created_by
+      , extra_data: o.extra_data
     })
 }
 
@@ -51,6 +53,7 @@ EmojiCollection.from_update = function(o) {
       , tags: o.tags
       , scopes: o.scopes
       , created_by: o.created_by
+      , extra_data: o.extra_data
     })
 }
 
@@ -65,6 +68,7 @@ EmojiCollection.from_db = function(o) {
       , tags: o.tags
       , scopes: o.scopes
       , created_by: o.created_by
+      , extra_data: EmojiCollection.text_to_json(o.extra_data)
     })
 }
 
@@ -79,6 +83,7 @@ EmojiCollection.prototype.to_json = function() {
       , tags: this.tags
       , scopes: this.scopes
       , created_by: this.created_by
+      , extra_data: this.extra_data
     }
 }
 
@@ -93,6 +98,7 @@ EmojiCollection.prototype.to_privileged = function() {
       , tags: this.tags
       , scopes: this.scopes
       , created_by: this.created_by
+      , extra_data: this.extra_data
     }
 }
 
@@ -107,6 +113,7 @@ EmojiCollection.prototype.to_db = function() {
       , tags: this.tags
       , scopes: this.scopes
       , created_by: this.created_by
+      , extra_data: EmojiCollection.json_to_text(this.extra_data)
     }
 }
 

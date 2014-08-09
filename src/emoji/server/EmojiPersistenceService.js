@@ -17,6 +17,7 @@ var EmojiPersistenceService = function EmojiPersistenceService() {
       , 'created_by'
       , 'asset_url'
       , 'emoji_collection_id'
+      , 'extra_data'
     ]
     this.table = 'emoji'
     this.clazz = Emojis

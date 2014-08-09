@@ -92,6 +92,7 @@ EmojiCollectionLocalService.prototype.create = function * (o) {
     o.tags = o.tags || []
     o.scopes = o.scopes || []
     o.scopes = _.unique(o.scopes)
+    o.extra_data = o.extra_data || {}
 
     this.validate_session(o.session)
     this.validate_display_name(o.display_name)
@@ -104,6 +105,7 @@ EmojiCollectionLocalService.prototype.create = function * (o) {
           , tags: o.tags
           , scopes: o.scopes
           , created_by: o.session.account_id
+          , extra_data: o.extra_data
         })
       , created_emoji_collections = yield EmojiCollectionPersistenceService.insert(emoji_collection)
       , emoji_collection = created_emoji_collections.first()
@@ -122,6 +124,7 @@ EmojiCollectionLocalService.prototype._update = function * (o) {
           , tags: o.tags
           , scopes: o.scopes
           , created_by: o.session.account_id
+          , extra_data: o.extra_data
         })
       , updated_emoji_collections = yield EmojiCollectionPersistenceService.update_by_id(emoji_collection)
       , updated_emoji_collection = updated_emoji_collections.first()
@@ -134,6 +137,7 @@ EmojiCollectionLocalService.prototype.upsert = function * (o) {
     o.tags = o.tags || []
     o.scopes = o.scopes || []
     o.scopes = _.unique(o.scopes)
+    o.extra_data = o.extra_data || {}
 
     this.validate_id(o.id)
     this.validate_session(o.session)
@@ -175,6 +179,7 @@ EmojiCollectionLocalService.prototype.upsert = function * (o) {
               , tags: o.tags
               , scopes: o.scopes
               , created_by: o.session.account_id
+              , extra_data: o.extra_data
             })
           , created_emoji_collections = yield EmojiCollectionPersistenceService.insert(emoji_collection)
           , created_emoji_collection = created_emoji_collections.first()
