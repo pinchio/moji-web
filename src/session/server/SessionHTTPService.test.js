@@ -5,6 +5,7 @@ var assert = require('chai').assert
   , port = config.get('server').port
   , request = require('request')
   , path = require('path')
+  , uuid = require('node-uuid')
 
 var get_url = function(args) {
     return 'http://' + host + ':' + port + path.join.apply(path, Array.prototype.slice.call(arguments))
@@ -12,9 +13,9 @@ var get_url = function(args) {
 
 describe('SessionHTTPService', function() {
     describe('post', function() {
-        var username = 'ab' + Date.now()
+        var username = Math.floor(Math.random() * 1000000000)
           , password = 'password'
-          , email = 'a' + Date.now() + '@b.com'
+          , email = uuid.v4().substring(0, 15) + '@b.com'
           , stored_account
           , stored_jar
 
@@ -109,7 +110,6 @@ describe('SessionHTTPService', function() {
                     var cookies = stored_jar.getCookieString(get_url())
 
                     assert.equal(d.statusCode, 403)
-                    assert.lengthOf(cookies, 0)
                     done()
                 }
             )
@@ -117,9 +117,9 @@ describe('SessionHTTPService', function() {
     })
 
     describe('del', function() {
-        var username = 'ab' + Date.now()
+        var username = Math.floor(Math.random() * 1000000000)
           , password = 'password'
-          , email = 'a' + Date.now() + '@b.com'
+          , email = uuid.v4().substring(0, 15) + '@b.com'
           , stored_account
           , stored_jar
 
@@ -151,7 +151,7 @@ describe('SessionHTTPService', function() {
                             var cookies = stored_jar.getCookieString(get_url())
 
                             assert.equal(d.statusCode, 200)
-                            assert.lengthOf(cookies, 0)
+                            assert.equal(cookies.indexOf('koa:sess=;') > -1, true)
                             done()
                         }
                     )
@@ -173,6 +173,8 @@ describe('SessionHTTPService', function() {
                   , jar: stored_jar
                 }
               , function(e, d, body) {
+                    var cookies = stored_jar.getCookieString(get_url())
+                    assert.equal(cookies.indexOf('koa:sess=;') > -1, false)
                     stored_account = body.account
 
                     request(
@@ -186,7 +188,7 @@ describe('SessionHTTPService', function() {
                             var cookies = stored_jar.getCookieString(get_url())
 
                             assert.equal(d.statusCode, 200)
-                            assert.lengthOf(cookies, 0)
+                            assert.equal(cookies.indexOf('koa:sess=;') > -1, true)
 
                             request(
                                 {
@@ -199,7 +201,7 @@ describe('SessionHTTPService', function() {
                                     var cookies = stored_jar.getCookieString(get_url())
 
                                     assert.equal(d.statusCode, 200)
-                                    assert.lengthOf(cookies, 0)
+                                    assert.equal(cookies.indexOf('koa:sess=;') > -1, true)
                                     done()
                                 }
                             )
