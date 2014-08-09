@@ -94,16 +94,16 @@ EmojiCollectionLocalService.prototype.validate_extra_data = function(extra_data)
     for (var i = 0, ii = keys.length; i < ii; ++i) {
         var key = keys[i]
         if (this.valid_extra_data_keys.indexOf(key) === -1) {
-            throw new LocalServiceError(this.ns, 'bad_request', 'Invalid extra_data.', 400)
+            throw new LocalServiceError(this.ns, 'bad_request', 'Extra_data ' + key + ' is not allowed.', 400)
         }
 
         if (key === 'background_color_light') {
             if (!_.isNumber(extra_data[key])) {
-                throw new LocalServiceError(this.ns, 'bad_request', 'Invalid extra_data.', 400)
+                throw new LocalServiceError(this.ns, 'bad_request', 'Invalid value for background_color_light.', 400)
             }
         } else if (key === 'background_color_dark') {
             if (!_.isNumber(extra_data[key])) {
-                throw new LocalServiceError(this.ns, 'bad_request', 'Invalid extra_data.', 400)
+                throw new LocalServiceError(this.ns, 'bad_request', 'Invalid value for background_color_dark.', 400)
             }
         }
     }
