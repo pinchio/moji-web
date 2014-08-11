@@ -30,7 +30,6 @@ SessionLocalService.prototype.create_by_account_session = function * (o) {
 }
 
 SessionLocalService.prototype.del = function * (o) {
-    console.log('####1 nullify')
     o.that.session = null
 }
 

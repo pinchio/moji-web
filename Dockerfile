@@ -12,7 +12,7 @@ RUN apt-get install -y nodejs
 # https://docs.docker.com/articles/using_supervisord/
 RUN mkdir -p /var/run/sshd
 RUN mkdir -p /var/log/supervisor
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Install and run server
 ADD . /var/www
