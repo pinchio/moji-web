@@ -321,6 +321,18 @@ EmojiLocalService.prototype.get_by_created_by__emoji_collection_id = function * 
     return emojis
 }
 
+EmojiLocalService.prototype.get_by_query = function * (o) {
+    this.validate_session(o.session)
+    this.validate_emoji_collection_id(o.emoji_collection_id)
+
+    var emojis = yield EmojiPersistenceService.select_by_created_by__emoji_collection_id__not_deleted({
+        created_by: o.session.account_id
+      , emoji_collection_id: o.emoji_collection_id
+    })
+
+    return emojis
+}
+
 EmojiLocalService.prototype.delete_by_id = function * (o) {
     this.validate_id(o.id)
     this.validate_session(o.session)

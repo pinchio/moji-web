@@ -14,9 +14,15 @@ RUN mkdir -p /var/run/sshd
 RUN mkdir -p /var/log/supervisor
 ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
+# ADD package.json /tmp/package.json
+# RUN cd /tmp && npm install
+# RUN mkdir -p /opt/app && cp -a /tmp/node_modules /opt/app/
+
+ADD package.json /var/www
+RUN cd /var/www && npm install --production
+
 # Install and run server
 ADD . /var/www
-RUN cd /var/www && npm install --production
 
 # Configure nginx
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf
