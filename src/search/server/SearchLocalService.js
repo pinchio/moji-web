@@ -21,10 +21,10 @@ SearchLocalService.prototype.get_by_query = function * (o) {
             query: o.query
           , session: o.session
         })
-      , emoji_collections = yield EmojiCollectionLocalService.get_by_query({
-            query: o.query
-          , session: o.session
-        })
+      // , emoji_collections = yield EmojiCollectionLocalService.get_by_query({
+      //       query: o.query
+      //     , session: o.session
+      //   })
 
     return {emojis: emojis, emoji_collections: emoji_collections}
 }

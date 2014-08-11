@@ -43,4 +43,14 @@ EmojiPersistenceService.prototype.select_by_created_by__emoji_collection_id__not
     return yield this.query({query: query, values: values})
 }
 
+EmojiPersistenceService.prototype.select_by_query__not_deleted = function * (req) {
+   var query = 'select * '
+              + 'from ' + this.table + ' '
+              + 'where to_tsvector(\'english\', array_to_string(tags, \',\'))' + ' '
+              + '@@ ts_tsquery(\'english\', $1)'
+      , values = [req.query]
+
+    return yield this.query({query: query, values: values})
+}
+
 module.exports = EmojiPersistenceService

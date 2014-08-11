@@ -18,7 +18,8 @@ ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 # RUN cd /tmp && npm install
 # RUN mkdir -p /opt/app && cp -a /tmp/node_modules /opt/app/
 
-ADD package.json /var/www
+RUN mkdir -p /var/www
+ADD package.json /var/www/package.json
 RUN cd /var/www && npm install --production
 
 # Install and run server

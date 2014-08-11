@@ -323,11 +323,10 @@ EmojiLocalService.prototype.get_by_created_by__emoji_collection_id = function * 
 
 EmojiLocalService.prototype.get_by_query = function * (o) {
     this.validate_session(o.session)
-    this.validate_emoji_collection_id(o.emoji_collection_id)
 
-    var emojis = yield EmojiPersistenceService.select_by_created_by__emoji_collection_id__not_deleted({
-        created_by: o.session.account_id
-      , emoji_collection_id: o.emoji_collection_id
+    var emojis = yield EmojiPersistenceService.select_by_query__not_deleted({
+            query: o.query
+        }
     })
 
     return emojis
