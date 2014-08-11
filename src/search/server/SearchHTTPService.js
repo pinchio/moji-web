@@ -15,7 +15,7 @@ SearchHTTPService.prototype.list = function() {
     return function * (next) {
         try {
             if (this.query.q) {
-                this.query.query = q
+                this.query.query = this.query.q
             }
 
             var results = yield SearchLocalService.get_by_query({
@@ -29,7 +29,7 @@ SearchHTTPService.prototype.list = function() {
                 return self.handle_success(this, {
                     emoji_collections: results.emoji_collections.to_json()
                   , emojis: results.emojis.to_json()
-                  , users: results.users.to_json()
+                  , accounts: results.accounts.to_json()
                 }, 'json')
             } else {
                 return self.handle_success(this, null)

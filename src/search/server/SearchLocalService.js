@@ -17,8 +17,9 @@ SearchLocalService.prototype.validate_session = function(session) {
 SearchLocalService.prototype.get_by_query = function * (o) {
     this.validate_session(o.session)
 
-    var emojis = yield EmojiLocalService.get_by_query({
+    var emojis = yield EmojiLocalService.get_by_query__created_by({
             query: o.query
+          , created_by: o.session.account_id
           , session: o.session
         })
       // , emoji_collections = yield EmojiCollectionLocalService.get_by_query({
@@ -26,7 +27,7 @@ SearchLocalService.prototype.get_by_query = function * (o) {
       //     , session: o.session
       //   })
 
-    return {emojis: emojis, emoji_collections: emoji_collections}
+    return {emojis: emojis, emoji_collections: emojis, accounts: emojis}
 }
 
 module.exports = SearchLocalService

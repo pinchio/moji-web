@@ -43,12 +43,16 @@ EmojiPersistenceService.prototype.select_by_created_by__emoji_collection_id__not
     return yield this.query({query: query, values: values})
 }
 
-EmojiPersistenceService.prototype.select_by_query__not_deleted = function * (req) {
+EmojiPersistenceService.prototype.select_by_query__created_by__not_deleted = function * (req) {
    var query = 'select * '
               + 'from ' + this.table + ' '
-              + 'where to_tsvector(\'english\', array_to_string(tags, \',\'))' + ' '
-              + '@@ ts_tsquery(\'english\', $1)'
-      , values = [req.query]
+              + 'where created_by = $1 || scopes = ANY(\'public_read\') '
+              + 'and to_tsvector(\'english\', array_to_string(tags, \',\'))' + ' '
+              + '@@ to_tsquery(\'english\', $1) '
+              + 'and deleted_at is null '
+              + 'order by updated_at desc '
+              + 'limit 100'
+      , values = [req.query, req.created_by]
 
     return yield this.query({query: query, values: values})
 }

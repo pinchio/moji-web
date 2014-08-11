@@ -321,11 +321,12 @@ EmojiLocalService.prototype.get_by_created_by__emoji_collection_id = function * 
     return emojis
 }
 
-EmojiLocalService.prototype.get_by_query = function * (o) {
+EmojiLocalService.prototype.get_by_query__created_by = function * (o) {
     this.validate_session(o.session)
 
-    var emojis = yield EmojiPersistenceService.select_by_query__not_deleted({
+    var emojis = yield EmojiPersistenceService.select_by_query__created_by__not_deleted({
             query: o.query
+          , created_by: o.created_by
         })
 
     return emojis
