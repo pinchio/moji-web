@@ -326,8 +326,7 @@ EmojiLocalService.prototype.get_by_query = function * (o) {
 
     var emojis = yield EmojiPersistenceService.select_by_query__not_deleted({
             query: o.query
-        }
-    })
+        })
 
     return emojis
 }
