@@ -32,4 +32,22 @@ EmojiCollectionPersistenceService.prototype.select_by_created_by__not_deleted = 
     return yield this.query({query: query, values: values})
 }
 
+EmojiCollectionPersistenceService.prototype.select_by_query__created_by__not_deleted = function * (req) {
+   var query = 'select * '
+              + 'from ' + this.table + ' '
+              + 'where (created_by = $1 or \'public_read\' = any(scopes)) '
+              + 'and ('
+                  + 'to_tsvector(\'english\', array_to_string(tags, \',\')) '
+                  + '@@ to_tsquery(\'english\', $2) or '
+                  + 'to_tsvector(\'english\', display_name) '
+                  + '@@ to_tsquery(\'english\', $2)'
+              + ') '
+              + 'and deleted_at is null '
+              + 'order by updated_at desc '
+              + 'limit 100'
+      , values = [req.created_by, req.query]
+
+    return yield this.query({query: query, values: values})
+}
+
 module.exports = EmojiCollectionPersistenceService

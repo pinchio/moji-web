@@ -12,15 +12,16 @@ RUN apt-get install -y nodejs
 # https://docs.docker.com/articles/using_supervisord/
 RUN mkdir -p /var/run/sshd
 RUN mkdir -p /var/log/supervisor
-ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+RUN mkdir -p /var/www
 
 # ADD package.json /tmp/package.json
 # RUN cd /tmp && npm install
 # RUN mkdir -p /opt/app && cp -a /tmp/node_modules /opt/app/
 
-RUN mkdir -p /var/www
 ADD package.json /var/www/package.json
 RUN cd /var/www && npm install --production
+
+ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Install and run server
 ADD . /var/www

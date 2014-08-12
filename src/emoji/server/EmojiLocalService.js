@@ -105,6 +105,12 @@ EmojiLocalService.prototype.validate_file_name = function(file_name) {
     }
 }
 
+EmojiLocalService.prototype.validate_query = function(query) {
+    if (!validator.isLength(query, 2)) {
+        throw new LocalServiceError(this.ns, 'bad_request', 'Queries must be at least 2 characters.', 400)
+    }
+}
+
 EmojiLocalService.prototype.get_file_sha = function(file_data) {
     return crypto.createHash('sha1').update(file_data).digest('hex')
 }
@@ -323,8 +329,10 @@ EmojiLocalService.prototype.get_by_created_by__emoji_collection_id = function * 
 
 EmojiLocalService.prototype.get_by_query__created_by = function * (o) {
     this.validate_session(o.session)
+    this.validate_query(o.query)
 
-    var emojis = yield EmojiPersistenceService.select_by_query__created_by__not_deleted({
+    var query = o.query.replace(/\s/g, '&')
+      , emojis = yield EmojiPersistenceService.select_by_query__created_by__not_deleted({
             query: o.query
           , created_by: o.created_by
         })

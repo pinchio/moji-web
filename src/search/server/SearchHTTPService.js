@@ -29,7 +29,7 @@ SearchHTTPService.prototype.list = function() {
                 return self.handle_success(this, {
                     emoji_collections: results.emoji_collections.to_json()
                   , emojis: results.emojis.to_json()
-                  , accounts: results.accounts.to_json()
+                  // , accounts: results.accounts.to_json()
                 }, 'json')
             } else {
                 return self.handle_success(this, null)

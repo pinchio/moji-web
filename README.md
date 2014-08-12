@@ -61,3 +61,4 @@ TODO:
 
 - If S3 put fails should fail with 500
 - Should not 404 if different user logs in and PUTs
+- support smileys
