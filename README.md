@@ -3,6 +3,16 @@ moji-web
 
 Repository to serve www.mojigram.com and api.mojigram.com.
 
+Install
+===
+1. Install nvm through `http://github.com/creationix/nvm`
+
+2. Get AWS access token from someone and copy to ~/.elasticbeanstalk/aws_credential_file. chmod 400 file.
+
+3. Install postgres and run `npm run db:schema:development`
+
+4. Try to run tests after uploading your own override.json.
+
 
 ===
 
