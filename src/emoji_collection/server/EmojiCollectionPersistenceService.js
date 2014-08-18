@@ -26,7 +26,8 @@ _.extend(EmojiCollectionPersistenceService.prototype, QueryMixin.prototype)
 EmojiCollectionPersistenceService.prototype.select_by_created_by__scopes__not_deleted = function * (req) {
     var query = 'select * '
               + 'from ' + this.table + ' '
-              + 'where created_by = $1 and scopes @> $2 and deleted_at is null'
+              + 'where created_by = $1 and scopes @> $2 and deleted_at is null '
+              + 'order by updated_at desc'
       , values = [req.created_by, '{' + req.scopes.join(',') + '}']
 
     return yield this.query({query: query, values: values})
