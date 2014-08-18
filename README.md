@@ -73,3 +73,5 @@ TODO:
 - Should not 404 if different user logs in and PUTs
 - support smileys
 
+- search should include public emojis/emoji collections
+

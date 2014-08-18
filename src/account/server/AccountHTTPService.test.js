@@ -182,7 +182,7 @@ describe('AccountHTTPService', function() {
               , function(e, d, body) {
                     assert.equal(d.statusCode, 400)
                     assert.equal(body.type, 'bad_request')
-                    assert.equal(body.description, 'Password must be between 6 and 32 characters.')
+                    assert.equal(body.description, 'Password must be between 6 and 50 characters.')
                     done()
             })
         })
@@ -199,7 +199,7 @@ describe('AccountHTTPService', function() {
               , function(e, d, body) {
                     assert.equal(d.statusCode, 400)
                     assert.equal(body.type, 'bad_request')
-                    assert.equal(body.description, 'Password must be between 6 and 32 characters.')
+                    assert.equal(body.description, 'Password must be between 6 and 50 characters.')
                     done()
             })
         })
@@ -210,13 +210,13 @@ describe('AccountHTTPService', function() {
                   , method: 'POST'
                   , json: {
                         username: username
-                      , password: '123456789012345678901234567890123'
+                      , password: (Array(52)).join('a')
                     }
                 }
               , function(e, d, body) {
                     assert.equal(d.statusCode, 400)
                     assert.equal(body.type, 'bad_request')
-                    assert.equal(body.description, 'Password must be between 6 and 32 characters.')
+                    assert.equal(body.description, 'Password must be between 6 and 50 characters.')
                     done()
             })
         })
@@ -331,6 +331,46 @@ describe('AccountHTTPService', function() {
                 }
               , function(e, d, body) {
                     assert.equal(d.statusCode, 404)
+                    done()
+            })
+        })
+    })
+
+    describe('@mojigram user', function() {
+        it('should not create @mojigram user because username already exists.', function(done) {
+            stored_jar = request.jar()
+
+            request({
+                    url: get_url('/_/api/account')
+                  , method: 'POST'
+                  , json: {
+                        username: 'mojigram'
+                      , password: 'somepassword'
+                      , email: 'mojigram@gmail.com'
+                    }
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 409)
+                    done()
+            })
+        })
+
+        it('should not create @mojigram user because email already exists.', function(done) {
+            stored_jar = request.jar()
+
+            request({
+                    url: get_url('/_/api/account')
+                  , method: 'POST'
+                  , json: {
+                        username: Math.floor(Math.random() * 1000000000)
+                      , password: 'somepassword'
+                      , email: 'mojigram@gmail.com'
+                    }
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 409)
                     done()
             })
         })

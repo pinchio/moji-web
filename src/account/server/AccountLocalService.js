@@ -33,8 +33,8 @@ AccountLocalService.prototype.validate_username = function(username) {
 }
 
 AccountLocalService.prototype.validate_password = function(password) {
-    if (!validator.isLength(password, 6, 32)) {
-        throw new LocalServiceError(this.ns, 'bad_request', 'Password must be between 6 and 32 characters.', 400)
+    if (!validator.isLength(password, 6, 50)) {
+        throw new LocalServiceError(this.ns, 'bad_request', 'Password must be between 6 and 50 characters.', 400)
     }
 
     if (!validator.isAlphanumeric(password)) {
