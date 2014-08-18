@@ -424,6 +424,7 @@ describe('EmojiHTTPService', function() {
         })
 
         it('should update emoji if no conflict', function(done) {
+            this.timeout(10000)
             var display_name = 'Updated Emoji'
             var req = request({
                     url: get_url('/_/api/emoji/' + stored_emoji.id)
@@ -455,6 +456,7 @@ describe('EmojiHTTPService', function() {
         })
 
         it('should not update emoji if conflict, but dont return error', function(done) {
+            this.timeout(10000)
             var display_name = 'Updated Again Emoji'
             var req = request({
                     url: get_url('/_/api/emoji/' + stored_emoji.id)

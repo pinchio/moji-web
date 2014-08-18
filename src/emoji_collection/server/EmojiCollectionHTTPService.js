@@ -89,9 +89,17 @@ EmojiCollectionHTTPService.prototype.list = function() {
 
     return function * (next) {
         try {
-            var emoji_collections = yield EmojiCollectionLocalService.get_by_created_by({
+            if (this.query.created_by) {
+                var created_by = this.query.created_by
+            } else {
+                var created_by = this.session.account_id
+            }
+
+            var emoji_collections = yield EmojiCollectionLocalService.get_by_created_by__scopes({
                     req: this.request
                   , session: this.session
+                  , created_by: created_by
+                  , scopes: ['public_read']
                 })
 
             if (emoji_collections) {
