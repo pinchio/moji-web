@@ -315,13 +315,15 @@ EmojiLocalService.prototype.get_by_created_by = function * (o) {
     return emojis
 }
 
-EmojiLocalService.prototype.get_by_created_by__emoji_collection_id = function * (o) {
+EmojiLocalService.prototype.get_by_emoji_collection_id__scopes = function * (o) {
     this.validate_session(o.session)
     this.validate_emoji_collection_id(o.emoji_collection_id)
+    this.validate_scopes(o.scopes)
 
-    var emojis = yield EmojiPersistenceService.select_by_created_by__emoji_collection_id__not_deleted({
+    var emojis = yield EmojiPersistenceService.select_by_created_by__emoji_collection_id__scopes__not_deleted({
         created_by: o.session.account_id
       , emoji_collection_id: o.emoji_collection_id
+      , scopes: o.scopes
     })
 
     return emojis

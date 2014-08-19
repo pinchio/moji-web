@@ -3,6 +3,16 @@ moji-web
 
 Repository to serve www.mojigram.com and api.mojigram.com.
 
+Install
+===
+1. Install nvm through `http://github.com/creationix/nvm`
+
+2. Get AWS access token from someone and copy to ~/.elasticbeanstalk/aws_credential_file. chmod 400 file.
+
+3. Install postgres and run `npm run db:schema:development`
+
+4. Try to run tests after uploading your own override.json.
+
 
 ===
 
@@ -62,4 +72,6 @@ TODO:
 - If S3 put fails should fail with 500
 - Should not 404 if different user logs in and PUTs
 - support smileys
+
+- search should include public emojis/emoji collection_ids
 

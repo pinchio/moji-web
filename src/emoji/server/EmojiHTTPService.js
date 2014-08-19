@@ -168,10 +168,11 @@ EmojiHTTPService.prototype.list = function() {
     return function * (next) {
         try {
             if (this.query.emoji_collection_id) {
-                var emojis = yield EmojiLocalService.get_by_created_by__emoji_collection_id({
+                var emojis = yield EmojiLocalService.get_by_emoji_collection_id__scopes({
                         emoji_collection_id: this.query.emoji_collection_id
-                      , req: this.request
+                      , scopes: ['public_read']
                       , session: this.session
+                      , req: this.request
                     })
             } else {
                 var emojis = yield EmojiLocalService.get_by_created_by({

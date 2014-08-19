@@ -34,11 +34,12 @@ EmojiPersistenceService.prototype.select_by_created_by__not_deleted = function *
     return yield this.query({query: query, values: values})
 }
 
-EmojiPersistenceService.prototype.select_by_created_by__emoji_collection_id__not_deleted = function * (req) {
+EmojiPersistenceService.prototype.select_by_created_by__emoji_collection_id__scopes__not_deleted = function * (req) {
     var query = 'select * '
               + 'from ' + this.table + ' '
-              + 'where created_by = $1 and emoji_collection_id = $2 and deleted_at is null'
-      , values = [req.created_by, req.emoji_collection_id]
+              + 'where emoji_collection_id = $1 and (created_by = $2 or scopes @> $3) and deleted_at is null '
+              + 'order by updated_at desc'
+      , values = [req.emoji_collection_id, req.created_by, '{' + req.scopes.join(',') + '}']
 
     return yield this.query({query: query, values: values})
 }

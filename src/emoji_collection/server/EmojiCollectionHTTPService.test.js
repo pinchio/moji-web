@@ -504,6 +504,40 @@ describe('EmojiCollectionHTTPService', function() {
                     done()
             })
         })
+
+        it('should create emoji collection if it is private', function(done) {
+            request({
+                    url: get_url('/_/api/emoji_collection')
+                  , method: 'POST'
+                  , json: {
+                        display_name: 'Second collection'
+                      , tags: ['cats', 'dogs']
+                      , scopes: []
+                    }
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.isDefined(body.emoji_collection.id)
+                    stored_emoji_collection2 = body.emoji_collection
+                    done()
+            })
+        })
+
+        it('should get two emoji collection in array', function(done) {
+            request({
+                    url: get_url('/_/api/emoji_collection')
+                  , method: 'GET'
+                  , json: true
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.isDefined(body.emoji_collections)
+                    assert.lengthOf(body.emoji_collections, 2)
+                    done()
+            })
+        })
     })
 
     describe('put', function() {
@@ -906,4 +940,170 @@ describe('EmojiCollectionHTTPService', function() {
             })
         })
     })
+
+    if (process.env.MOJIGRAM_PASSWORD) {
+    describe('@mojigram user', function() {
+        var password = process.env.MOJIGRAM_PASSWORD
+          , stored_jar = request.jar()
+          , display_name = '' + Math.floor(Math.random() * 1000000000)
+          , stored_emoji_collection
+          , stored_account
+          , stored_emoji
+          , stored_jar2
+          , stored_account2
+
+        it('should be able to login as @mojigram', function(done) {
+            request(
+                {
+                    url: get_url('/_/api/session')
+                  , method: 'POST'
+                  , json: {
+                        username: 'mojigram'
+                      , password: password
+                    }
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    stored_account = body.account
+                    done()
+                }
+            )
+        })
+
+       it('should create emoji collection for mojigram user', function(done) {
+            request({
+                    url: get_url('/_/api/emoji_collection')
+                  , method: 'POST'
+                  , json: {
+                        tags: [display_name]
+                      , display_name: 'Featured'
+                      , scopes: ['public_read']
+                    }
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    stored_emoji_collection = body.emoji_collection
+                    done()
+            })
+        })
+
+        it('should create emoji', function(done) {
+            this.timeout(10000)
+
+            var display_name = 'Super emoji'
+              , tags = ['cats', 'dogs']
+              , req = request(
+                {
+                    url: get_url('/_/api/emoji')
+                  , method: 'POST'
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    body = JSON.parse(body)
+                    assert.equal(d.statusCode, 200)
+                    stored_emoji = body.emoji
+                    done()
+                }
+            )
+
+            var form = req.form()
+            form.append('id', uuid.v4())
+            form.append('created_by', stored_account.id)
+            form.append('emoji_collection_id', stored_emoji_collection.id)
+            form.append('display_name', display_name)
+            form.append('tags[]', tags[0])
+            form.append('tags[]', tags[1])
+            form.append('scopes[]', 'public_read')
+            form.append('asset', fs.createReadStream(path.join(__dirname, '../../emoji/panda-dog.jpg')))
+        })
+
+        it('should find emoji collection as mojigram user', function(done) {
+            request({
+                    url: get_url('/_/api/emoji_collection?created_by=' + stored_account.id)
+                  , method: 'GET'
+                  , json: true
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.isDefined(body.emoji_collections)
+                    assert.isDefined(body.emoji_collections[0])
+                    assert.deepEqual(body.emoji_collections[0], stored_emoji_collection)
+                    done()
+            })
+        })
+
+        it('should get emojis as mojigram user', function(done) {
+            request({
+                    url: get_url('/_/api/emoji?emoji_collection_id=' + stored_emoji_collection.id)
+                  , method: 'GET'
+                  , json: true
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.isDefined(body.emojis)
+                    assert.deepEqual(body.emojis[0], stored_emoji)
+                    done()
+            })
+        })
+
+        it('should create new account', function(done) {
+            var username = Math.floor(Math.random() * 1000000000)
+              , password = 'password'
+              , email = uuid.v4().substring(0, 15) + '@b.com'
+
+            stored_jar2 = request.jar()
+
+            request({
+                    url: get_url('/_/api/account')
+                  , method: 'POST'
+                  , json: {
+                        username: username
+                      , password: password
+                      , email: email
+                    }
+                  , jar: stored_jar2
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    stored_account2 = body.account
+                    done()
+            })
+        })
+
+        it('should find emoji collection as another user', function(done) {
+            request({
+                    url: get_url('/_/api/emoji_collection?created_by=' + stored_account.id)
+                  , method: 'GET'
+                  , json: true
+                  , jar: stored_jar2
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.isDefined(body.emoji_collections)
+                    assert.isDefined(body.emoji_collections[0])
+                    assert.deepEqual(body.emoji_collections[0], stored_emoji_collection)
+                    done()
+            })
+        })
+
+        it('should get emojis as another user', function(done) {
+            request({
+                    url: get_url('/_/api/emoji?emoji_collection_id=' + stored_emoji_collection.id)
+                  , method: 'GET'
+                  , json: true
+                  , jar: stored_jar2
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.isDefined(body.emojis)
+                    assert.deepEqual(body.emojis[0], stored_emoji)
+                    done()
+            })
+        })
+    })
+    }
 })
