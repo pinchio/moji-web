@@ -244,10 +244,16 @@ EmojiCollectionLocalService.prototype.get_by_created_by__scopes = function * (o)
     this.validate_created_by(o.created_by)
     this.validate_scopes(o.scopes)
 
-    var emoji_collections = yield EmojiCollectionPersistenceService.select_by_created_by__scopes__not_deleted({
-        created_by: o.created_by
-      , scopes: o.scopes
-    })
+    if (o.session.account_id !== o.created_by) {
+        var emoji_collections = yield EmojiCollectionPersistenceService.select_by_created_by__scopes__not_deleted({
+            created_by: o.created_by
+          , scopes: o.scopes
+        })
+    } else {
+        var emoji_collections = yield EmojiCollectionPersistenceService.select_by_created_by__not_deleted({
+            created_by: o.created_by
+        })
+    }
 
     return emoji_collections
 }

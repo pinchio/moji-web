@@ -504,6 +504,40 @@ describe('EmojiCollectionHTTPService', function() {
                     done()
             })
         })
+
+        it('should create emoji collection if it is private', function(done) {
+            request({
+                    url: get_url('/_/api/emoji_collection')
+                  , method: 'POST'
+                  , json: {
+                        display_name: 'Second collection'
+                      , tags: ['cats', 'dogs']
+                      , scopes: []
+                    }
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.isDefined(body.emoji_collection.id)
+                    stored_emoji_collection2 = body.emoji_collection
+                    done()
+            })
+        })
+
+        it('should get two emoji collection in array', function(done) {
+            request({
+                    url: get_url('/_/api/emoji_collection')
+                  , method: 'GET'
+                  , json: true
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.isDefined(body.emoji_collections)
+                    assert.lengthOf(body.emoji_collections, 2)
+                    done()
+            })
+        })
     })
 
     describe('put', function() {
