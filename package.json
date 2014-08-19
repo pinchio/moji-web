@@ -7,9 +7,9 @@
   "scripts": {
     "stop": "pm2 stop all",
     "start": "node services | sh",
-    "server:start:development": "NODE_OVERRIDE=charlies-air NODE_ENV=development NODE_PATH=./ node --harmony ./server.js",
+    "server:start:development": "NODE_ENV=development NODE_PATH=./ node --harmony ./server.js",
     "server:start:production": "NODE_ENV=production NODE_PATH=./ node --harmony ./server.js",
-    "test": "NODE_OVERRIDE=charlies-air NODE_PATH=./ mocha -b --harmony --reporter spec src/**/*.test.js",
+    "test": "NODE_PATH=./ mocha -b --harmony --reporter spec src/**/*.test.js",
     "deploy-production": "git push production1 HEAD:master",
     "create-production": "AWS_REGION=us-west-1 ./node_modules/.bin/awsbox create -n production",
     "ssh:production": "ssh -i ~/Downloads/mojigram-ssh-2.pem ec2-user@ec2-54-183-150-96.us-west-1.compute.amazonaws.com",

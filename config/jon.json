@@ -1,0 +1,10 @@
+{
+    "project_path": "/Users/renwoshin/Documents/Code/moji-web"
+  , "db": {
+        "host": "127.0.0.1"
+      , "port": "5432"
+      , "name": "mojigram"
+      , "user": "renwoshin"
+      , "pass": ""
+    }
+}
