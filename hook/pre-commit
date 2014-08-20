@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+npm run test
+
 gulp precommit
 
 git add public/_/file_hashes.json
