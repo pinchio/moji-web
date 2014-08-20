@@ -1,29 +1,17 @@
-var assert = require('assert')
-  , _ = require('underscore')
-  , Moment = require('moment')
+var _ = require('underscore')
   , Account = require('./Account')
+  , CollectionMixin = require('../../common/CollectionMixin')
 
 var Accounts = function(o) {
-    var self = this
-
     this.ns = 'Accounts'
-    Accounts.keys.forEach(function(key) {
-        self[key] = o[key]
-    })
+    for (var i = 0, ii = Accounts.keys.length; i < ii; ++i) {
+        var key = Accounts.keys[i]
+        this[key] = o[key]
+    }
 }
 Accounts.keys = ['list']
-
-Accounts.from_db = function(raw) {
-    var results = []
-
-    for (var i = 0, ii = raw.length; i < ii; ++i) {
-        var o = raw[i]
-          , result = Account.from_db(o)
-
-        results.push(result)
-    }
-
-    return new Accounts({list: results})
-}
+Accounts.model = Account
+_.extend(Accounts, CollectionMixin)
+_.extend(Accounts.prototype, CollectionMixin.prototype)
 
 module.exports = Accounts

@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-npm run test
-
 gulp precommit
 
 git add public/_/file_hashes.json
 git add public/_/css/all.min.css
 git add public/_/scripts/main.min.js
 git add public/_/scripts/vendor.min.js
+
+npm run test

@@ -3,12 +3,11 @@ var _ = require('underscore')
   , CollectionMixin = require('../../common/CollectionMixin')
 
 var Emojis = function(o) {
-    var self = this
-
     this.ns = 'Emojis'
-    Emojis.keys.forEach(function(key) {
-        self[key] = o[key]
-    })
+    for (var i = 0, ii = Emojis.keys.length; i < ii; ++i) {
+        var key = Emojis.keys[i]
+        this[key] = o[key]
+    }
 }
 Emojis.keys = ['list']
 Emojis.model = Emoji

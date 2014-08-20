@@ -1,5 +1,3 @@
-var Moment = require('moment')
-
 var CollectionMixin = function() {}
 
 CollectionMixin.from_db = function(raw) {
