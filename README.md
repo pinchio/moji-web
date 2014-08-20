@@ -58,7 +58,7 @@ TODO:
 - add csrf
 - add https
 - add http -> https redirect
-- add mojigram.com -> www.mojigram redirecGot
+- add mojigram.com -> www.mojigram redirect
 - should shrinkwrap as part of the pre-commit hook
 - use 201 for POST success
 - sessions should be forever
@@ -75,3 +75,12 @@ TODO:
 
 - search should include public emojis/emoji collection_ids
 
+- endpoint to save user's profile image
+- endpoint to delete user's profile image
+- during account update
+- filter on unique asset_urls for search
+- make sure search returns public collections
+- send count for each individual emoji
+- save count for each emoji (this is the number of times someone else cloned it)
+- attribution back to original
+- use image_url when creating emoji
