@@ -13,7 +13,7 @@ var get_url = function(args) {
     return 'http://' + host + ':' + port + path.join.apply(path, Array.prototype.slice.call(arguments))
 }
 
-describe('EmojiHTTPService', function() {
+describe.skip('EmojiHTTPService', function() {
     describe('post', function() {
         var username = 'ab' + Date.now()
           , password = 'password'
