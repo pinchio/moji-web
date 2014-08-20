@@ -12,7 +12,7 @@ var get_url = function(args) {
     return 'http://' + host + ':' + port + path.join.apply(path, Array.prototype.slice.call(arguments))
 }
 
-describe('SearchHTTPService', function() {
+describe.skip('SearchHTTPService', function() {
     describe('list', function() {
         var username = Math.floor(Math.random() * 1000000000)
           , password = 'password'
