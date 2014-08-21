@@ -45,6 +45,7 @@ AccountHTTPService.prototype.post = function() {
                   , password: this.request.body && this.request.body.password
                   , email: this.request.body && this.request.body.email
                   , full_name: this.request.body && this.request.body.full_name
+                  , profile_image_url: this.request.body && this.request.body.profile_image_url
                   , born_at: this.request.body && this.request.body.born_at
                   , session: this.session
                 })

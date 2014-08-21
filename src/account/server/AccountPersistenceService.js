@@ -13,6 +13,7 @@ var AccountPersistenceService = function AccountPersistenceService() {
       , 'email'
       , 'full_name'
       , 'password'
+      , 'profile_image_url'
       , 'born_at'
       , 'extra_data'
     ]

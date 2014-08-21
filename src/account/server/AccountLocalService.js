@@ -1,26 +1,18 @@
 var _ = require('underscore')
-  , validator = require('validator')
-  , LocalServiceError = require('src/common').LocalServiceError
-  , AccountPersistenceService = require('./AccountPersistenceService').get_instance()
-  , StaticMixin = require('../../common/StaticMixin')
-  , easy_pbkdf2 = require('easy-pbkdf2')({DEFAULT_HASH_ITERATIONS: 10000, SALT_SIZE: 32, KEY_LENGTH: 256})
-  , thunkify = require('thunkify')
   , Account = require('./Account')
-
-// 400 Bad input parameter. Error message should indicate which one and why.
-// 401 Bad or expired token. This can happen if the user or Dropbox revoked or expired an access token. To fix, you should re-authenticate the user.
-// 403 Bad OAuth request (wrong consumer key, bad nonce, expired timestamp...). Unfortunately, re-authenticating the user won't help here.
-// 404 File or folder not found at the specified path.
-// 405 Request method not expected (generally should be GET or POST).
-// 429 Your app is making too many requests and is being rate limited. 429s can trigger on a per-app or per-user basis.
-// 503 If the response includes the Retry-After header, this means your OAuth 1.0 app is being rate limited. Otherwise, this indicates a transient server error, and your app should retry its request.
-// 507 User is over Dropbox storage quota.
-// 5xx Server error. Check DropboxOps.
+  , AccountPersistenceService = require('./AccountPersistenceService').get_instance()
+  , easy_pbkdf2 = require('easy-pbkdf2')({DEFAULT_HASH_ITERATIONS: 10000, SALT_SIZE: 32, KEY_LENGTH: 256})
+  , LocalServiceError = require('src/common').LocalServiceError
+  , StaticMixin = require('../../common/StaticMixin')
+  , thunkify = require('thunkify')
+  , ValidationMixin = require('src/common').ValidationMixin
+  , validator = require('validator')
 
 var AccountLocalService = function AccountLocalService() {
     this.ns = 'AccountLocalService'
 }
 _.extend(AccountLocalService, StaticMixin)
+_.extend(AccountLocalService.prototype, ValidationMixin.prototype)
 
 AccountLocalService.prototype.validate_username = function(username) {
     if (!validator.isLength(username, 3, 15)) {
@@ -83,6 +75,7 @@ AccountLocalService.prototype.create = function * (o) {
     this.validate_username(o.username)
     this.validate_password(o.password)
     this.validate_email(o.email)
+    yield this.validate_asset_url(o.profile_image_url)
 
     var self = this
       , hash_salt = yield this.create_password_hash_salt(o.password)
@@ -91,13 +84,13 @@ AccountLocalService.prototype.create = function * (o) {
           , password: hash_salt
           , email: o.email
           , full_name: o.full_name
+          , profile_image_url: o.profile_image_url
           , born_at: o.born_at
           , extra_data: o.extra_data
         })
 
     try {
-        var created_accounts = yield AccountPersistenceService.insert(account)
-          , account = (created_accounts && created_accounts.list.length === 1) ? created_accounts.list[0] : null
+        var account = (yield AccountPersistenceService.insert(account)).first()
           , session = yield SessionLocalService.create_by_account_session({
                 account: account
               , session: o.session

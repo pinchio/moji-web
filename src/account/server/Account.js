@@ -22,6 +22,7 @@ Account.keys = [
   , 'email'
   , 'full_name'
   , 'password'
+  , 'profile_image_url'
   , 'born_at'
   , 'extra_data'
 ]
@@ -35,6 +36,7 @@ Account.from_create = function(o) {
       , email: o.email
       , full_name: o.full_name
       , password: o.password
+      , profile_image_url: o.profile_image_url
       , born_at: Account.to_moment(o.born_at)
       , extra_data: o.extra_data
     })
@@ -49,6 +51,7 @@ Account.from_db = function(o) {
       , email: o.email
       , full_name: o.full_name
       , password: o.password
+      , profile_image_url: o.profile_image_url
       , born_at: Account.to_moment(o.born_at)
       , extra_data: Account.text_to_json(o.extra_data)
     })
@@ -59,6 +62,7 @@ Account.prototype.to_json = function() {
         id: this.id
       , created_at: this.created_at.toISOString()
       , username: this.username
+      , profile_image_url: this.profile_image_url
     }
 }
 
@@ -70,6 +74,7 @@ Account.prototype.to_privileged = function() {
       , username: this.username
       , email: this.email
       , full_name: this.full_name
+      , profile_image_url: this.profile_image_url
       , born_at: this.born_at
       , extra_data: this.extra_data
     }
@@ -84,6 +89,7 @@ Account.prototype.to_db = function() {
       , email: this.email
       , full_name: this.full_name
       , password: this.password
+      , profile_image_url: this.profile_image_url
       , born_at: Account.from_moment(this.born_at)
       , extra_data: Account.json_to_text(this.extra_data)
     }
