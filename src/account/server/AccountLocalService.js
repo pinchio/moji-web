@@ -86,12 +86,15 @@ AccountLocalService.prototype.update = function * (o) {
     yield this.validate_uuid(o.id, 'Id')
     yield this.validate_password(o.password)
     yield this.validate_email(o.email)
-    yield this.validate_asset_url(o.profile_image_url, 'Profile image url')
+
+    if (o.profile_image_url) {
+        yield this.validate_asset_url(o.profile_image_url, 'Profile image url')
+    }
 
     var current_account = (yield AccountPersistenceService.select_by_id({id: o.id})).first()
 
     yield this.validate_exists(current_account)
-    yield this.validate_can_edit(current_account.created_by, o.session)
+    yield this.validate_can_edit(current_account.id, o.session.account_id)
 
     var hash_salt = yield this.create_password_hash_salt(o.password)
       , account = Account.from_update({
@@ -108,7 +111,7 @@ AccountLocalService.prototype.update = function * (o) {
         })
       , updated_account = (yield AccountPersistenceService.update_by_id(account)).first()
       , session = yield SessionLocalService.create_by_account__session({
-            account: inserted_account
+            account: updated_account
           , session: o.session
         })
 

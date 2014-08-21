@@ -339,6 +339,88 @@ describe('AccountHTTPService', function() {
         })
     })
 
+    describe.only('put', function() {
+        var username = Math.floor(Math.random() * 1000000000)
+          , password = 'password'
+          , email = uuid.v4().substring(0, 15) + '@b.com'
+          , profile_image_url = 'someurl.png'
+          , stored_jar = request.jar()
+
+        it('should create account if username and email unique', function(done) {
+
+            request({
+                    url: get_url('/_/api/account')
+                  , method: 'POST'
+                  , json: {
+                        username: username
+                      , password: password
+                      , email: email
+                      , profile_image_url: profile_image_url
+                    }
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    stored_account = body.account
+                    done()
+            })
+        })
+
+        it('should not allow update if not logged in', function(done) {
+            request({
+                    url: get_url('/_/api/account/' + stored_account.id)
+                  , method: 'PUT'
+                  , json: {
+                        username: username
+                      , password: password
+                      , email: email
+                    }
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 401)
+                    done()
+            })
+        })
+
+        it('should not allow update if account id does not exist', function(done) {
+            request({
+                    url: get_url('/_/api/account/' + uuid.v4())
+                  , method: 'PUT'
+                  , json: {
+                        username: username
+                      , password: password
+                      , email: email
+                    }
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 404)
+                    done()
+            })
+        })
+
+        it('should allow update', function(done) {
+            request({
+                    url: get_url('/_/api/account/' + stored_account.id)
+                  , method: 'PUT'
+                  , json: {
+                        username: username
+                      , password: 'somenewpassword'
+                      , email: email
+                      , full_name: 'I has a name now'
+                      , profile_image_url: 'Some_newurl.png'
+                    }
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.notEqual(body.account.full_name, stored_account.full_name)
+                    assert.notEqual(body.account.profile_image_url, stored_account.profile_image_url)
+                    done()
+            })
+        })
+    })
+
     describe('get', function() {
         it('should get account even if not authd', function(done) {
             request({

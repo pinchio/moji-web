@@ -18,7 +18,7 @@ ValidationMixin.prototype.validate_uuid = function * (id, field_name) {
     }
 }
 
-ValidationMixin.prototype.valid_asset_file_name_extensions = ['.png', '.jpg', '.jpeg', 'gif']
+ValidationMixin.prototype.valid_asset_file_name_extensions = ['.png', '.jpg', '.jpeg', '.gif']
 ValidationMixin.prototype.validate_asset_file_name = function * (file_name, field_name) {
     var ext = path.extname(file_name)
 
@@ -69,8 +69,8 @@ ValidationMixin.prototype.validate_password_hash_salt = thunkify(function(passwo
     })
 })
 
-ValidationMixin.prototype.validate_can_edit = function * (created_by, session) {
-    if (created_by !== session.account_id) {
+ValidationMixin.prototype.validate_can_edit = function * (created_by, session_account_id) {
+    if (created_by !== session_account_id) {
         throw new LocalServiceError(this.ns, 'forbidden', 'Forbidden.', 403)
     }
 }

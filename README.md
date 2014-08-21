@@ -79,7 +79,6 @@ TODO
 - S3 signed urls for images to provide access to true private images
 - Signature good for 30 days. New signatures blocked.
 
-- endpoint to delete user's profile image
 - during account update
 - filter on unique asset_urls for search
 - make sure search returns public collections
@@ -106,3 +105,4 @@ CHANGELOG
 
 - endpoint to save user's profile image on account creation. POST /_/api/account with profile_image_url
 
+- endpoint to delete user's profile image. POST /_/api/account with a new profile_image_url

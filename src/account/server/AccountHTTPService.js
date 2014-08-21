@@ -63,7 +63,7 @@ AccountHTTPService.prototype.put = function() {
     return function * (next) {
         try {
             var account = yield AccountLocalService.update({
-                    id: this.request.body && this.request.body.id
+                    id: this.params.id
                   , password: this.request.body && this.request.body.password
                   , email: this.request.body && this.request.body.email
                   , full_name: this.request.body && this.request.body.full_name
