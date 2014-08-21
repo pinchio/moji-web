@@ -42,11 +42,26 @@ Account.from_create = function(o) {
     })
 }
 
+Account.from_update = function(o) {
+    return new Account({
+        id: o.id
+      , created_at: Account.to_moment(o.created_at)
+      , updated_at: Account.to_moment(o.updated_at)
+      , username: o.username
+      , email: o.email
+      , full_name: o.full_name
+      , password: o.password
+      , profile_image_url: o.profile_image_url
+      , born_at: Account.to_moment(o.born_at)
+      , extra_data: o.extra_data
+    })
+}
+
 Account.from_db = function(o) {
     return new Account({
         id: o.id
-      , created_at: new Moment(o.created_at)
-      , updated_at: new Moment(o.updated_at)
+      , created_at: Account.to_moment(o.created_at)
+      , updated_at: Account.to_moment(o.updated_at)
       , username: o.username
       , email: o.email
       , full_name: o.full_name
@@ -60,7 +75,7 @@ Account.from_db = function(o) {
 Account.prototype.to_json = function() {
     return {
         id: this.id
-      , created_at: this.created_at.toISOString()
+      , created_at: Account.from_moment(this.created_at)
       , username: this.username
       , profile_image_url: this.profile_image_url
     }
@@ -69,8 +84,8 @@ Account.prototype.to_json = function() {
 Account.prototype.to_privileged = function() {
     return {
         id: this.id
-      , created_at: this.created_at.toISOString()
-      , updated_at: this.updated_at.toISOString()
+      , created_at: Account.from_moment(this.created_at)
+      , updated_at: Account.from_moment(this.updated_at)
       , username: this.username
       , email: this.email
       , full_name: this.full_name

@@ -66,7 +66,7 @@ describe('AssetHTTPService', function() {
               , function(e, d, body) {
                     body = JSON.parse(body)
                     assert.equal(d.statusCode, 400)
-                    assert.equal(body.description, 'Asset extension not supported.')
+                    assert.equal(body.description, 'Original file name extension not supported.')
                     done()
                 }
             )

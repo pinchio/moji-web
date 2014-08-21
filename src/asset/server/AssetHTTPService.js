@@ -29,7 +29,6 @@ AssetHTTPService.prototype.post = function() {
     // TODO: That would mean client must send up the hash.
     return function * (next) {
         try {
-            yield self.validate_required('session', this.session)
             yield self.validate_session(this.session)
 
             var parts = co_busboy(this)

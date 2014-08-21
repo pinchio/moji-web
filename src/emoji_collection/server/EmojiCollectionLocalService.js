@@ -180,8 +180,7 @@ EmojiCollectionLocalService.prototype.upsert = function * (o) {
         throw new LocalServiceError(this.ns, 'not_found', 'Not found.', 404)
     }
 
-    var db_emoji_collections = yield EmojiCollectionPersistenceService.select_by_id({id: o.id})
-      , db_emoji_collection = db_emoji_collections.first()
+    var db_emoji_collection = (yield EmojiCollectionPersistenceService.select_by_id({id: o.id})).first()
 
     if (db_emoji_collection) {
         // Update.

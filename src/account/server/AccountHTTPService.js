@@ -57,4 +57,26 @@ AccountHTTPService.prototype.post = function() {
     }
 }
 
+AccountHTTPService.prototype.put = function() {
+    var self = this
+
+    return function * (next) {
+        try {
+            var account = yield AccountLocalService.update({
+                    id: this.request.body && this.request.body.id
+                  , password: this.request.body && this.request.body.password
+                  , email: this.request.body && this.request.body.email
+                  , full_name: this.request.body && this.request.body.full_name
+                  , profile_image_url: this.request.body && this.request.body.profile_image_url
+                  , born_at: this.request.body && this.request.body.born_at
+                  , session: this.session
+                })
+
+            self.handle_success(this, {account: account.to_privileged()}, 'json')
+        } catch(e) {
+            self.handle_exception(this, e)
+        }
+    }
+}
+
 module.exports = AccountHTTPService

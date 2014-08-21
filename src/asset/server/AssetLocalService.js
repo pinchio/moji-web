@@ -28,10 +28,8 @@ AssetLocalService.prototype.get_file_sha = function(file_data) {
 }
 
 AssetLocalService.prototype.create = function * (o) {
-    yield this.validate_required('session', o.session)
     yield this.validate_session(o.session)
-    yield this.validate_required('original_file_name', o.original_file_name)
-    yield this.validate_asset_file_name(o.original_file_name)
+    yield this.validate_asset_file_name(o.original_file_name, 'Original file name')
 
     // TODO: Errors from s3?
     // TODO: Optimization: check for duplicates before uploading to S3.

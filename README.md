@@ -79,8 +79,6 @@ TODO
 - S3 signed urls for images to provide access to true private images
 - Signature good for 30 days. New signatures blocked.
 
-- endpoint to upload image
-- endpoint to save user's profile image
 - endpoint to delete user's profile image
 - during account update
 - filter on unique asset_urls for search
@@ -96,6 +94,8 @@ TODO
 
 - clear test db before running any tests. this is mainly for duplicate asset upload stuff
 
+- validation for extraneous fields. If trying to update account.username, error is not thrown.
+
 CHANGELOG
 ===
 2014-8-14
@@ -103,4 +103,6 @@ CHANGELOG
   - requires logged in user
   - returns asset_url
   - Future work to rate limit to one new upload every second.
+
+- endpoint to save user's profile image on account creation. POST /_/api/account with profile_image_url
 

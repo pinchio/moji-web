@@ -14,71 +14,33 @@ var AccountLocalService = function AccountLocalService() {
 _.extend(AccountLocalService, StaticMixin)
 _.extend(AccountLocalService.prototype, ValidationMixin.prototype)
 
-AccountLocalService.prototype.validate_username = function(username) {
-    if (!validator.isLength(username, 3, 15)) {
-        throw new LocalServiceError(this.ns, 'bad_request', 'Username must be between 3 and 15 characters.', 400)
-    }
-
-    if (!validator.isAlphanumeric(username)) {
-        throw new LocalServiceError(this.ns, 'bad_request', 'Username can only contain letters and numbers.', 400)
-    }
-}
-
-AccountLocalService.prototype.validate_password = function(password) {
-    if (!validator.isLength(password, 6, 50)) {
-        throw new LocalServiceError(this.ns, 'bad_request', 'Password must be between 6 and 50 characters.', 400)
-    }
-
-    if (!validator.isAlphanumeric(password)) {
-        throw new LocalServiceError(this.ns, 'bad_request', 'Password can only contain letters and numbers.', 400)
-    }
-}
-
-AccountLocalService.prototype.validate_email = function(email) {
-    if (!validator.isEmail(email)) {
-        throw new LocalServiceError(this.ns, 'bad_request', 'Email is not valid.', 400)
-    }
-}
-
 AccountLocalService.prototype.create_password_hash_salt = thunkify(function(password, cb) {
     easy_pbkdf2.secureHash(password, function(err, hash, salt) {
         return cb(err, hash + ':' + salt)
     })
 })
 
-AccountLocalService.prototype.validate_password_hash_salt = thunkify(function(password, expected_password, cb) {
-    var hash_salt = expected_password.split(':')
-
-    easy_pbkdf2.verify(hash_salt[1], hash_salt[0], password, function(err, valid) {
-        return cb(err, valid)
-    })
-})
-
-AccountLocalService.prototype.validate_id = function(id) {
-    if (!validator.isLength(id, 10)) {
-        throw new LocalServiceError(this.ns, 'bad_request', 'Account ids contain more than 10 characters.', 400)
-    }
-}
-
 AccountLocalService.prototype.get_by_id = function * (o) {
-    this.validate_id(o.id)
+    yield this.validate_uuid(o.id, 'Id')
 
-    var accounts = yield AccountPersistenceService.select_by_id({id: o.id})
+    var account = (yield AccountPersistenceService.select_by_id({id: o.id})).first()
 
-    return (accounts && accounts.list.length === 1) ? accounts.list[0] : null
+    return account
 }
 
 AccountLocalService.prototype.create = function * (o) {
     o.extra_data = o.extra_data || {}
 
     // TODO: Account name cannot be login, logout, username
-    this.validate_username(o.username)
-    this.validate_password(o.password)
-    this.validate_email(o.email)
-    yield this.validate_asset_url(o.profile_image_url)
+    yield this.validate_username(o.username)
+    yield this.validate_password(o.password)
+    yield this.validate_email(o.email)
 
-    var self = this
-      , hash_salt = yield this.create_password_hash_salt(o.password)
+    if (o.profile_image_url) {
+        yield this.validate_asset_url(o.profile_image_url, 'Profile image url')
+    }
+
+    var hash_salt = yield this.create_password_hash_salt(o.password)
       , account = Account.from_create({
             username: o.username
           , password: hash_salt
@@ -91,7 +53,7 @@ AccountLocalService.prototype.create = function * (o) {
 
     try {
         var account = (yield AccountPersistenceService.insert(account)).first()
-          , session = yield SessionLocalService.create_by_account_session({
+          , session = yield SessionLocalService.create_by_account__session({
                 account: account
               , session: o.session
             })
@@ -99,9 +61,9 @@ AccountLocalService.prototype.create = function * (o) {
         if (e && e.type === 'db_duplicate_key_error') {
             if (e.detail) {
                 if (e.detail.key === 'username') {
-                    throw new LocalServiceError(self.ns, 'conflict', 'Username is taken.', 409)
+                    throw new LocalServiceError(this.ns, 'conflict', 'Username is taken.', 409)
                 } else if (e.detail.key === 'email') {
-                    throw new LocalServiceError(self.ns, 'conflict', 'Email is taken.', 409)
+                    throw new LocalServiceError(this.ns, 'conflict', 'Email is taken.', 409)
                 } else {
                     throw e
                 }
@@ -116,10 +78,47 @@ AccountLocalService.prototype.create = function * (o) {
     return account
 }
 
+AccountLocalService.prototype.update = function * (o) {
+    o.extra_data = o.extra_data || {}
+
+    // TODO: validation for other fields.
+    yield this.validate_session(o.session)
+    yield this.validate_uuid(o.id, 'Id')
+    yield this.validate_password(o.password)
+    yield this.validate_email(o.email)
+    yield this.validate_asset_url(o.profile_image_url, 'Profile image url')
+
+    var current_account = (yield AccountPersistenceService.select_by_id({id: o.id})).first()
+
+    yield this.validate_exists(current_account)
+    yield this.validate_can_edit(current_account.created_by, o.session)
+
+    var hash_salt = yield this.create_password_hash_salt(o.password)
+      , account = Account.from_update({
+            id: o.id
+          , created_at: current_account.created_at
+          , updated_at: 'now()'
+          , username: o.username
+          , password: hash_salt
+          , email: o.email
+          , full_name: o.full_name
+          , profile_image_url: o.profile_image_url
+          , born_at: o.born_at
+          , extra_data: o.extra_data
+        })
+      , updated_account = (yield AccountPersistenceService.update_by_id(account)).first()
+      , session = yield SessionLocalService.create_by_account__session({
+            account: inserted_account
+          , session: o.session
+        })
+
+    return updated_account
+}
+
 AccountLocalService.prototype.get_by_username_password = function * (o) {
     // Should not select by username, password because the validate method will probably work against other pw.
-    this.validate_username(o.username)
-    this.validate_password(o.password)
+    yield this.validate_username(o.username)
+    yield this.validate_password(o.password)
 
     var accounts = yield AccountPersistenceService.select_by_username({
             username: o.username

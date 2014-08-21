@@ -14,10 +14,10 @@ SessionLocalService.prototype.create = function * (o) {
           , password: o.password
         })
 
-    return yield this.create_by_account_session({account: account, session: o.session})
+    return yield this.create_by_account__session({account: account, session: o.session})
 }
 
-SessionLocalService.prototype.create_by_account_session = function * (o) {
+SessionLocalService.prototype.create_by_account__session = function * (o) {
     var account = o.account
 
     if (account) {

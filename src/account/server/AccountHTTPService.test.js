@@ -43,6 +43,7 @@ describe('AccountHTTPService', function() {
                   , jar: stored_jar
                 }
               , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
                     assert.isDefined(body, 'body should be defined')
                     assert.isObject(body, 'body is an object')
                     assert.isDefined(body.account, 'account should be defined')
@@ -332,7 +333,7 @@ describe('AccountHTTPService', function() {
               , function(e, d, body) {
                     assert.equal(d.statusCode, 400)
                     assert.equal(body.type, 'bad_request')
-                    assert.equal(body.description, 'Asset extension not supported.')
+                    assert.equal(body.description, 'Profile image url extension not supported.')
                     done()
             })
         })

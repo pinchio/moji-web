@@ -44,7 +44,9 @@ var Server = function Server() {
 
     // API routes
     this.app.route('/_/api/account').post(AccountHTTPService.post())
+
     this.app.route('/_/api/account/:id').get(AccountHTTPService.get())
+    this.app.route('/_/api/account/:id').put(AccountHTTPService.put())
 
     this.app.route('/_/api/session').post(SessionHTTPService.post())
     this.app.route('/_/api/session').del(SessionHTTPService.del())
