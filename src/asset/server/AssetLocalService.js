@@ -39,14 +39,29 @@ AssetLocalService.prototype.create = function * (o) {
             Key: s3_file_name
           , Body: file_data
         })
-
-    var asset = Asset.from_create({
+      , asset = Asset.from_create({
             created_by: o.session.account_id
           , asset_url: this.s3_base_url + s3_file_name
         })
-      , asset = (yield AssetPersistenceService.insert(asset)).first()
 
-    return asset
+    try {
+        var inserted_asset = (yield AssetPersistenceService.insert(asset)).first()
+    } catch (e) {
+        if (e && e.type === 'db_duplicate_key_error') {
+            if (e.detail) {
+                if (e.detail.key === 'asset_url') {
+                    // Asset already exists in db. Nothing to do.
+                    return asset
+                }
+            } else {
+                throw e
+            }
+        } else {
+            throw e
+        }
+    }
+
+    return inserted_asset
 }
 
 module.exports = AssetLocalService

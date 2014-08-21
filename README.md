@@ -54,7 +54,8 @@ Note:
 - A collection is a set of emojis. An user can have multiple collections. A collection can be empty.
 
 
-TODO:
+TODO
+===
 - add csrf
 - add https
 - add http -> https redirect
@@ -78,6 +79,7 @@ TODO:
 - S3 signed urls for images to provide access to true private images
 - Signature good for 30 days. New signatures blocked.
 
+- endpoint to upload image
 - endpoint to save user's profile image
 - endpoint to delete user's profile image
 - during account update
@@ -91,3 +93,13 @@ TODO:
 - move out validation logic
 
 - put something on home page that's not an upload form.
+
+- clear test db before running any tests. this is mainly for duplicate asset upload stuff
+
+CHANGELOG
+===
+2014-8-14
+- added endpoint to upload image. POST /_/api/asset
+  - requires logged in user
+  - returns asset_url
+

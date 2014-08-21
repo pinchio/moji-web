@@ -89,11 +89,6 @@ describe('AssetHTTPService', function() {
                     body = JSON.parse(body)
                     assert.equal(d.statusCode, 200)
                     assert.isDefined(body.asset)
-                    assert.isDefined(body.asset.id)
-                    assert.isDefined(body.asset.created_at)
-                    assert.isDefined(body.asset.updated_at)
-                    assert.equal(body.asset.deleted_at, null)
-                    assert.equal(body.asset.created_by, stored_account.id)
                     assert.isDefined(body.asset.asset_url)
                     done()
                 }

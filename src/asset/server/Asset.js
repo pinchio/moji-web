@@ -47,23 +47,13 @@ Asset.from_db = function(o) {
 
 Asset.prototype.to_json = function() {
     return {
-        id: this.id
-      , created_at: Asset.from_moment(this.created_at)
-      , updated_at: Asset.from_moment(this.updated_at)
-      , deleted_at: Asset.from_moment(this.deleted_at)
-      , created_by: this.created_by
-      , asset_url: this.asset_url
+        asset_url: this.asset_url
     }
 }
 
 Asset.prototype.to_privileged = function() {
     return {
-        id: this.id
-      , created_at: Asset.from_moment(this.created_at)
-      , updated_at: Asset.from_moment(this.updated_at)
-      , deleted_at: Asset.from_moment(this.deleted_at)
-      , created_by: this.created_by
-      , asset_url: this.asset_url
+        asset_url: this.asset_url
     }
 }
 

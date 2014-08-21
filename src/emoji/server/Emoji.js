@@ -85,7 +85,6 @@ Emoji.prototype.to_json = function() {
         id: this.id
       , created_at: Emoji.from_moment(this.created_at)
       , updated_at: Emoji.from_moment(this.updated_at)
-      , deleted_at: Emoji.from_moment(this.deleted_at)
       , slug_name: this.slug_name
       , display_name: this.display_name
       , tags: this.tags
@@ -102,7 +101,6 @@ Emoji.prototype.to_privileged = function() {
         id: this.id
       , created_at: Emoji.from_moment(this.created_at)
       , updated_at: Emoji.from_moment(this.updated_at)
-      , deleted_at: Emoji.from_moment(this.deleted_at)
       , slug_name: this.slug_name
       , display_name: this.display_name
       , tags: this.tags
