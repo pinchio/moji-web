@@ -102,4 +102,5 @@ CHANGELOG
 - added endpoint to upload image. POST /_/api/asset
   - requires logged in user
   - returns asset_url
+  - Future work to rate limit to one new upload every second.
 

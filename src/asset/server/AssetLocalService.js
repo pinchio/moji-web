@@ -13,6 +13,7 @@ var _ = require('underscore')
   , crypto = require('crypto')
   , ValidationMixin = require('src/common').ValidationMixin
 
+// FIXME: this endpoint is vulnerable to DDOS. Should rate limit uploads by session.
 var AssetLocalService = function AssetLocalService() {
     this.ns = 'AssetLocalService'
     this.s3_bucket = new AWS.S3({params: {Bucket: config.get('s3').bucket}})
@@ -47,15 +48,9 @@ AssetLocalService.prototype.create = function * (o) {
     try {
         var inserted_asset = (yield AssetPersistenceService.insert(asset)).first()
     } catch (e) {
-        if (e && e.type === 'db_duplicate_key_error') {
-            if (e.detail) {
-                if (e.detail.key === 'asset_url') {
-                    // Asset already exists in db. Nothing to do.
-                    return asset
-                }
-            } else {
-                throw e
-            }
+        if (e && e.type === 'db_duplicate_key_error' && e.detail && e.detail.key === 'asset_url') {
+            // Asset already exists in db. Nothing to do.
+            return asset
         } else {
             throw e
         }
