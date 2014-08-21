@@ -1,10 +1,11 @@
 var assert = require('chai').assert
-  , server = require('src/server').Server.get_instance()
   , config = require('config')
   , host = config.get('server').host
+  , path = require('path')
   , port = config.get('server').port
   , request = require('request')
-  , path = require('path')
+  , server = require('src/server').Server.get_instance()
+  , uuid = require('node-uuid')
 
 var get_url = function(args) {
     return 'http://' + host + ':' + port + path.join.apply(path, Array.prototype.slice.call(arguments))
@@ -18,17 +19,17 @@ describe('AccountHTTPService', function() {
     // after(function() {
     //     server.close()
     // })
-    var username = 'ab' + Date.now()
-      , password = 'password'
-      , email = 'a' + Date.now() + '@b.com'
-      , stored_account
+    var stored_account
       , stored_jar
 
     describe('post', function() {
+        var username = Math.floor(Math.random() * 1000000000)
+          , password = 'password'
+          , email = uuid.v4().substring(0, 15) + '@b.com'
+          , profile_image_url = 'someurl.png'
+
         it('should create account if username and email unique', function(done) {
             stored_jar = request.jar()
-            // var cookie = request.cookie('a=b')
-            // stored_jar.setCookie(cookie, 'www.mojigram.com')
 
             request({
                     url: get_url('/_/api/account')
@@ -37,6 +38,7 @@ describe('AccountHTTPService', function() {
                         username: username
                       , password: password
                       , email: email
+                      , profile_image_url: profile_image_url
                     }
                   , jar: stored_jar
                 }
@@ -47,6 +49,7 @@ describe('AccountHTTPService', function() {
                     assert.equal(body.account.username, username, 'username should match')
                     assert.equal(body.account.email, email, 'email should match')
                     assert.isUndefined(body.account.password, 'password should not be defined')
+                    assert.equal(body.account.profile_image_url, profile_image_url)
 
                     var cookies = stored_jar.getCookieString(get_url())
                       , cookie_map = {}
@@ -61,6 +64,29 @@ describe('AccountHTTPService', function() {
                     assert.isDefined(cookie_map['koa:sess.sig'])
 
                     stored_account = body.account
+                    done()
+            })
+        })
+
+        it('should create account if without born_at if born_at not set', function(done) {
+            var username = Math.floor(Math.random() * 1000000000)
+              , password = 'password'
+              , email = uuid.v4().substring(0, 15) + '@b.com'
+              , stored_jar = request.jar()
+
+            request({
+                    url: get_url('/_/api/account')
+                  , method: 'POST'
+                  , json: {
+                        username: username
+                      , password: password
+                      , email: email
+                    }
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.equal(body.account.born_at, null)
                     done()
             })
         })
@@ -288,6 +314,25 @@ describe('AccountHTTPService', function() {
                     assert.equal(d.statusCode, 400)
                     assert.equal(body.type, 'bad_request')
                     assert.equal(body.description, 'Email is not valid.')
+                    done()
+            })
+        })
+
+        it('should not allow bad profile_image_urls', function(done) {
+            request({
+                    url: get_url('/_/api/account')
+                  , method: 'POST'
+                  , json: {
+                        username: username
+                      , password: password
+                      , email: 'a@b.com'
+                      , profile_image_url: 'bad.exe'
+                    }
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 400)
+                    assert.equal(body.type, 'bad_request')
+                    assert.equal(body.description, 'Asset extension not supported.')
                     done()
             })
         })

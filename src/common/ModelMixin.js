@@ -7,7 +7,7 @@ ModelMixin.from_moment = function(value) {
 }
 
 ModelMixin.to_moment = function(value) {
-    if (value !== null) {
+    if (value !== null && value !== void 0) {
         var maybe_moment = new Moment(value)
         if (maybe_moment.isValid()) {
             return maybe_moment
