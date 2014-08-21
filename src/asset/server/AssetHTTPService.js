@@ -25,6 +25,8 @@ AssetHTTPService.prototype.part_stream_finish = thunkify(function(part, stream, 
 AssetHTTPService.prototype.post = function() {
     var self = this
 
+    // TODO: If entry already exists in db for this asset_url, we dont need to upload it.
+    // TODO: That would mean client must send up the hash.
     return function * (next) {
         try {
             yield self.validate_session(this.session)
@@ -32,7 +34,7 @@ AssetHTTPService.prototype.post = function() {
             var parts = co_busboy(this)
               , part
               , body = {}
-              , image_part
+              , asset_part
 
             while (part = yield parts) {
                 if (part.length) {
@@ -46,31 +48,28 @@ AssetHTTPService.prototype.post = function() {
                         body[part[0]] = part[1]
                     }
                 } else if (part.fieldname === 'asset') {
-                    image_part = part
+                    asset_part = part
                     var local_file_name = '/tmp/' + uuid.v4()
                       , stream = fs.createWriteStream(local_file_name)
-                      , original_file_name = image_part.filename
-                      , stream_finished = yield self.part_stream_finish(image_part, stream)
+                      , original_file_name = asset_part.filename
+                      , stream_finished = yield self.part_stream_finish(asset_part, stream)
+
                 } else {
                     throw new LocalServiceError(this.ns, 'bad_request', part.fieldname + ' is not a valid field.', 400)
                 }
             }
 
-            if (!image_part) {
+            if (!asset_part) {
                 throw new LocalServiceError(this.ns, 'bad_request', 'Assets must include an asset.', 400)
             }
 
-            var image = yield AssetLocalService.create({
-                    display_name: body.display_name
-                  , tags: body.tags
-                  , scopes: body.scopes
-                  , local_file_name: local_file_name
+            var asset = yield AssetLocalService.create({
+                    local_file_name: local_file_name
                   , original_file_name: original_file_name
-                  , image_collection_id: body.image_collection_id
                   , session: session
                 })
 
-            return self.handle_success(this, {image: image.to_privileged()}, 'json')
+            return self.handle_success(this, {asset: asset.to_privileged()}, 'json')
         } catch(e) {
             self.handle_exception(this, e)
         }

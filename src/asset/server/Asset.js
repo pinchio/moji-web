@@ -19,14 +19,8 @@ Asset.keys = [
   , 'created_at'
   , 'updated_at'
   , 'deleted_at'
-  , 'slug_name'
-  , 'display_name'
-  , 'tags'
-  , 'scopes'
   , 'created_by'
   , 'asset_url'
-  , 'emoji_collection_id'
-  , 'extra_data'
 ]
 
 Asset.from_create = function(o) {
@@ -35,31 +29,8 @@ Asset.from_create = function(o) {
       , created_at: 'now()'
       , updated_at: 'now()'
       , deleted_at: null
-      , slug_name: o.slug_name
-      , display_name: o.display_name
-      , tags: o.tags
-      , scopes: o.scopes
       , created_by: o.created_by
       , asset_url: o.asset_url
-      , emoji_collection_id: o.emoji_collection_id
-      , extra_data: o.extra_data
-    })
-}
-
-Asset.from_update = function(o) {
-    return new Asset({
-        id: o.id || uuid.v4()
-      , created_at: o.created_at || 'now()'
-      , updated_at: o.updated_at || 'now()'
-      , deleted_at: o.deleted_at || null
-      , slug_name: o.slug_name
-      , display_name: o.display_name
-      , tags: o.tags
-      , scopes: o.scopes
-      , created_by: o.created_by
-      , asset_url: o.asset_url
-      , emoji_collection_id: o.emoji_collection_id
-      , extra_data: o.extra_data
     })
 }
 
@@ -69,14 +40,8 @@ Asset.from_db = function(o) {
       , created_at: Asset.to_moment(o.created_at)
       , updated_at: Asset.to_moment(o.updated_at)
       , deleted_at: Asset.to_moment(o.deleted_at)
-      , slug_name: o.slug_name
-      , display_name: o.display_name
-      , tags: o.tags
-      , scopes: o.scopes
       , created_by: o.created_by
       , asset_url: o.asset_url
-      , emoji_collection_id: o.emoji_collection_id
-      , extra_data: Asset.text_to_json(o.extra_data)
     })
 }
 
@@ -86,14 +51,8 @@ Asset.prototype.to_json = function() {
       , created_at: Asset.from_moment(this.created_at)
       , updated_at: Asset.from_moment(this.updated_at)
       , deleted_at: Asset.from_moment(this.deleted_at)
-      , slug_name: this.slug_name
-      , display_name: this.display_name
-      , tags: this.tags
-      , scopes: this.scopes
       , created_by: this.created_by
       , asset_url: this.asset_url
-      , emoji_collection_id: this.emoji_collection_id
-      , extra_data: this.extra_data
     }
 }
 
@@ -103,14 +62,8 @@ Asset.prototype.to_privileged = function() {
       , created_at: Asset.from_moment(this.created_at)
       , updated_at: Asset.from_moment(this.updated_at)
       , deleted_at: Asset.from_moment(this.deleted_at)
-      , slug_name: this.slug_name
-      , display_name: this.display_name
-      , tags: this.tags
-      , scopes: this.scopes
       , created_by: this.created_by
       , asset_url: this.asset_url
-      , emoji_collection_id: this.emoji_collection_id
-      , extra_data: this.extra_data
     }
 }
 
@@ -120,14 +73,8 @@ Asset.prototype.to_db = function() {
       , created_at: Asset.from_moment(this.created_at)
       , updated_at: Asset.from_moment(this.updated_at)
       , deleted_at: Asset.from_moment(this.deleted_at)
-      , slug_name: this.slug_name
-      , display_name: this.display_name
-      , tags: this.tags
-      , scopes: this.scopes
       , created_by: this.created_by
       , asset_url: this.asset_url
-      , emoji_collection_id: this.emoji_collection_id
-      , extra_data: Asset.json_to_text(this.extra_data)
     }
 }
 
