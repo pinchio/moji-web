@@ -66,7 +66,7 @@ AssetHTTPService.prototype.post = function() {
             var asset = yield AssetLocalService.create({
                     local_file_name: local_file_name
                   , original_file_name: original_file_name
-                  , session: session
+                  , session: this.session
                 })
 
             return self.handle_success(this, {asset: asset.to_privileged()}, 'json')

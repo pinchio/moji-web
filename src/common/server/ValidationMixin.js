@@ -1,4 +1,5 @@
 var LocalServiceError = require('src/common/server/LocalServiceError')
+  , path = require('path')
 
 var ValidationMixin = function() {}
 

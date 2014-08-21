@@ -19,12 +19,10 @@ describe.skip('EmojiHTTPService', function() {
           , password = 'password'
           , email = 'a' + Date.now() + '@b.com'
           , stored_account
-          , stored_jar
+          , stored_jar = request.jar()
           , stored_emoji_collection
 
         it('should create session if login correct', function(done) {
-            stored_jar = request.jar()
-
             request(
                 {
                     url: get_url('/_/api/account')
@@ -56,7 +54,7 @@ describe.skip('EmojiHTTPService', function() {
             )
 
             var form = req.form()
-            form.append('asset', fs.createReadStream(path.join(__dirname, '../panda-dog.jpg')))
+            form.append('asset', fs.createReadStream(path.join(__dirname, '../../asset/panda-dog.jpg')))
         })
 
         it('should not allow upload of emoji if no emoji_collection_id', function(done) {
@@ -77,7 +75,7 @@ describe.skip('EmojiHTTPService', function() {
             var form = req.form()
             form.append('id', uuid.v4())
             form.append('created_by', stored_account.id)
-            form.append('asset', fs.createReadStream(path.join(__dirname, '../panda-dog.jpg')))
+            form.append('asset', fs.createReadStream(path.join(__dirname, '../../asset/panda-dog.jpg')))
         })
 
         it('should not allow upload of emoji if extension not valid', function(done) {
@@ -99,7 +97,7 @@ describe.skip('EmojiHTTPService', function() {
             form.append('id', uuid.v4())
             form.append('created_by', stored_account.id)
             form.append('emoji_collection_id', 'some_id_not_exist')
-            form.append('asset', fs.createReadStream(path.join(__dirname, '../panda-dog.bad')))
+            form.append('asset', fs.createReadStream(path.join(__dirname, '../../asset/panda-dog.bad')))
         })
 
         it('should not allow upload of emoji if emoji_collection_id does not exist', function(done) {
@@ -121,7 +119,7 @@ describe.skip('EmojiHTTPService', function() {
             form.append('id', uuid.v4())
             form.append('created_by', stored_account.id)
             form.append('emoji_collection_id', 'some_id_not_exist')
-            form.append('asset', fs.createReadStream(path.join(__dirname, '../panda-dog.jpg')))
+            form.append('asset', fs.createReadStream(path.join(__dirname, '../../asset/panda-dog.jpg')))
         })
 
         it('should create emoji collection', function(done) {
@@ -177,7 +175,7 @@ describe.skip('EmojiHTTPService', function() {
             form.append('display_name', display_name)
             form.append('tags[]', tags[0])
             form.append('tags[]', tags[1])
-            form.append('asset', fs.createReadStream(path.join(__dirname, '../panda-dog.jpg')))
+            form.append('asset', fs.createReadStream(path.join(__dirname, '../../asset/panda-dog.jpg')))
         })
 
         it.skip('should only allow create if user owns it')
@@ -226,7 +224,7 @@ describe.skip('EmojiHTTPService', function() {
             )
 
             var form = req.form()
-            form.append('asset', fs.createReadStream(path.join(__dirname, '../panda-dog.jpg')))
+            form.append('asset', fs.createReadStream(path.join(__dirname, '../../asset/panda-dog.jpg')))
         })
 
         it('should not allow upload of emoji if no id', function(done) {
@@ -245,7 +243,7 @@ describe.skip('EmojiHTTPService', function() {
             )
 
             var form = req.form()
-            form.append('asset', fs.createReadStream(path.join(__dirname, '../panda-dog.jpg')))
+            form.append('asset', fs.createReadStream(path.join(__dirname, '../../asset/panda-dog.jpg')))
         })
 
         it('should not allow upload of emoji if no emoji_collection_id', function(done) {
@@ -266,7 +264,7 @@ describe.skip('EmojiHTTPService', function() {
 
             var form = req.form()
             form.append('id', emoji_id)
-            form.append('asset', fs.createReadStream(path.join(__dirname, '../panda-dog.jpg')))
+            form.append('asset', fs.createReadStream(path.join(__dirname, '../../asset/panda-dog.jpg')))
         })
 
         it('should not allow upload of emoji if extension not valid', function(done) {
@@ -291,7 +289,7 @@ describe.skip('EmojiHTTPService', function() {
             form.append('id', emoji_id)
             form.append('created_by', stored_account.id)
             form.append('emoji_collection_id', emoji_collection_id)
-            form.append('asset', fs.createReadStream(path.join(__dirname, '../panda-dog.bad')))
+            form.append('asset', fs.createReadStream(path.join(__dirname, '../../asset/panda-dog.bad')))
         })
 
         it('should not allow upload of emoji if emoji_collection_id does not exist', function(done) {
@@ -314,7 +312,7 @@ describe.skip('EmojiHTTPService', function() {
             form.append('id', emoji_id)
             form.append('created_by', stored_account.id)
             form.append('emoji_collection_id', 'some_id_not_exist')
-            form.append('asset', fs.createReadStream(path.join(__dirname, '../panda-dog.jpg')))
+            form.append('asset', fs.createReadStream(path.join(__dirname, '../../asset/panda-dog.jpg')))
         })
 
         it('should create emoji collection', function(done) {
@@ -374,7 +372,7 @@ describe.skip('EmojiHTTPService', function() {
             form.append('display_name', display_name)
             form.append('tags[]', tags[0])
             form.append('tags[]', tags[1])
-            form.append('asset', fs.createReadStream(path.join(__dirname, '../panda-dog.jpg')))
+            form.append('asset', fs.createReadStream(path.join(__dirname, '../../asset/panda-dog.jpg')))
         })
 
         it('should not update emoji if different user logged in', function(done) {
@@ -419,7 +417,7 @@ describe.skip('EmojiHTTPService', function() {
                     form.append('display_name', display_name)
                     form.append('tags[]', tags[0])
                     form.append('tags[]', tags[1])
-                    form.append('asset', fs.createReadStream(path.join(__dirname, '../panda-dog.jpg')))
+                    form.append('asset', fs.createReadStream(path.join(__dirname, '../../asset/panda-dog.jpg')))
             })
         })
 
@@ -452,7 +450,7 @@ describe.skip('EmojiHTTPService', function() {
                 form.append('created_by', stored_account.id)
                 form.append('emoji_collection_id', stored_emoji_collection.id)
                 form.append('display_name', display_name)
-                form.append('asset', fs.createReadStream(path.join(__dirname, '../panda-dog.jpg')))
+                form.append('asset', fs.createReadStream(path.join(__dirname, '../../asset/panda-dog.jpg')))
         })
 
         it('should not update emoji if conflict, but dont return error', function(done) {
@@ -481,7 +479,7 @@ describe.skip('EmojiHTTPService', function() {
                 form.append('created_by', stored_account.id)
                 form.append('emoji_collection_id', stored_emoji_collection.id)
                 form.append('display_name', display_name)
-                form.append('asset', fs.createReadStream(path.join(__dirname, '../panda-dog.jpg')))
+                form.append('asset', fs.createReadStream(path.join(__dirname, '../../asset/panda-dog.jpg')))
         })
 
         it('should delete emoji', function(done) {
@@ -517,7 +515,7 @@ describe.skip('EmojiHTTPService', function() {
                 form.append('created_by', stored_account.id)
                 form.append('emoji_collection_id', stored_emoji_collection.id)
                 form.append('display_name', display_name)
-                form.append('asset', fs.createReadStream(path.join(__dirname, '../panda-dog.jpg')))
+                form.append('asset', fs.createReadStream(path.join(__dirname, '../../asset/panda-dog.jpg')))
         })
     })
 
@@ -590,7 +588,7 @@ describe.skip('EmojiHTTPService', function() {
             form.append('tags[]', tags[0])
             form.append('tags[]', tags[1])
             form.append('scopes[]', 'public_read')
-            form.append('asset', fs.createReadStream(path.join(__dirname, '../panda-dog.jpg')))
+            form.append('asset', fs.createReadStream(path.join(__dirname, '../../asset/panda-dog.jpg')))
         })
 
         it('should get 404 if emoji does not exist', function(done) {
@@ -659,7 +657,7 @@ describe.skip('EmojiHTTPService', function() {
             form.append('display_name', display_name)
             form.append('tags[]', tags[0])
             form.append('tags[]', tags[1])
-            form.append('asset', fs.createReadStream(path.join(__dirname, '../panda-dog.jpg')))
+            form.append('asset', fs.createReadStream(path.join(__dirname, '../../asset/panda-dog.jpg')))
         })
 
         it('should get emoji if creator even without scope', function(done) {
@@ -797,7 +795,7 @@ describe.skip('EmojiHTTPService', function() {
             form.append('display_name', display_name)
             form.append('tags[]', tags[0])
             form.append('tags[]', tags[1])
-            form.append('asset', fs.createReadStream(path.join(__dirname, '../panda-dog.jpg')))
+            form.append('asset', fs.createReadStream(path.join(__dirname, '../../asset/panda-dog.jpg')))
         })
 
         it('should create another emoji in first collection', function(done) {
@@ -825,7 +823,7 @@ describe.skip('EmojiHTTPService', function() {
             form.append('display_name', display_name)
             form.append('tags[]', tags[0])
             form.append('tags[]', tags[1])
-            form.append('asset', fs.createReadStream(path.join(__dirname, '../panda-dog.jpg')))
+            form.append('asset', fs.createReadStream(path.join(__dirname, '../../asset/panda-dog.jpg')))
         })
 
         it('should create emoji in second collection', function(done) {
@@ -853,7 +851,7 @@ describe.skip('EmojiHTTPService', function() {
             form.append('display_name', display_name)
             form.append('tags[]', tags[0])
             form.append('tags[]', tags[1])
-            form.append('asset', fs.createReadStream(path.join(__dirname, '../panda-dog.jpg')))
+            form.append('asset', fs.createReadStream(path.join(__dirname, '../../asset/panda-dog.jpg')))
         })
 
         it('should get three emojis if no filter', function(done) {
