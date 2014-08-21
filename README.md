@@ -75,6 +75,9 @@ TODO:
 
 - search should include public emojis/emoji collection_ids
 
+- S3 signed urls for images to provide access to true private images
+- Signature good for 30 days. New signatures blocked.
+
 - endpoint to save user's profile image
 - endpoint to delete user's profile image
 - during account update
@@ -84,3 +87,7 @@ TODO:
 - save count for each emoji (this is the number of times someone else cloned it)
 - attribution back to original
 - use image_url when creating emoji
+
+- move out validation logic
+
+- put something on home page that's not an upload form.

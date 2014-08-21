@@ -49,6 +49,8 @@ var Server = function Server() {
     this.app.route('/_/api/session').post(SessionHTTPService.post())
     this.app.route('/_/api/session').del(SessionHTTPService.del())
 
+    this.app.route('/_/api/image').post(ImageHTTPService.post())
+
     this.app.route('/_/api/emoji_collection').post(EmojiCollectionHTTPService.post())
     this.app.route('/_/api/emoji_collection').get(EmojiCollectionHTTPService.list())
 
@@ -84,9 +86,10 @@ Server.prototype.close = function() {
 
 module.exports = Server
 
-var HomeHTTPService = require('src/home').HomeHTTPService.get_instance()
-  , AccountHTTPService = require('src/account').AccountHTTPService.get_instance()
-  , SessionHTTPService = require('src/session').SessionHTTPService.get_instance()
+var AccountHTTPService = require('src/account').AccountHTTPService.get_instance()
   , EmojiHTTPService = require('src/emoji').EmojiHTTPService.get_instance()
   , EmojiCollectionHTTPService = require('src/emoji_collection').EmojiCollectionHTTPService.get_instance()
+  , HomeHTTPService = require('src/home').HomeHTTPService.get_instance()
+  , ImageHTTPService = require('src/image').ImageHTTPService.get_instance()
   , SearchHTTPService = require('src/search').SearchHTTPService.get_instance()
+  , SessionHTTPService = require('src/session').SessionHTTPService.get_instance()

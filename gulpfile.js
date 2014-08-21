@@ -40,24 +40,24 @@ var paths = {
 }
 
 gulp.task('sprite', function() {
-    var sprite_data = gulp.src('src/asset/**/*.png').pipe(gulp_spritesmith({
+    var sprite_data = gulp.src('src/site_asset/**/*.png').pipe(gulp_spritesmith({
         imgName: 'sprite_2x.png'
       , cssName: 'sprite.less'
       , engine: 'pngsmith'
       , padding: 2
-      , cssTemplate: './src/asset/.spriterc'
+      , cssTemplate: './src/site_asset/.spriterc'
       , imgOpts: {
             format: 'png'
           , quality: 100
         }
       , algorithm: 'binary-tree'
       , cssOpts: {
-            img_path: '/_/asset/sprite_2x.png'
+            img_path: '/_/site_asset/sprite_2x.png'
         }
     }))
 
-    sprite_data.img.pipe(gulp.dest('public/_/asset/'))
-    return sprite_data.css.pipe(gulp.dest('src/asset/'))
+    sprite_data.img.pipe(gulp.dest('public/_/site_asset/'))
+    return sprite_data.css.pipe(gulp.dest('src/site_asset/'))
 })
 
 var less = function() {
