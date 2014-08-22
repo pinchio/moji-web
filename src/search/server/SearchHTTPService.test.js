@@ -12,7 +12,7 @@ var get_url = function(args) {
     return 'http://' + host + ':' + port + path.join.apply(path, Array.prototype.slice.call(arguments))
 }
 
-describe.skip('SearchHTTPService', function() {
+describe('SearchHTTPService', function() {
     describe('list', function() {
         var username = Math.floor(Math.random() * 1000000000)
           , password = 'password'
@@ -83,7 +83,7 @@ describe.skip('SearchHTTPService', function() {
             form.append('display_name', display_name)
             form.append('tags[]', tags[0])
             form.append('tags[]', tags[1])
-            form.append('asset', fs.createReadStream(path.join(__dirname, '../../emoji/panda-dog.jpg')))
+            form.append('asset', fs.createReadStream(path.join(__dirname, '../../asset/panda-dog.jpg')))
         })
 
         it('should find emojis if matching one tag', function(done) {

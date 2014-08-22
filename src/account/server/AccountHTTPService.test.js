@@ -339,7 +339,7 @@ describe('AccountHTTPService', function() {
         })
     })
 
-    describe.only('put', function() {
+    describe('put', function() {
         var username = Math.floor(Math.random() * 1000000000)
           , password = 'password'
           , email = uuid.v4().substring(0, 15) + '@b.com'
@@ -422,6 +422,31 @@ describe('AccountHTTPService', function() {
     })
 
     describe('get', function() {
+        var stored_jar = request.jar()
+          , stored_account
+
+        it('should create account', function(done) {
+            var username = Math.floor(Math.random() * 1000000000)
+              , password = 'password'
+              , email = uuid.v4().substring(0, 15) + '@b.com'
+
+            request({
+                    url: get_url('/_/api/account')
+                  , method: 'POST'
+                  , json: {
+                        username: username
+                      , password: password
+                      , email: email
+                    }
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    stored_account = body.account
+                    done()
+            })
+        })
+
         it('should get account even if not authd', function(done) {
             request({
                     url: get_url('/_/api/account/' + stored_account.id)
@@ -445,8 +470,7 @@ describe('AccountHTTPService', function() {
                 }
               , function(e, d, body) {
                     assert.equal(d.statusCode, 200)
-                    assert.equal(body.account.id, stored_account.id)
-                    assert.isDefined(body.account.email)
+                    assert.deepEqual(body.account, stored_account)
                     done()
             })
         })

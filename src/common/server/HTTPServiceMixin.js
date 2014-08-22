@@ -10,6 +10,8 @@ HTTPServiceMixin.prototype.handle_success = function(that, data, format) {
     } else {
         that.status = 404
     }
+
+    console.log('handle_success: ', that.status, that.body)
 }
 
 HTTPServiceMixin.prototype.handle_exception = function(that, error) {
