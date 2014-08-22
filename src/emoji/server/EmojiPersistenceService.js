@@ -16,6 +16,7 @@ var EmojiPersistenceService = function EmojiPersistenceService() {
       , 'scopes'
       , 'created_by'
       , 'asset_url'
+      , 'asset_hash'
       , 'emoji_collection_id'
       , 'extra_data'
     ]

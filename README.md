@@ -80,24 +80,30 @@ TODO
 - Signature good for 30 days. New signatures blocked.
 
 - during account update
-- filter on unique asset_urls for search
-- make sure search returns public collections
 - send count for each individual emoji
 - save count for each emoji (this is the number of times someone else cloned it)
 - attribution back to original
 - use image_url when creating emoji
 
 - move out validation logic
-
 - put something on home page that's not an upload form.
-
 - clear test db before running any tests. this is mainly for duplicate asset upload stuff
-
 - validation for extraneous fields. If trying to update account.username, error is not thrown.
+
+IN-PROGRESS
+===
+- filter on unique asset_urls for search
+- make sure search returns public collections
 
 CHANGELOG
 ===
-2014-8-14
+
+2014-8-22
+---
+
+
+2014-8-20
+---
 - added endpoint to upload image. POST /_/api/asset
   - requires logged in user
   - returns asset_url

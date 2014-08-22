@@ -43,6 +43,7 @@ CREATE TABLE emoji (
     scopes          text[],
     created_by      char(36),
     asset_url       varchar(512),
+    asset_hash      varchar(512),
     emoji_collection_id char(36),
     extra_data      text
 );

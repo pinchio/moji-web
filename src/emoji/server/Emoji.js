@@ -25,6 +25,7 @@ Emoji.keys = [
   , 'scopes'
   , 'created_by'
   , 'asset_url'
+  , 'asset_hash'
   , 'emoji_collection_id'
   , 'extra_data'
 ]
@@ -41,6 +42,7 @@ Emoji.from_create = function(o) {
       , scopes: o.scopes
       , created_by: o.created_by
       , asset_url: o.asset_url
+      , asset_hash: o.asset_hash
       , emoji_collection_id: o.emoji_collection_id
       , extra_data: o.extra_data
     })
@@ -58,6 +60,7 @@ Emoji.from_update = function(o) {
       , scopes: o.scopes
       , created_by: o.created_by
       , asset_url: o.asset_url
+      , asset_hash: o.asset_hash
       , emoji_collection_id: o.emoji_collection_id
       , extra_data: o.extra_data
     })
@@ -75,6 +78,7 @@ Emoji.from_db = function(o) {
       , scopes: o.scopes
       , created_by: o.created_by
       , asset_url: o.asset_url
+      , asset_hash: o.asset_hash
       , emoji_collection_id: o.emoji_collection_id
       , extra_data: Emoji.text_to_json(o.extra_data)
     })
@@ -91,6 +95,7 @@ Emoji.prototype.to_json = function() {
       , scopes: this.scopes
       , created_by: this.created_by
       , asset_url: this.asset_url
+      , asset_hash: this.asset_hash
       , emoji_collection_id: this.emoji_collection_id
       , extra_data: this.extra_data
     }
@@ -107,6 +112,7 @@ Emoji.prototype.to_privileged = function() {
       , scopes: this.scopes
       , created_by: this.created_by
       , asset_url: this.asset_url
+      , asset_hash: this.asset_hash
       , emoji_collection_id: this.emoji_collection_id
       , extra_data: this.extra_data
     }
@@ -124,6 +130,7 @@ Emoji.prototype.to_db = function() {
       , scopes: this.scopes
       , created_by: this.created_by
       , asset_url: this.asset_url
+      , asset_hash: this.asset_hash
       , emoji_collection_id: this.emoji_collection_id
       , extra_data: Emoji.json_to_text(this.extra_data)
     }

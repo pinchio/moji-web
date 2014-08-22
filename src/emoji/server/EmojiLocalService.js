@@ -145,7 +145,8 @@ EmojiLocalService.prototype.create = function * (o) {
 
     var file_data = yield readFile_thunk(o.local_file_name)
       , original_file_name_ext = path.extname(o.original_file_name)
-      , s3_file_name = this.get_file_sha(file_data) + original_file_name_ext
+      , file_sha = this.get_file_sha(file_data)
+      , s3_file_name = file_sha + original_file_name_ext
       , put_response = yield this.s3_bucket_put_object({
             Key: s3_file_name
           , Body: file_data
@@ -158,6 +159,7 @@ EmojiLocalService.prototype.create = function * (o) {
           , scopes: o.scopes
           , created_by: o.session.account_id
           , asset_url: this.s3_base_url + s3_file_name
+          , asset_hash: file_sha
           , emoji_collection_id: o.emoji_collection_id
           , extra_data: o.extra_data
         })
@@ -179,6 +181,7 @@ EmojiLocalService.prototype._update = function * (o) {
           , scopes: o.scopes
           , created_by: o.session.account_id
           , asset_url: o.asset_url
+          , asset_hash: o.asset_hash
           , emoji_collection_id: o.emoji_collection_id
           , extra_data: o.extra_data
         })
@@ -243,7 +246,8 @@ EmojiLocalService.prototype.upsert = function * (o) {
         if (db_emoji.updated_at.isSame(o.updated_at)) {
             var file_data = yield readFile_thunk(o.local_file_name)
               , original_file_name_ext = path.extname(o.original_file_name)
-              , s3_file_name = this.get_file_sha(file_data) + original_file_name_ext
+              , file_sha = this.get_file_sha(file_data)
+              , s3_file_name = file_sha + original_file_name_ext
               , put_response = yield this.s3_bucket_put_object({
                     Key: s3_file_name
                   , Body: file_data
@@ -251,6 +255,7 @@ EmojiLocalService.prototype.upsert = function * (o) {
 
             o.created_at = db_emoji.created_at
             o.asset_url = this.s3_base_url + s3_file_name
+            o.asset_hash = file_sha
             return yield this._update(o)
         } else {
             // Updating from a stale version. Disallow. Return, db version.
@@ -260,7 +265,8 @@ EmojiLocalService.prototype.upsert = function * (o) {
         // Create.
         var file_data = yield readFile_thunk(o.local_file_name)
           , original_file_name_ext = path.extname(o.original_file_name)
-          , s3_file_name = this.get_file_sha(file_data) + original_file_name_ext
+          , file_sha = this.get_file_sha(file_data)
+          , s3_file_name = file_sha + original_file_name_ext
           , put_response = yield this.s3_bucket_put_object({
                 Key: s3_file_name
               , Body: file_data
@@ -274,6 +280,7 @@ EmojiLocalService.prototype.upsert = function * (o) {
               , scopes: o.scopes
               , created_by: o.session.account_id
               , asset_url: this.s3_base_url + s3_file_name
+              , asset_hash: file_sha
               , emoji_collection_id: o.emoji_collection_id
               , extra_data: o.extra_data
             })

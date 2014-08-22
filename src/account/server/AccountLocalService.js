@@ -6,7 +6,6 @@ var _ = require('underscore')
   , StaticMixin = require('../../common/StaticMixin')
   , thunkify = require('thunkify')
   , ValidationMixin = require('src/common').ValidationMixin
-  , validator = require('validator')
 
 var AccountLocalService = function AccountLocalService() {
     this.ns = 'AccountLocalService'

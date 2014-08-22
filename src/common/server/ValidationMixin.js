@@ -81,4 +81,10 @@ ValidationMixin.prototype.validate_exists = function * (field_value) {
     }
 }
 
+ValidationMixin.prototype.validate_query = function * (query) {
+    if (!validator.isLength(query, 2)) {
+        throw new LocalServiceError(this.ns, 'bad_request', 'Queries must be at least 2 characters.', 400)
+    }
+}
+
 module.exports = ValidationMixin
