@@ -11,7 +11,7 @@ HTTPServiceMixin.prototype.handle_success = function(that, data, format) {
         that.status = 404
     }
 
-    console.log('handle_success: ', that.status, that.body)
+    console.log('handle_success: ', that.status, JSON.stringify(that.body, 4, 4))
 }
 
 HTTPServiceMixin.prototype.handle_exception = function(that, error) {

@@ -92,7 +92,7 @@ EmojiLocalService.prototype.validate_created_by = function(id) {
     }
 }
 
-EmojiLocalService.prototype.valid_file_extensions = ['.png', '.jpg', '.jpeg', 'gif']
+EmojiLocalService.prototype.valid_file_extensions = ['.png', '.jpg', '.jpeg', '.gif']
 EmojiLocalService.prototype.validate_file_name = function(file_name) {
     if (!file_name) {
         throw new LocalServiceError(this.ns, 'bad_request', 'File name is required.', 400)

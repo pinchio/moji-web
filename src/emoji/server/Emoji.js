@@ -95,7 +95,6 @@ Emoji.prototype.to_json = function() {
       , scopes: this.scopes
       , created_by: this.created_by
       , asset_url: this.asset_url
-      , asset_hash: this.asset_hash
       , emoji_collection_id: this.emoji_collection_id
       , extra_data: this.extra_data
     }
@@ -112,7 +111,6 @@ Emoji.prototype.to_privileged = function() {
       , scopes: this.scopes
       , created_by: this.created_by
       , asset_url: this.asset_url
-      , asset_hash: this.asset_hash
       , emoji_collection_id: this.emoji_collection_id
       , extra_data: this.extra_data
     }
