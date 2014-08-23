@@ -12,7 +12,7 @@ var get_url = function(args) {
     return 'http://' + host + ':' + port + path.join.apply(path, Array.prototype.slice.call(arguments))
 }
 
-describe.only('SearchHTTPService', function() {
+describe.skip('SearchHTTPService', function() {
     describe('list', function() {
         var stored_account
           , stored_emoji_collection

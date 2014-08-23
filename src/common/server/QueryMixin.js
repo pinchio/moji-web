@@ -68,16 +68,23 @@ QueryMixin.prototype._select_all_limit = function * (req) {
 }
 QueryMixin.prototype.select_all_limit = QueryMixin.prototype._select_all_limit
 
-QueryMixin.prototype._get_prepared_indices = function(keys) {
-    return keys.map(function(v, i) {
-        return '$' + (i + 1)
-    })
+QueryMixin.prototype._get_prepared_indices = function(len) {
+    var result = []
+
+    for (var i = 0, ii = len; i < ii; ++i) {
+        result.push('$' + (i + 1))
+    }
+
+    return result
 }
 
 QueryMixin.prototype._insert = function * (req) {
+    console.log('11', this.columns.length)
+    console.log('12', this._get_prepared_indices(this.columns.length))
+
     var query = 'insert into ' + this.table + ' '
               + '(' + this.columns_string() + ') values '
-              + '(' + this._get_prepared_indices(this.columns).join(', ') + ') '
+              + '(' + this._get_prepared_indices(this.columns.length).join(', ') + ') '
               + 'returning ' + this.columns_string()
       , req = req.to_db()
       , values = this.columns.map(function(column) {
@@ -99,22 +106,34 @@ QueryMixin.prototype._get_non_id_columns = function() {
 }
 
 QueryMixin.prototype._update_by_id = function * (req) {
+    // Update only those fields that are defined.
+    // Use null to store nulls in db.
+    // This is to prevent issues with partial updates.
+    var query_columns = []
+      , values = []
+
+    for (var i = 0, ii = this.columns.length; i < ii; ++i) {
+        var column = this.columns[i]
+
+        if (column !== 'id' && req[column] !== void 0) {
+            query_columns.push(column)
+
+            if (_.isArray(req[column])) {
+                values.push('{' + req[column].join(',') + '}')
+            } else {
+                values.push(req[column])
+            }
+        }
+    }
+
+    values.push(req.id)
+
     var query = 'update ' + this.table + ' '
-        + 'set (' + this._get_non_id_columns().join(', ') + ') '
-        + '= (' + this._get_prepared_indices(this._get_non_id_columns()).join(', ') + ') '
-        + 'where id=$' + this.columns.length
+        + 'set (' + query_columns.join(', ') + ') '
+        + '= (' + this._get_prepared_indices(query_columns.length).join(', ') + ') '
+        + 'where id=$' + (query_columns.length + 1) + ' '
         + 'returning ' + this.columns_string()
       , req = req.to_db()
-      , values = this.columns.map(function(column) {
-            if (_.isArray(req[column])) {
-                return '{' + req[column].join(',') + '}'
-            } else {
-                return req[column]
-            }
-        })
-
-    // Put id at the very end.
-    values.push(values.shift())
 
     return yield this.query({query: query, values: values})
 }

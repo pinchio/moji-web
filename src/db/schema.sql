@@ -44,6 +44,8 @@ CREATE TABLE emoji (
     created_by      char(36),
     asset_url       varchar(512),
     asset_hash      varchar(512),
+    sent_count      integer NOT NULL DEFAULT 0,
+    saved_count     integer NOT NULL DEFAULT 0,
     emoji_collection_id char(36),
     extra_data      text
 );

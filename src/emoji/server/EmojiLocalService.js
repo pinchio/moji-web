@@ -226,8 +226,7 @@ EmojiLocalService.prototype.upsert = function * (o) {
     }
 
     // Make sure emoji exists.
-    var db_emojis = yield EmojiPersistenceService.select_by_id({id: o.id})
-      , db_emoji = db_emojis.first()
+    var db_emoji = (yield EmojiPersistenceService.select_by_id({id: o.id})).first()
 
     if (db_emoji) {
         // Update.
@@ -256,6 +255,9 @@ EmojiLocalService.prototype.upsert = function * (o) {
             o.created_at = db_emoji.created_at
             o.asset_url = this.s3_base_url + s3_file_name
             o.asset_hash = file_sha
+            o.sent_count = db_emoji.sent_count
+            o.saved_count = db_emoji.saved_count
+
             return yield this._update(o)
         } else {
             // Updating from a stale version. Disallow. Return, db version.
@@ -353,8 +355,7 @@ EmojiLocalService.prototype.delete_by_id = function * (o) {
     this.validate_id(o.id)
     this.validate_session(o.session)
 
-    var emojis = yield EmojiPersistenceService.select_by_id({id: o.id})
-      , emoji = emojis.first()
+    var emoji = (yield EmojiPersistenceService.select_by_id({id: o.id})).first()
 
     if (emoji) {
         if (emoji.deleted_at) {
