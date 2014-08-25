@@ -100,7 +100,8 @@ CHANGELOG
 
 2014-8-22
 ---
-
+- Search deduping.
+- Add sent_count and saved_count to emoji schema.
 
 2014-8-20
 ---

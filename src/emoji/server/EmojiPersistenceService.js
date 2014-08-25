@@ -46,9 +46,10 @@ EmojiPersistenceService.prototype.select_by_created_by__emoji_collection_id__sco
 }
 
 EmojiPersistenceService.prototype.select_by_query__created_by__not_deleted = function * (req) {
-    // updated_at is necessary in inner query to grab right row for each distinct.
-    var query = 'select * from ('
-                  + 'select distinct on (asset_hash) * '
+    var query = 'select ' + this.columns_string() + ' '
+              + 'from ('
+                  + 'select ' + this.columns_string() + ', '
+                  + 'row_number() over(partition by asset_hash order by sent_count desc, updated_at desc) as rn '
                   + 'from ' + this.table + ' '
                   + 'where (created_by = $1 or \'public_read\' = any(scopes)) '
                   + 'and ('
@@ -58,9 +59,10 @@ EmojiPersistenceService.prototype.select_by_query__created_by__not_deleted = fun
                       + '@@ to_tsquery(\'english\', $2)'
                   + ') '
                   + 'and deleted_at is null '
-                  + 'order by asset_hash, updated_at desc '
-                  + 'limit 100'
-              + ') b order by b.updated_at desc'
+              + ') b '
+              + 'where b.rn = 1 '
+              + 'order by b.updated_at desc '
+              + 'limit 100'
       , values = [req.created_by, req.query]
 
     return yield this.query({query: query, values: values})
