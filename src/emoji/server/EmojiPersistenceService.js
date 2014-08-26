@@ -17,6 +17,8 @@ var EmojiPersistenceService = function EmojiPersistenceService() {
       , 'created_by'
       , 'asset_url'
       , 'asset_hash'
+      , 'sent_count'
+      , 'saved_count'
       , 'emoji_collection_id'
       , 'extra_data'
     ]
@@ -45,7 +47,7 @@ EmojiPersistenceService.prototype.select_by_created_by__emoji_collection_id__sco
     return yield this.query({query: query, values: values})
 }
 
-EmojiPersistenceService.prototype.select_by_query__created_by__not_deleted = function * (req) {
+EmojiPersistenceService.prototype.select_by_query__created_by = function * (req) {
     var query = 'select ' + this.columns_string() + ' '
               + 'from ('
                   + 'select ' + this.columns_string() + ', '
@@ -61,7 +63,7 @@ EmojiPersistenceService.prototype.select_by_query__created_by__not_deleted = fun
                   + 'and deleted_at is null '
               + ') b '
               + 'where b.rn = 1 '
-              + 'order by b.updated_at desc '
+              + 'order by sent_count desc, updated_at desc '
               + 'limit 100'
       , values = [req.created_by, req.query]
 

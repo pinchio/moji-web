@@ -102,6 +102,7 @@ CHANGELOG
 ---
 - Use `npm run setup` before pushing to production.
 - Use ValidationMixin for all validation.
+- Add collections to search results.
 
 2014-8-22
 ---

@@ -371,7 +371,7 @@ describe('SearchHTTPService', function() {
             })
         })
 
-        it.skip('should find emoji collections through display_name', function(done) {
+        it('should find emoji collections through display_name', function(done) {
             var query = encodeURIComponent('super')
             request({
                     url: get_url('/_/api/search?q=' + query)
@@ -387,7 +387,7 @@ describe('SearchHTTPService', function() {
             })
         })
 
-        it.skip('should find emoji collections through tags', function(done) {
+        it('should find emoji collections through tags', function(done) {
             var query = encodeURIComponent('cute')
             request({
                     url: get_url('/_/api/search?q=' + query)
@@ -403,7 +403,7 @@ describe('SearchHTTPService', function() {
             })
         })
 
-        it.skip('should delete emoji collection', function(done) {
+        it('should delete emoji collection', function(done) {
             request({
                     url: get_url('/_/api/emoji_collection/' + stored_emoji_collection.id)
                   , method: 'DELETE'
@@ -416,7 +416,7 @@ describe('SearchHTTPService', function() {
             })
         })
 
-        it.skip('should not find deleted emoji collections', function(done) {
+        it('should not find deleted emoji collections', function(done) {
             var query = encodeURIComponent('cute')
             request({
                     url: get_url('/_/api/search?q=' + query)

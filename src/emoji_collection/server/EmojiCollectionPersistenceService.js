@@ -43,7 +43,7 @@ EmojiCollectionPersistenceService.prototype.select_by_created_by__scopes__not_de
     return yield this.query({query: query, values: values})
 }
 
-EmojiCollectionPersistenceService.prototype.select_by_query__created_by__not_deleted = function * (req) {
+EmojiCollectionPersistenceService.prototype.select_by_query__created_by = function * (req) {
    var query = 'select * '
               + 'from ' + this.table + ' '
               + 'where (created_by = $1 or \'public_read\' = any(scopes)) '

@@ -20,13 +20,13 @@ SearchLocalService.prototype.get_by_query = function * (o) {
           , created_by: o.session.account_id
           , session: o.session
         })
-      // , emoji_collections = yield EmojiCollectionLocalService.get_by_query__created_by({
-      //       query: query
-      //     , created_by: o.session.account_id
-      //     , session: o.session
-      //   })
+      , emoji_collections = yield EmojiCollectionLocalService.get_by_query__created_by({
+            query: query
+          , created_by: o.session.account_id
+          , session: o.session
+        })
 
-    return {emojis: emojis}
+    return {emojis: emojis, emoji_collections: emoji_collections}
 }
 
 module.exports = SearchLocalService

@@ -173,7 +173,7 @@ EmojiCollectionLocalService.prototype.get_by_query__created_by = function * (o) 
     yield this.validate_query(o.query)
 
     var query = o.query.replace(/\s/g, '&')
-      , emojis = yield EmojiCollectionPersistenceService.select_by_query__created_by__not_deleted({
+      , emojis = yield EmojiCollectionPersistenceService.select_by_query__created_by({
             query: o.query
           , created_by: o.created_by
         })
