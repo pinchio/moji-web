@@ -101,6 +101,7 @@ CHANGELOG
 - Use `npm run setup` before pushing to production.
 - Use ValidationMixin for all validation.
 - Add collections to search results.
+- Use POST /_/api/event with {event: 'emoji_sent', properties: <emoji_id>} to track emoji sent.
 
 2014-8-22
 ---

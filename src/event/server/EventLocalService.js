@@ -23,6 +23,18 @@ EventLocalService.prototype.create = function * (o) {
 
     yield this.validate_number(properties_keys.length, 0, 10, 'Number of properties')
 
+    if (o.event === 'emoji_sent') {
+        yield this.validate_uuid(o.properties.emoji_id, '`emoji_id`')
+        yield EmojiLocalService.increment_sent_count({
+            id: o.properties.emoji_id
+          , session: o.session
+        })
+    } else if (o.event === 'emoji_saved') {
+    } else {
+        // Intentionally left blank.
+        // Continue storing the event.
+    }
+
     var event_group_id = uuid.v4()
       , created_by = o.session.account_id
       , events = [Event.from_create({
@@ -44,11 +56,7 @@ EventLocalService.prototype.create = function * (o) {
         }))
     }
 
-    var inserted_events = yield EventPersistenceService.insert(events)
-
-    if (o.event === 'emoji_send') {
-    } else if (o.event === 'emoji_saved') {
-    }
+    yield EventPersistenceService.insert(events)
 
     return
 }

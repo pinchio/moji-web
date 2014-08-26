@@ -288,6 +288,25 @@ EmojiLocalService.prototype.delete_by_id = function * (o) {
     }
 }
 
+EmojiLocalService.prototype.increment_sent_count = function * (o) {
+    yield this.validate_session(o.session)
+    yield this.validate_uuid(o.id, 'Emoji ids')
+
+    var current_emoji = yield this.get_by_id({session: o.session, id: o.id})
+
+    if (current_emoji === null) {
+        throw new LocalServiceError(this.ns, 'not_found', 'Not found.', 404)
+    }
+
+    var updated_emoji = (yield EmojiPersistenceService.increment({
+            column: 'sent_count'
+          , amount: 1
+          , id: o.id
+        })).first()
+
+    return updated_emoji
+}
+
 module.exports = EmojiLocalService
 
 var SessionLocalService = require('src/session/server/SessionLocalService').get_instance()

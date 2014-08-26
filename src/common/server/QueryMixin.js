@@ -160,11 +160,22 @@ QueryMixin.prototype._update_by_id = function * (req) {
     var query = 'update ' + this.table + ' '
         + 'set (' + query_columns.join(', ') + ') '
         + '= (' + this._get_prepared_indices(query_columns.length).join(', ') + ') '
-        + 'where id=$' + (query_columns.length + 1) + ' '
+        + 'where id = $' + (query_columns.length + 1) + ' '
         + 'returning ' + this.columns_string()
 
     return yield this.query({query: query, values: values})
 }
+
 QueryMixin.prototype.update_by_id = QueryMixin.prototype._update_by_id
+
+QueryMixin.prototype.increment = function * (req) {
+    var query = 'update ' + this.table + ' '
+        + 'set ' + req.column + ' = ' + req.column + ' + ' + req.amount + ' '
+        + 'where id = $1 '
+        + 'returning ' + this.columns_string()
+      , values = [req.id]
+
+    return yield this.query({query: query, values: values})
+}
 
 module.exports = QueryMixin
