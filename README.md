@@ -98,6 +98,11 @@ IN-PROGRESS
 CHANGELOG
 ===
 
+2014-8-26
+---
+- Use `npm run setup` before pushing to production.
+- Use ValidationMixin for all validation.
+
 2014-8-22
 ---
 - Search deduping.

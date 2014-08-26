@@ -1,7 +1,7 @@
-var HTTPServiceMixin = require('src/common').HTTPServiceMixin
-  , _ = require('underscore')
-  , StaticMixin = require('../../common/StaticMixin')
+var _ = require('underscore')
   , AccountLocalService = require('./AccountLocalService').get_instance()
+  , HTTPServiceMixin = require('src/common/server/HTTPServiceMixin')
+  , StaticMixin = require('src/common/StaticMixin')
 
 var AccountHTTPService = function AccountHTTPService() {
     this.ns = 'AccountHTTPService'

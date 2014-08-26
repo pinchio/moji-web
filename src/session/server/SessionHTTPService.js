@@ -1,7 +1,6 @@
-var HTTPServiceMixin = require('src/common').HTTPServiceMixin
+var HTTPServiceMixin = require('src/common/server/HTTPServiceMixin')
   , _ = require('underscore')
-  , StaticMixin = require('../../common/StaticMixin')
-  , SessionLocalService = require('./SessionLocalService').get_instance()
+  , StaticMixin = require('src/common/StaticMixin')
 
 var SessionHTTPService = function SessionHTTPService() {
     this.ns = 'SessionHTTPService'
@@ -44,3 +43,5 @@ SessionHTTPService.prototype.del = function() {
 }
 
 module.exports = SessionHTTPService
+
+var SessionLocalService = require('./SessionLocalService').get_instance()

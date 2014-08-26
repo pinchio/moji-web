@@ -1,5 +1,5 @@
 var assert = require('chai').assert
-  , server = require('src/server').Server.get_instance()
+  , server = require('src/server/server/Server').get_instance()
   , config = require('config')
   , host = config.get('server').host
   , port = config.get('server').port

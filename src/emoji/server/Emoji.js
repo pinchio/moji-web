@@ -1,9 +1,8 @@
 var _ = require('underscore')
+  , LocalServiceError = require('src/common/server/LocalServiceError')
+  , ModelMixin = require('src/common/ModelMixin')
   , Moment = require('moment')
   , uuid = require('node-uuid')
-  , validator = require('validator')
-  , ModelMixin = require('../../common/ModelMixin')
-  , LocalServiceError = require('src/common').LocalServiceError
 
 var Emoji = function(o) {
     var self = this

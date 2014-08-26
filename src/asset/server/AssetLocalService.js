@@ -1,7 +1,7 @@
 var _ = require('underscore')
-  , LocalServiceError = require('src/common').LocalServiceError
+  , LocalServiceError = require('src/common/server/LocalServiceError')
   , AssetPersistenceService = require('./AssetPersistenceService').get_instance()
-  , StaticMixin = require('../../common/StaticMixin')
+  , StaticMixin = require('src/common/StaticMixin')
   , easy_pbkdf2 = require('easy-pbkdf2')({DEFAULT_HASH_ITERATIONS: 10000, SALT_SIZE: 32, KEY_LENGTH: 256})
   , thunkify = require('thunkify')
   , Asset = require('./Asset')
@@ -11,7 +11,7 @@ var _ = require('underscore')
   , config = require('../../../config')
   , path = require('path')
   , crypto = require('crypto')
-  , ValidationMixin = require('src/common').ValidationMixin
+  , ValidationMixin = require('src/common/server/ValidationMixin')
 
 // FIXME: this endpoint is vulnerable to DDOS. Should rate limit uploads by session. 429
 var AssetLocalService = function AssetLocalService() {

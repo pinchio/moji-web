@@ -1,5 +1,5 @@
 var _ = require('underscore')
-  , QueryMixin = require('src/common').QueryMixin
+  , QueryMixin = require('src/common/server/QueryMixin')
   , Assets = require('src/asset/server/Assets')
   , StaticMixin = require('src/common/StaticMixin')
 

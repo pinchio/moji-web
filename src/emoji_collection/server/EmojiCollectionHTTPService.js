@@ -1,6 +1,6 @@
-var HTTPServiceMixin = require('src/common').HTTPServiceMixin
+var HTTPServiceMixin = require('src/common/server/HTTPServiceMixin')
   , _ = require('underscore')
-  , StaticMixin = require('../../common/StaticMixin')
+  , StaticMixin = require('src/common/StaticMixin')
   , EmojiCollectionLocalService = require('./EmojiCollectionLocalService').get_instance()
   , co_busboy = require('co-busboy')
   , fs = require('fs')

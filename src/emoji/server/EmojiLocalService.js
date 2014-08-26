@@ -6,12 +6,11 @@ var _ = require('underscore')
   , Emoji = require('./Emoji')
   , EmojiPersistenceService = require('./EmojiPersistenceService').get_instance()
   , fs = require('fs')
-  , LocalServiceError = require('src/common').LocalServiceError
+  , LocalServiceError = require('src/common/server/LocalServiceError')
   , path = require('path')
-  , StaticMixin = require('../../common/StaticMixin')
+  , StaticMixin = require('src/common/StaticMixin')
   , thunkify = require('thunkify')
-  , ValidationMixin = require('src/common').ValidationMixin
-  , validator = require('validator')
+  , ValidationMixin = require('src/common/server/ValidationMixin')
 
 var readFile_thunk = thunkify(fs.readFile)
 
@@ -265,8 +264,8 @@ EmojiLocalService.prototype.get_by_query__created_by = function * (o) {
 }
 
 EmojiLocalService.prototype.delete_by_id = function * (o) {
-    yield this.validate_uuid(o.id, 'Emoji ids')
     yield this.validate_session(o.session)
+    yield this.validate_uuid(o.id, 'Emoji ids')
 
     var emoji = (yield EmojiPersistenceService.select_by_id({id: o.id})).first()
 

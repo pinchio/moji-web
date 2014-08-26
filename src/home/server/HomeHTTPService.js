@@ -1,6 +1,6 @@
-var HTTPServiceMixin = require('src/common').HTTPServiceMixin
+var HTTPServiceMixin = require('src/common/server/HTTPServiceMixin')
   , _ = require('underscore')
-  , StaticMixin = require('../../common/StaticMixin')
+  , StaticMixin = require('src/common/StaticMixin')
 
 var HomeHTTPService = function HomeHTTPService() {
     this.ns = 'HomeHTTPService'

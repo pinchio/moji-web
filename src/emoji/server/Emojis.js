@@ -1,6 +1,6 @@
 var _ = require('underscore')
   , Emoji = require('./Emoji')
-  , CollectionMixin = require('../../common/CollectionMixin')
+  , CollectionMixin = require('src/common/CollectionMixin')
 
 var Emojis = function(o) {
     this.ns = 'Emojis'
@@ -9,9 +9,9 @@ var Emojis = function(o) {
         this[key] = o[key]
     }
 }
-Emojis.keys = ['list']
-Emojis.model = Emoji
 _.extend(Emojis, CollectionMixin)
 _.extend(Emojis.prototype, CollectionMixin.prototype)
+
+Emojis.model = Emoji
 
 module.exports = Emojis

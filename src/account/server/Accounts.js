@@ -1,6 +1,6 @@
 var _ = require('underscore')
   , Account = require('./Account')
-  , CollectionMixin = require('../../common/CollectionMixin')
+  , CollectionMixin = require('src/common/CollectionMixin')
 
 var Accounts = function(o) {
     this.ns = 'Accounts'
@@ -9,9 +9,9 @@ var Accounts = function(o) {
         this[key] = o[key]
     }
 }
-Accounts.keys = ['list']
-Accounts.model = Account
 _.extend(Accounts, CollectionMixin)
 _.extend(Accounts.prototype, CollectionMixin.prototype)
+
+Accounts.model = Account
 
 module.exports = Accounts

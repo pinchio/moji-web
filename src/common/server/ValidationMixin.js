@@ -1,9 +1,9 @@
-var LocalServiceError = require('src/common/server/LocalServiceError')
-  , path = require('path')
-  , validator = require('validator')
-  , thunkify = require('thunkify')
+var _ = require('underscore')
   , easy_pbkdf2 = require('easy-pbkdf2')({DEFAULT_HASH_ITERATIONS: 10000, SALT_SIZE: 32, KEY_LENGTH: 256})
-  , _ = require('underscore')
+  , LocalServiceError = require('src/common/server/LocalServiceError')
+  , path = require('path')
+  , thunkify = require('thunkify')
+  , validator = require('validator')
 
 var ValidationMixin = function() {}
 
@@ -129,6 +129,21 @@ ValidationMixin.prototype.validate_scopes = function * (scopes) {
 
         if (this.valid_scopes.indexOf(scope) === -1) {
             throw new LocalServiceError(this.ns, 'bad_request', 'Invalid scope.', 400)
+        }
+    }
+}
+
+ValidationMixin.prototype.validate_extra_data = function * (extra_data) {
+    var keys = Object.keys(extra_data)
+
+    for (var i = 0, ii = keys.length; i < ii; ++i) {
+        var key = keys[i]
+        if (this.valid_extra_data_keys.indexOf(key) === -1) {
+            throw new LocalServiceError(this.ns, 'bad_request', 'Extra_data ' + key + ' is not allowed.', 400)
+        }
+
+        if (!_.isString(extra_data[key])) {
+            throw new LocalServiceError(this.ns, 'bad_request', key + ' contains an invalid value.', 400)
         }
     }
 }

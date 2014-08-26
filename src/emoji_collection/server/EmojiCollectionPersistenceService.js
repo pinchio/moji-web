@@ -1,7 +1,7 @@
 var _ = require('underscore')
-  , QueryMixin = require('src/common').QueryMixin
+  , QueryMixin = require('src/common/server/QueryMixin')
   , EmojiCollections = require('./EmojiCollections')
-  , StaticMixin = require('../../common/StaticMixin')
+  , StaticMixin = require('src/common/StaticMixin')
 
 var EmojiCollectionPersistenceService = function EmojiCollectionPersistenceService() {
     this.ns = 'EmojiCollectionPersistenceService'

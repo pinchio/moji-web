@@ -1,5 +1,7 @@
 var CollectionMixin = function() {}
 
+CollectionMixin.keys = ['list']
+
 CollectionMixin.from_db = function(raw) {
     var results = []
 

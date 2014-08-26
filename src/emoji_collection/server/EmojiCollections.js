@@ -1,6 +1,6 @@
 var _ = require('underscore')
   , EmojiCollection = require('./EmojiCollection')
-  , CollectionMixin = require('../../common/CollectionMixin')
+  , CollectionMixin = require('src/common/CollectionMixin')
 
 var EmojiCollections = function(o) {
     this.ns = 'EmojiCollections'

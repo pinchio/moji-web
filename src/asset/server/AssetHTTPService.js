@@ -1,14 +1,14 @@
-var HTTPServiceMixin = require('src/common').HTTPServiceMixin
-  , _ = require('underscore')
-  , StaticMixin = require('../../common/StaticMixin')
+var _ = require('underscore')
   , AssetLocalService = require('./AssetLocalService').get_instance()
+  , HTTPServiceMixin = require('src/common/server/HTTPServiceMixin')
+  , StaticMixin = require('src/common/StaticMixin')
   , co_busboy = require('co-busboy')
   , fs = require('fs')
   , uuid = require('node-uuid')
   , co = require('co')
   , thunkify = require('thunkify')
-  , LocalServiceError = require('src/common').LocalServiceError
-  , ValidationMixin = require('src/common').ValidationMixin
+  , LocalServiceError = require('src/common/server/LocalServiceError')
+  , ValidationMixin = require('src/common/server/ValidationMixin')
 
 var AssetHTTPService = function AssetHTTPService() {
     this.ns = 'AssetHTTPService'

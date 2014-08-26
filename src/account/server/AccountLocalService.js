@@ -2,10 +2,10 @@ var _ = require('underscore')
   , Account = require('./Account')
   , AccountPersistenceService = require('./AccountPersistenceService').get_instance()
   , easy_pbkdf2 = require('easy-pbkdf2')({DEFAULT_HASH_ITERATIONS: 10000, SALT_SIZE: 32, KEY_LENGTH: 256})
-  , LocalServiceError = require('src/common').LocalServiceError
-  , StaticMixin = require('../../common/StaticMixin')
+  , LocalServiceError = require('src/common/server/LocalServiceError')
+  , StaticMixin = require('src/common/StaticMixin')
   , thunkify = require('thunkify')
-  , ValidationMixin = require('src/common').ValidationMixin
+  , ValidationMixin = require('src/common/server/ValidationMixin')
 
 var AccountLocalService = function AccountLocalService() {
     this.ns = 'AccountLocalService'
@@ -142,4 +142,4 @@ AccountLocalService.prototype.get_by_username_password = function * (o) {
 
 module.exports = AccountLocalService
 
-var SessionLocalService = require('../../session/server/SessionLocalService').get_instance()
+var SessionLocalService = require('src/session/server/SessionLocalService').get_instance()

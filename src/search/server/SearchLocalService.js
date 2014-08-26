@@ -1,7 +1,7 @@
 var _ = require('underscore')
-  , LocalServiceError = require('src/common').LocalServiceError
-  , StaticMixin = require('../../common/StaticMixin')
-  , ValidationMixin = require('src/common').ValidationMixin
+  , LocalServiceError = require('src/common/server/LocalServiceError')
+  , StaticMixin = require('src/common/StaticMixin')
+  , ValidationMixin = require('src/common/server/ValidationMixin')
 
 var SearchLocalService = function SearchLocalService() {
     this.ns = 'SearchLocalService'

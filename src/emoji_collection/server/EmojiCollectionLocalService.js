@@ -1,18 +1,19 @@
 var _ = require('underscore')
-  , validator = require('validator')
-  , LocalServiceError = require('src/common').LocalServiceError
-  , EmojiCollectionPersistenceService = require('./EmojiCollectionPersistenceService').get_instance()
-  , StaticMixin = require('../../common/StaticMixin')
-  , easy_pbkdf2 = require('easy-pbkdf2')({DEFAULT_HASH_ITERATIONS: 10000, SALT_SIZE: 32, KEY_LENGTH: 256})
-  , thunkify = require('thunkify')
-  , EmojiCollection = require('./EmojiCollection')
-  , fs = require('fs')
-  , readFile_thunk = thunkify(fs.readFile)
   , AWS = require('aws-sdk')
   , config = require('../../../config')
-  , path = require('path')
   , crypto = require('crypto')
+  , easy_pbkdf2 = require('easy-pbkdf2')({DEFAULT_HASH_ITERATIONS: 10000, SALT_SIZE: 32, KEY_LENGTH: 256})
+  , EmojiCollection = require('./EmojiCollection')
+  , EmojiCollectionPersistenceService = require('./EmojiCollectionPersistenceService').get_instance()
+  , fs = require('fs')
+  , LocalServiceError = require('src/common/server/LocalServiceError')
   , Moment = require('moment')
+  , path = require('path')
+  , StaticMixin = require('src/common/StaticMixin')
+  , thunkify = require('thunkify')
+  , ValidationMixin = require('src/common/server/ValidationMixin')
+
+var readFile_thunk = thunkify(fs.readFile)
 
 var EmojiCollectionLocalService = function EmojiCollectionLocalService() {
     this.ns = 'EmojiCollectionLocalService'
@@ -21,99 +22,9 @@ var EmojiCollectionLocalService = function EmojiCollectionLocalService() {
     this.s3_base_url = this.s3_bucket.endpoint.href + config.get('s3').bucket + '/'
 }
 _.extend(EmojiCollectionLocalService, StaticMixin)
-
-EmojiCollectionLocalService.prototype.validate_session = function(session) {
-    if (!session.account_id) {
-        throw new LocalServiceError(this.ns, 'unauthorized', 'Authentication required.', 401)
-    }
-}
-
-// EmojiCollectionLocalService.prototype.valid_display_name_regex = /^[A-Za-z0-9\s\-_,\.;:()]*$/
-EmojiCollectionLocalService.prototype.valid_display_name_regex = /.*/
-
-EmojiCollectionLocalService.prototype.validate_display_name = function(display_name) {
-    if (_.isString(display_name) && display_name.length === 0) {
-        return true
-    }
-
-    if (!validator.isLength(display_name, 0, 128)) {
-        throw new LocalServiceError(this.ns, 'bad_request', 'Display name must be less than 129 characters.', 400)
-    }
-
-    if (!validator.matches(display_name, this.valid_display_name_regex)) {
-        throw new LocalServiceError(this.ns, 'bad_request', 'Display name can only contain letters, numbers and standard punctuation.', 400)
-    }
-}
-
-EmojiCollectionLocalService.prototype.validate_tags = function(tags) {
-    if (!_.isArray(tags)) {
-        throw new LocalServiceError(this.ns, 'bad_request', 'Tags must be an array.', 400)
-    }
-
-    for (var i = 0, ii = tags.length; i < ii; ++i) {
-        var tag = tags[i]
-
-        if (!validator.isAlphanumeric(tag)) {
-            throw new LocalServiceError(this.ns, 'bad_request', 'Tags can only contain letters and numbers.', 400)
-        }
-    }
-}
-
-EmojiCollectionLocalService.prototype.valid_scopes = ['public_read']
-
-EmojiCollectionLocalService.prototype.validate_scopes = function(scopes) {
-    if (!_.isArray(scopes)) {
-        throw new LocalServiceError(this.ns, 'bad_request', 'Scopes must be an array.', 400)
-    }
-
-    for (var i = 0, ii = scopes.length; i < ii; ++i) {
-        var scope = scopes[i]
-
-        if (this.valid_scopes.indexOf(scope) === -1) {
-            throw new LocalServiceError(this.ns, 'bad_request', 'Invalid scope.', 400)
-        }
-    }
-}
-
-EmojiCollectionLocalService.prototype.validate_id = function(id) {
-    if (!validator.isLength(id, 10)) {
-        throw new LocalServiceError(this.ns, 'bad_request', 'Emoji collection ids contain more than 10 characters.', 400)
-    }
-}
-
-EmojiCollectionLocalService.prototype.validate_created_by = function(id) {
-    if (!validator.isLength(id, 10)) {
-        throw new LocalServiceError(this.ns, 'bad_request', 'Emoji collection created by ids contain more than 10 characters.', 400)
-    }
-}
+_.extend(EmojiCollectionLocalService.prototype, ValidationMixin.prototype)
 
 EmojiCollectionLocalService.prototype.valid_extra_data_keys = ['background_color_light', 'background_color_dark']
-EmojiCollectionLocalService.prototype.validate_extra_data = function(extra_data) {
-    var keys = Object.keys(extra_data)
-
-    for (var i = 0, ii = keys.length; i < ii; ++i) {
-        var key = keys[i]
-        if (this.valid_extra_data_keys.indexOf(key) === -1) {
-            throw new LocalServiceError(this.ns, 'bad_request', 'Extra_data ' + key + ' is not allowed.', 400)
-        }
-
-        if (key === 'background_color_light') {
-            if (!_.isString(extra_data[key])) {
-                throw new LocalServiceError(this.ns, 'bad_request', 'Invalid value for background_color_light.', 400)
-            }
-        } else if (key === 'background_color_dark') {
-            if (!_.isString(extra_data[key])) {
-                throw new LocalServiceError(this.ns, 'bad_request', 'Invalid value for background_color_dark.', 400)
-            }
-        }
-    }
-}
-
-EmojiCollectionLocalService.prototype.validate_query = function(query) {
-    if (!validator.isLength(query, 2)) {
-        throw new LocalServiceError(this.ns, 'bad_request', 'Queries must be at least 2 characters.', 400)
-    }
-}
 
 EmojiCollectionLocalService.prototype.create = function * (o) {
     o.display_name = o.display_name || ''
@@ -122,11 +33,11 @@ EmojiCollectionLocalService.prototype.create = function * (o) {
     o.scopes = _.unique(o.scopes)
     o.extra_data = o.extra_data || {}
 
-    this.validate_session(o.session)
-    this.validate_display_name(o.display_name)
-    this.validate_tags(o.tags)
-    this.validate_scopes(o.scopes)
-    this.validate_extra_data(o.extra_data)
+    yield this.validate_session(o.session)
+    yield this.validate_display_name(o.display_name)
+    yield this.validate_tags(o.tags)
+    yield this.validate_scopes(o.scopes)
+    yield this.validate_extra_data(o.extra_data)
 
     var emoji_collection = EmojiCollection.from_create({
             slug_name: ''
@@ -168,13 +79,13 @@ EmojiCollectionLocalService.prototype.upsert = function * (o) {
     o.scopes = _.unique(o.scopes)
     o.extra_data = o.extra_data || {}
 
-    this.validate_id(o.id)
-    this.validate_session(o.session)
-    this.validate_display_name(o.display_name)
-    this.validate_tags(o.tags)
-    this.validate_scopes(o.scopes)
-    this.validate_created_by(o.created_by)
-    this.validate_extra_data(o.extra_data)
+    yield this.validate_session(o.session)
+    yield this.validate_uuid(o.id, 'Emoji collection ids')
+    yield this.validate_display_name(o.display_name)
+    yield this.validate_tags(o.tags)
+    yield this.validate_scopes(o.scopes)
+    yield this.validate_uuid(o.created_by, 'Emoji collection created by ids')
+    yield this.validate_extra_data(o.extra_data)
 
     if (o.created_by !== o.session.account_id) {
         throw new LocalServiceError(this.ns, 'not_found', 'Not found.', 404)
@@ -218,7 +129,7 @@ EmojiCollectionLocalService.prototype.upsert = function * (o) {
 }
 
 EmojiCollectionLocalService.prototype.get_by_id = function * (o) {
-    this.validate_id(o.id)
+    yield this.validate_uuid(o.id, 'Emoji collection ids')
 
     var emoji_collections = yield EmojiCollectionPersistenceService.select_by_id({id: o.id})
       , emoji_collection = emoji_collections.first()
@@ -239,9 +150,9 @@ EmojiCollectionLocalService.prototype.get_by_id = function * (o) {
 }
 
 EmojiCollectionLocalService.prototype.get_by_created_by__scopes = function * (o) {
-    this.validate_session(o.session)
-    this.validate_created_by(o.created_by)
-    this.validate_scopes(o.scopes)
+    yield this.validate_session(o.session)
+    yield this.validate_uuid(o.created_by, 'Emoji collection created by ids')
+    yield this.validate_scopes(o.scopes)
 
     if (o.session.account_id !== o.created_by) {
         var emoji_collections = yield EmojiCollectionPersistenceService.select_by_created_by__scopes__not_deleted({
@@ -258,8 +169,8 @@ EmojiCollectionLocalService.prototype.get_by_created_by__scopes = function * (o)
 }
 
 EmojiCollectionLocalService.prototype.get_by_query__created_by = function * (o) {
-    this.validate_session(o.session)
-    this.validate_query(o.query)
+    yield this.validate_session(o.session)
+    yield this.validate_query(o.query)
 
     var query = o.query.replace(/\s/g, '&')
       , emojis = yield EmojiCollectionPersistenceService.select_by_query__created_by__not_deleted({
@@ -271,8 +182,8 @@ EmojiCollectionLocalService.prototype.get_by_query__created_by = function * (o) 
 }
 
 EmojiCollectionLocalService.prototype.delete_by_id = function * (o) {
-    this.validate_id(o.id)
-    this.validate_session(o.session)
+    yield this.validate_session(o.session)
+    yield this.validate_uuid(o.id, 'Emoji collection ids')
 
     var emoji_collections = yield EmojiCollectionPersistenceService.select_by_id({id: o.id})
       , emoji_collection = emoji_collections.first()

@@ -1,4 +1,4 @@
-var server = require('src/server').Server.get_instance()
+var server = require('src/server/server/Server').get_instance()
   , config = require('config')
   , port = config.get('server').port
   , host = '0.0.0.0'

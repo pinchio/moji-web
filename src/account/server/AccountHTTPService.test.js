@@ -4,7 +4,7 @@ var assert = require('chai').assert
   , path = require('path')
   , port = config.get('server').port
   , request = require('request')
-  , server = require('src/server').Server.get_instance()
+  , server = require('src/server/server/Server').get_instance()
   , uuid = require('node-uuid')
 
 var get_url = function(args) {

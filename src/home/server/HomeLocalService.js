@@ -1,8 +1,8 @@
 var fs = require('fs')
   , _ = require('underscore')
   , path = require('path')
-  , CommonLocalService = require('src/common').CommonLocalService.get_instance()
-  , StaticMixin = require('../../common/StaticMixin')
+  , CommonLocalService = require('src/common/server/CommonLocalService').get_instance()
+  , StaticMixin = require('src/common/StaticMixin')
 
 var HomeLocalService = function HomeLocalService() {
     this.ns = 'HomeLocalService'

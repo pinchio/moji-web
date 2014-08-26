@@ -1,7 +1,7 @@
 var _ = require('underscore')
-  , QueryMixin = require('src/common').QueryMixin
   , Accounts = require('./Accounts')
-  , StaticMixin = require('../../common/StaticMixin')
+  , QueryMixin = require('src/common/server/QueryMixin')
+  , StaticMixin = require('src/common/StaticMixin')
 
 var AccountPersistenceService = function AccountPersistenceService() {
     this.ns = 'AccountPersistenceService'

@@ -1,7 +1,6 @@
 var _ = require('underscore')
-  , validator = require('validator')
-  , LocalServiceError = require('src/common').LocalServiceError
-  , StaticMixin = require('../../common/StaticMixin')
+  , LocalServiceError = require('src/common/server/LocalServiceError')
+  , StaticMixin = require('src/common/StaticMixin')
 
 var SessionLocalService = function SessionLocalService() {
     this.ns = 'SessionLocalService'
@@ -35,4 +34,4 @@ SessionLocalService.prototype.del = function * (o) {
 
 module.exports = SessionLocalService
 
-var AccountLocalService = require('../../account/server/AccountLocalService').get_instance()
+var AccountLocalService = require('src/account/server/AccountLocalService').get_instance()

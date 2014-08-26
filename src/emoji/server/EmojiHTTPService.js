@@ -1,13 +1,13 @@
-var HTTPServiceMixin = require('src/common').HTTPServiceMixin
+var HTTPServiceMixin = require('src/common/server/HTTPServiceMixin')
   , _ = require('underscore')
-  , StaticMixin = require('../../common/StaticMixin')
+  , StaticMixin = require('src/common/StaticMixin')
   , EmojiLocalService = require('./EmojiLocalService').get_instance()
   , co_busboy = require('co-busboy')
   , fs = require('fs')
   , uuid = require('node-uuid')
   , co = require('co')
   , thunkify = require('thunkify')
-  , LocalServiceError = require('src/common').LocalServiceError
+  , LocalServiceError = require('src/common/server/LocalServiceError')
 
 var EmojiHTTPService = function EmojiHTTPService() {
     this.ns = 'EmojiHTTPService'
