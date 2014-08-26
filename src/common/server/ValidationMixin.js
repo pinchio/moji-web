@@ -3,6 +3,7 @@ var LocalServiceError = require('src/common/server/LocalServiceError')
   , validator = require('validator')
   , thunkify = require('thunkify')
   , easy_pbkdf2 = require('easy-pbkdf2')({DEFAULT_HASH_ITERATIONS: 10000, SALT_SIZE: 32, KEY_LENGTH: 256})
+  , _ = require('underscore')
 
 var ValidationMixin = function() {}
 
@@ -23,7 +24,7 @@ ValidationMixin.prototype.validate_asset_file_name = function * (file_name, fiel
     var ext = path.extname(file_name)
 
     if (this.valid_asset_file_name_extensions.indexOf(ext) === -1) {
-        throw new LocalServiceError(this.ns, 'bad_request', field_name + ' extension not supported.', 400)
+        throw new LocalServiceError(this.ns, 'bad_request', field_name + ' file name extension not supported.', 400)
     }
 }
 
@@ -84,6 +85,51 @@ ValidationMixin.prototype.validate_exists = function * (field_value) {
 ValidationMixin.prototype.validate_query = function * (query) {
     if (!validator.isLength(query, 2)) {
         throw new LocalServiceError(this.ns, 'bad_request', 'Queries must be at least 2 characters.', 400)
+    }
+}
+
+// ValidationMixin.prototype.valid_display_name_regex = /^[A-Za-z0-9\s\-_,\.;:()]*$/
+ValidationMixin.prototype.valid_display_name_regex = /.*/
+ValidationMixin.prototype.validate_display_name = function * (display_name) {
+    if (_.isString(display_name) && display_name.length === 0) {
+        return true
+    }
+
+    if (!validator.isLength(display_name, 0, 128)) {
+        throw new LocalServiceError(this.ns, 'bad_request', 'Display name must be less than 129 characters.', 400)
+    }
+
+    if (!validator.matches(display_name, this.valid_display_name_regex)) {
+        throw new LocalServiceError(this.ns, 'bad_request', 'Display name can only contain letters, numbers and standard punctuation.', 400)
+    }
+}
+
+ValidationMixin.prototype.validate_tags = function * (tags) {
+    if (!_.isArray(tags)) {
+        throw new LocalServiceError(this.ns, 'bad_request', 'Tags must be an array.', 400)
+    }
+
+    for (var i = 0, ii = tags.length; i < ii; ++i) {
+        var tag = tags[i]
+
+        if (!validator.isAlphanumeric(tag)) {
+            throw new LocalServiceError(this.ns, 'bad_request', 'Tags can only contain letters and numbers.', 400)
+        }
+    }
+}
+
+ValidationMixin.prototype.valid_scopes = ['public_read']
+ValidationMixin.prototype.validate_scopes = function * (scopes) {
+    if (!_.isArray(scopes)) {
+        throw new LocalServiceError(this.ns, 'bad_request', 'Scopes must be an array.', 400)
+    }
+
+    for (var i = 0, ii = scopes.length; i < ii; ++i) {
+        var scope = scopes[i]
+
+        if (this.valid_scopes.indexOf(scope) === -1) {
+            throw new LocalServiceError(this.ns, 'bad_request', 'Invalid scope.', 400)
+        }
     }
 }
 

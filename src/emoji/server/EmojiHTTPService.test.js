@@ -67,7 +67,7 @@ describe('EmojiHTTPService', function() {
               , function(e, d, body) {
                     body = JSON.parse(body)
                     assert.equal(d.statusCode, 400)
-                    assert.equal(body.description, 'Emoji collection ids contain more than 10 characters.')
+                    assert.equal(body.description, 'Emoji collection ids must contain more than 10 characters.')
                     done()
                 }
             )
@@ -88,7 +88,7 @@ describe('EmojiHTTPService', function() {
               , function(e, d, body) {
                     body = JSON.parse(body)
                     assert.equal(d.statusCode, 400)
-                    assert.equal(body.description, 'Asset extension not supported.')
+                    assert.equal(body.description, 'Asset file name extension not supported.')
                     done()
                 }
             )
@@ -237,7 +237,7 @@ describe('EmojiHTTPService', function() {
               , function(e, d, body) {
                     body = JSON.parse(body)
                     assert.equal(d.statusCode, 400)
-                    assert.equal(body.description, 'Emoji ids contain more than 10 characters.')
+                    assert.equal(body.description, 'Emoji ids must contain more than 10 characters.')
                     done()
                 }
             )
@@ -257,7 +257,7 @@ describe('EmojiHTTPService', function() {
               , function(e, d, body) {
                     body = JSON.parse(body)
                     assert.equal(d.statusCode, 400)
-                    assert.equal(body.description, 'Emoji collection created by ids contain more than 10 characters.')
+                    assert.equal(body.description, 'Emoji collection created by ids must contain more than 10 characters.')
                     done()
                 }
             )
@@ -280,7 +280,7 @@ describe('EmojiHTTPService', function() {
               , function(e, d, body) {
                     body = JSON.parse(body)
                     assert.equal(d.statusCode, 400)
-                    assert.equal(body.description, 'Asset extension not supported.')
+                    assert.equal(body.description, 'Asset file name extension not supported.')
                     done()
                 }
             )

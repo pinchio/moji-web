@@ -19,14 +19,14 @@ RUN mkdir -p /var/www
 # RUN cd /tmp && npm install
 # RUN mkdir -p /opt/app && cp -a /tmp/node_modules /opt/app/
 
-ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
 # Configure nginx
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf
 
 ADD package.json /var/www/package.json
 ADD npm-shrinkwrap.json /var/www/npm-shrinkwrap.json
 RUN cd /var/www && npm install --production
+
+ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Install and run server
 ADD . /var/www
