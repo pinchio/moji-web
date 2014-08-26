@@ -8,7 +8,6 @@ var AccountHTTPService = function AccountHTTPService() {
 }
 _.extend(AccountHTTPService, StaticMixin)
 _.extend(AccountHTTPService.prototype, HTTPServiceMixin.prototype)
-// TODO: bring back this.req
 
 AccountHTTPService.prototype.get = function() {
     var self = this

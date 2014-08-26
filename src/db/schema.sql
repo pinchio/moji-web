@@ -50,12 +50,15 @@ CREATE TABLE emoji (
     extra_data      text
 );
 
-DROP TABLE emoji_stat;
-CREATE TABLE emoji_stat (
+DROP TABLE event;
+CREATE TABLE event (
     id              char(36) PRIMARY KEY,
-    last_sent_at    timestamptz,
-    sent_count      integer,
-    download_count  integer
+    created_at      timestamptz,
+    event           varchar(512),
+    label           varchar(512),
+    value           varchar(512),
+    event_group_id  char(36),
+    created_by      char(36)
 );
 
 DROP TABLE emoji_collection;

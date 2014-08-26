@@ -16,7 +16,7 @@
     "db:connect:production": "psql --host=aa1a5ouvvq3742b.cu6qafut7bux.us-west-1.rds.amazonaws.com --port=5432 --username=ebroot --password --dbname=mojigram",
     "db:schema:production": "psql --host=aa1a5ouvvq3742b.cu6qafut7bux.us-west-1.rds.amazonaws.com --port=5432 --username=ebroot --password --dbname=test -f src/db/schema.sql",
     "db:schema:development": "psql -f src/db/schema.sql",
-    "setup": "rm ./.git/hooks/pre-commit; ln -s ../../hook/pre-commit .git/hooks/pre-commit"
+    "setup": "mv ./.git/hooks/pre-commit ./.git/hooks/pre-commit.old; ln -s ../../hook/pre-commit .git/hooks/pre-commit"
   },
   "dependencies": {
     "aws-sdk": "2.0.11",

@@ -78,25 +78,53 @@ QueryMixin.prototype._get_prepared_indices = function(len) {
     return result
 }
 
+QueryMixin.prototype._get_values = function(req) {
+    return this.columns.map(function(column) {
+        if (_.isArray(req[column])) {
+            return '{' + req[column].join(',') + '}'
+        } else {
+            return req[column]
+        }
+    })
+}
+
 QueryMixin.prototype._insert = function * (req) {
-    console.log('11', this.columns.length)
-    console.log('12', this._get_prepared_indices(this.columns.length))
+    var self = this
+
+    if (_.isArray(req)) {
+        var row_count = req.length
+          , values = _.flatten(req.map(function(row) {
+                row = row.to_db()
+                return self._get_values(row)
+            }), true)
+    } else {
+        var row_count = 1
+          , req = req.to_db()
+          , values = this._get_values(req)
+    }
+
+    var rows = []
+
+    for (var i = 0, ii = row_count; i < ii; ++i) {
+        var one_row = []
+          , columns_count = this.columns.length
+          , offset = i * columns_count
+
+        for (var j = offset, jj = offset + columns_count; j < jj; ++j) {
+            one_row.push('$' + (j + 1))
+        }
+
+        rows.push('(' + one_row.join(', ') + ')')
+    }
 
     var query = 'insert into ' + this.table + ' '
               + '(' + this.columns_string() + ') values '
-              + '(' + this._get_prepared_indices(this.columns.length).join(', ') + ') '
+              + rows.join(', ') + ' '
               + 'returning ' + this.columns_string()
-      , req = req.to_db()
-      , values = this.columns.map(function(column) {
-            if (_.isArray(req[column])) {
-                return '{' + req[column].join(',') + '}'
-            } else {
-                return req[column]
-            }
-        })
 
     return yield this.query({query: query, values: values})
 }
+
 QueryMixin.prototype.insert = QueryMixin.prototype._insert
 
 QueryMixin.prototype._get_non_id_columns = function() {
@@ -111,6 +139,7 @@ QueryMixin.prototype._update_by_id = function * (req) {
     // This is to prevent issues with partial updates.
     var query_columns = []
       , values = []
+      , req = req.to_db()
 
     for (var i = 0, ii = this.columns.length; i < ii; ++i) {
         var column = this.columns[i]
@@ -133,7 +162,6 @@ QueryMixin.prototype._update_by_id = function * (req) {
         + '= (' + this._get_prepared_indices(query_columns.length).join(', ') + ') '
         + 'where id=$' + (query_columns.length + 1) + ' '
         + 'returning ' + this.columns_string()
-      , req = req.to_db()
 
     return yield this.query({query: query, values: values})
 }

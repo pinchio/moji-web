@@ -148,4 +148,31 @@ ValidationMixin.prototype.validate_extra_data = function * (extra_data) {
     }
 }
 
+ValidationMixin.prototype.valid_event_regex = /^[A-Za-z0-9_]*$/
+ValidationMixin.prototype.validate_event = function * (event) {
+    if (!validator.isLength(event, 2, 512)) {
+        throw new LocalServiceError(this.ns, 'bad_request', 'Event must be between 2 and 512 characters.', 400)
+    }
+
+    if (!validator.matches(event, this.valid_event_regex)) {
+        throw new LocalServiceError(this.ns, 'bad_request', 'Event can only contain letters, numbers and underscores.', 400)
+    }
+}
+
+ValidationMixin.prototype.validate_number = function * (number, min, max, field_name) {
+    if (!_.isNumber(number)) {
+        throw new LocalServiceError(this.ns, 'bad_request', field_name + ' should be a number.', 400)
+    }
+
+    if (!(min <= number && number <= max)) {
+        throw new LocalServiceError(this.ns, 'bad_request', field_name + ' should be between ' + min + ' and ' + max + '.', 400)
+    }
+}
+
+ValidationMixin.prototype.validate_json_object = function * (value, field_name) {
+    if (!_.isObject(value) || _.isArray(value)) {
+        throw new LocalServiceError(this.ns, 'bad_request', field_name + ' should be a JSON object like {}.', 400)
+    }
+}
+
 module.exports = ValidationMixin

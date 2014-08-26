@@ -13,6 +13,7 @@ var Account = function(o) {
     })
 }
 _.extend(Account, ModelMixin)
+
 Account.keys = [
     'id'
   , 'created_at'

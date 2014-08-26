@@ -85,15 +85,13 @@ TODO
 - attribution back to original
 - use image_url when creating emoji
 
-- move out validation logic
 - put something on home page that's not an upload form.
 - clear test db before running any tests. this is mainly for duplicate asset upload stuff
 - validation for extraneous fields. If trying to update account.username, error is not thrown.
 
-IN-PROGRESS
-===
-- filter on unique asset_urls for search
-- make sure search returns public collections
+- password redactor
+
+- need to return attribution to original emoji and recent emoji.
 
 CHANGELOG
 ===
