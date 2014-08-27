@@ -187,5 +187,68 @@ describe('EventHTTPService', function() {
                     done()
             })
         })
+
+        it('should be able to delete ancestor emoji', function(done) {
+            var req = request(
+                {
+                    url: get_url('/_/api/emoji/' + stored_emoji.id)
+                  , method: 'DELETE'
+                  , json: true
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    done()
+                }
+            )
+        })
+
+        it('should create emoji_sent event and increment send_count', function(done) {
+            request({
+                    url: get_url('/_/api/event')
+                  , method: 'POST'
+                  , json: {
+                        event: 'emoji_sent'
+                      , properties: {
+                            emoji_id: stored_emoji2.id
+                          , destination: 'Messages.app'
+                        }
+                    }
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    done()
+            })
+        })
+
+        it('should get emoji with sent_count incremented', function(done) {
+            request({
+                    url: get_url('/_/api/emoji/' + stored_emoji2.id)
+                  , method: 'GET'
+                  , json: true
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.isDefined(body.emoji)
+                    assert.equal(body.emoji.sent_count, 3)
+                    stored_emoji2 = body.emoji
+                    done()
+            })
+        })
+
+        it('should not get ancestor emoji', function(done) {
+            request({
+                    url: get_url('/_/api/emoji/' + stored_emoji.id)
+                  , method: 'GET'
+                  , json: true
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 404)
+                    done()
+            })
+        })
     })
 })

@@ -135,6 +135,14 @@ Emoji.prototype.to_privileged = function() {
     }
 }
 
+Emoji.prototype.to_minimum = function() {
+    return {
+        id: this.id
+      , sent_count: this.sent_count
+      , saved_count: this.saved_count
+    }
+}
+
 Emoji.prototype.to_db = function() {
     return {
         id: this.id

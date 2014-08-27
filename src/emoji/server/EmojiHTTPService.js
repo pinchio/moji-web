@@ -148,18 +148,29 @@ EmojiHTTPService.prototype.get = function() {
 
     return function * (next) {
         try {
-            var emoji = yield EmojiLocalService.get_by_id({
+            var o = yield EmojiLocalService.get_by_id_extended({
                     req: this.request
                   , id: this.params.id
                   , session: this.session
                 })
 
-            if (emoji) {
-                if (this.session.account_id === emoji.created_by) {
-                    return self.handle_success(this, {emoji: emoji.to_privileged()}, 'json')
+            if (o && o.emoji) {
+                var ancestor_emoji = o.ancestor_emoji && o.ancestor_emoji.to_minimum()
+                  , ancestor_creator = o.ancestor_creator && o.ancestor_creator.to_json()
+                  , creator = o.creator && o.creator.to_json()
+
+                if (this.session.account_id === o.emoji.created_by) {
+                    var emoji = o.emoji.to_privileged()
                 } else {
-                    return self.handle_success(this, {emoji: emoji.to_json()}, 'json')
+                    var emoji = o.emoji.to_json()
                 }
+
+                return self.handle_success(this, {
+                    emoji: emoji
+                  , ancestor_emoji: ancestor_emoji
+                  , ancestor_creator: ancestor_creator
+                  , creator: creator
+                }, 'json')
             } else {
                 return self.handle_success(this, null)
             }

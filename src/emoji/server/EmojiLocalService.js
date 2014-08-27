@@ -155,6 +155,10 @@ EmojiLocalService.prototype.upsert = function * (o) {
             throw new LocalServiceError(this.ns, 'not_authoried', 'Cannot modify emoji collection id.', 403)
         }
 
+        if (db_emoji.parent_emoji_id) {
+            throw new LocalServiceError(this.ns, 'not_authoried', 'Cannot modify saved emoji.', 403)
+        }
+
         if (db_emoji.updated_at.isSame(o.updated_at)) {
             var file_data = yield readFile_thunk(o.local_file_name)
               , original_file_name_ext = path.extname(o.original_file_name)
@@ -213,10 +217,47 @@ EmojiLocalService.prototype.get_by_id = function * (o) {
     if (emoji) {
         if (emoji.deleted_at) {
             return null
-        } else if (o.session && o.session.account_id === emoji.created_by) {
+        } else if ((o.session && o.session.account_id === emoji.created_by)
+                || (emoji.scopes.indexOf('public_read') > -1)) {
             return emoji
-        } else if (emoji.scopes.indexOf('public_read') > -1) {
-            return emoji
+        } else {
+            return null
+        }
+    } else {
+        return null
+    }
+}
+
+EmojiLocalService.prototype.get_by_id_extended = function * (o) {
+    yield this.validate_uuid(o.id, 'Emoji ids')
+
+    var emoji = (yield EmojiPersistenceService.select_by_id({id: o.id})).first()
+
+    if (emoji) {
+        if (emoji.deleted_at) {
+            return null
+        } else if ((o.session && o.session.account_id === emoji.created_by)
+                || (emoji.scopes.indexOf('public_read') > -1)) {
+
+            if (emoji.ancestor_emoji_id) {
+                var ancestor_emoji = (yield EmojiPersistenceService.select_by_id({
+                    id: emoji.ancestor_emoji_id})).first()
+
+                if (!ancestor_emoji) {
+                    throw new LocalServiceError(this.ns, 'internal_server_error', 'Internal server error', 500)
+                }
+
+                var ancestor_creator = yield AccountLocalService.get_by_id({
+                    id: ancestor_emoji.created_by})
+
+                return {emoji: emoji, ancestor_emoji: ancestor_emoji, ancestor_creator: ancestor_creator}
+            } else {
+                // No ancestor, return user info on creator.
+                var creator = yield AccountLocalService.get_by_id({id: emoji.created_by})
+
+                return {emoji: emoji, creator: creator}
+            }
+
         } else {
             return null
         }
@@ -407,3 +448,4 @@ module.exports = EmojiLocalService
 var SessionLocalService = require('src/session/server/SessionLocalService').get_instance()
   , EmojiCollectionLocalService = require('src/emoji_collection/server/EmojiCollectionLocalService').get_instance()
   , EventLocalService = require('src/event/server/EventLocalService').get_instance()
+  , AccountLocalService = require('src/account/server/AccountLocalService').get_instance()
