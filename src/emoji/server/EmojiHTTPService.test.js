@@ -634,6 +634,7 @@ describe('EmojiHTTPService', function() {
         })
 
         it('should create emoji with no scopes', function(done) {
+            this.timeout(10000)
             var display_name = 'Super emoji'
               , tags = ['cats', 'dogs']
             var req = request(

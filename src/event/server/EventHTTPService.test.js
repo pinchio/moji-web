@@ -12,7 +12,7 @@ var get_url = function(args) {
     return 'http://' + host + ':' + port + path.join.apply(path, Array.prototype.slice.call(arguments))
 }
 
-describe.only('EventHTTPService', function() {
+describe('EventHTTPService', function() {
     describe('post', function () {
         var stored_event
           , stored_jar = request.jar()
