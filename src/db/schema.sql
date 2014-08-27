@@ -47,6 +47,8 @@ CREATE TABLE emoji (
     sent_count      integer NOT NULL DEFAULT 0,
     saved_count     integer NOT NULL DEFAULT 0,
     emoji_collection_id char(36),
+    ancestor_emoji_id char(36),
+    parent_emoji_id char(36),
     extra_data      text
 );
 

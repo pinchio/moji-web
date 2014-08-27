@@ -11,6 +11,7 @@ var _ = require('underscore')
   , StaticMixin = require('src/common/StaticMixin')
   , thunkify = require('thunkify')
   , ValidationMixin = require('src/common/server/ValidationMixin')
+  , uuid = require('node-uuid')
 
 var readFile_thunk = thunkify(fs.readFile)
 
@@ -27,59 +28,59 @@ EmojiLocalService.prototype.get_file_sha = function(file_data) {
     return crypto.createHash('sha1').update(file_data).digest('hex')
 }
 
-EmojiLocalService.prototype.create = function * (o) {
-    o.display_name = o.display_name || ''
-    o.tags = o.tags || []
-    o.scopes = o.scopes || []
-    o.scopes = _.unique(o.scopes)
-    o.extra_data = o.extra_data || {}
+// EmojiLocalService.prototype.create = function * (o) {
+//     o.display_name = o.display_name || ''
+//     o.tags = o.tags || []
+//     o.scopes = o.scopes || []
+//     o.scopes = _.unique(o.scopes)
+//     o.extra_data = o.extra_data || {}
 
-    yield this.validate_session(o.session)
-    yield this.validate_display_name(o.display_name)
-    yield this.validate_tags(o.tags)
-    yield this.validate_scopes(o.scopes)
-    yield this.validate_asset_file_name(o.original_file_name, 'Asset')
-    yield this.validate_uuid(o.emoji_collection_id, 'Emoji collection ids')
+//     yield this.validate_session(o.session)
+//     yield this.validate_display_name(o.display_name)
+//     yield this.validate_tags(o.tags)
+//     yield this.validate_scopes(o.scopes)
+//     yield this.validate_asset_file_name(o.original_file_name, 'Asset')
+//     yield this.validate_uuid(o.emoji_collection_id, 'Emoji collection ids')
 
-    // Make sure emoji collection exists.
-    var emoji_collection = yield EmojiCollectionLocalService.get_by_id({
-            id: o.emoji_collection_id
-          , session: o.session
-        })
+//     // Make sure emoji collection exists.
+//     var emoji_collection = yield EmojiCollectionLocalService.get_by_id({
+//             id: o.emoji_collection_id
+//           , session: o.session
+//         })
 
-    if (!emoji_collection) {
-        throw new LocalServiceError(this.ns, 'bad_request', 'Invalid emoji collection id.', 400)
-    }
+//     if (!emoji_collection) {
+//         throw new LocalServiceError(this.ns, 'bad_request', 'Invalid emoji collection id.', 400)
+//     }
 
-    if (emoji_collection.created_by !== o.session.account_id) {
-        throw new LocalServiceError(this.ns, 'access_denied', 'Not authorized to create emoji in this collection.', 403)
-    }
+//     if (emoji_collection.created_by !== o.session.account_id) {
+//         throw new LocalServiceError(this.ns, 'access_denied', 'Not authorized to create emoji in this collection.', 403)
+//     }
 
-    var file_data = yield readFile_thunk(o.local_file_name)
-      , original_file_name_ext = path.extname(o.original_file_name)
-      , file_sha = this.get_file_sha(file_data)
-      , s3_file_name = file_sha + original_file_name_ext
-      , put_response = yield this.s3_bucket_put_object({
-            Key: s3_file_name
-          , Body: file_data
-        })
+//     var file_data = yield readFile_thunk(o.local_file_name)
+//       , original_file_name_ext = path.extname(o.original_file_name)
+//       , file_sha = this.get_file_sha(file_data)
+//       , s3_file_name = file_sha + original_file_name_ext
+//       , put_response = yield this.s3_bucket_put_object({
+//             Key: s3_file_name
+//           , Body: file_data
+//         })
 
-    var emoji = Emoji.from_create({
-            slug_name: o.slug_name
-          , display_name: o.display_name
-          , tags: o.tags
-          , scopes: o.scopes
-          , created_by: o.session.account_id
-          , asset_url: this.s3_base_url + s3_file_name
-          , asset_hash: file_sha
-          , emoji_collection_id: o.emoji_collection_id
-          , extra_data: o.extra_data
-        })
-      , created_emojis = yield EmojiPersistenceService.insert(emoji)
-      , emoji = created_emojis.first()
+//     var emoji = Emoji.from_create({
+//             slug_name: o.slug_name
+//           , display_name: o.display_name
+//           , tags: o.tags
+//           , scopes: o.scopes
+//           , created_by: o.session.account_id
+//           , asset_url: this.s3_base_url + s3_file_name
+//           , asset_hash: file_sha
+//           , emoji_collection_id: o.emoji_collection_id
+//           , extra_data: o.extra_data
+//         })
+//       , created_emojis = yield EmojiPersistenceService.insert(emoji)
+//       , emoji = created_emojis.first()
 
-    return emoji
-}
+//     return emoji
+// }
 
 EmojiLocalService.prototype._update = function * (o) {
     var emoji = Emoji.from_update({
@@ -198,23 +199,21 @@ EmojiLocalService.prototype.upsert = function * (o) {
               , emoji_collection_id: o.emoji_collection_id
               , extra_data: o.extra_data
             })
-          , created_emojis = yield EmojiPersistenceService.insert(emoji)
-          , emoji = created_emojis.first()
+          , created_emoji = (yield EmojiPersistenceService.insert(emoji)).first()
 
-        return emoji
+        return created_emoji
     }
 }
 
 EmojiLocalService.prototype.get_by_id = function * (o) {
     yield this.validate_uuid(o.id, 'Emoji ids')
 
-    var emojis = yield EmojiPersistenceService.select_by_id({id: o.id})
-      , emoji = emojis.first()
+    var emoji = (yield EmojiPersistenceService.select_by_id({id: o.id})).first()
 
     if (emoji) {
         if (emoji.deleted_at) {
             return null
-        } else if (o.session.account_id === emoji.created_by) {
+        } else if (o.session && o.session.account_id === emoji.created_by) {
             return emoji
         } else if (emoji.scopes.indexOf('public_read') > -1) {
             return emoji
@@ -288,9 +287,10 @@ EmojiLocalService.prototype.delete_by_id = function * (o) {
     }
 }
 
-EmojiLocalService.prototype.increment_sent_count = function * (o) {
+EmojiLocalService.prototype.increment_counter = function * (o) {
     yield this.validate_session(o.session)
     yield this.validate_uuid(o.id, 'Emoji ids')
+    // TODO: valdiate column, amount
 
     var current_emoji = yield this.get_by_id({session: o.session, id: o.id})
 
@@ -299,15 +299,78 @@ EmojiLocalService.prototype.increment_sent_count = function * (o) {
     }
 
     var updated_emoji = (yield EmojiPersistenceService.increment({
-            column: 'sent_count'
-          , amount: 1
+            column: o.column
+          , amount: o.amount
           , id: o.id
         })).first()
 
     return updated_emoji
 }
 
+EmojiLocalService.prototype.clone = function * (o) {
+    yield this.validate_session(o.session)
+    yield this.validate_uuid(o.parent_emoji_id, '`parent_emoji_id`')
+    yield this.validate_uuid(o.emoji_collection_id, '`emoji_collection_id`')
+
+    var parent_emoji = yield this.get_by_id({
+            id: o.parent_emoji_id
+          , session: o.session
+        })
+      , emoji_collection = yield EmojiCollectionLocalService.get_by_id({
+            id: o.emoji_collection_id
+          , session: o.session
+        })
+
+    if (!parent_emoji) {
+        throw new LocalServiceError(this.ns, 'bad_request', '`parent_emoji_id` does not exist.', 400)
+    }
+
+    if (!emoji_collection) {
+        throw new LocalServiceError(this.ns, 'bad_request', '`emoji_collection` does not exist.', 400)
+    }
+
+    var ancestor_emoji_id = parent_emoji.ancestor_emoji_id || parent_emoji.id
+      , parent_emoji_id = parent_emoji.id
+      , cloned_emoji = parent_emoji.clone({
+            id: uuid.v4()
+          , created_at: 'now()'
+          , updated_at: 'now()'
+          , created_by: o.session.account_id
+          , sent_count: 0
+          , saved_count: 0
+          , emoji_collection_id: o.emoji_collection_id
+          , ancestor_emoji_id: ancestor_emoji_id
+          , parent_emoji_id: parent_emoji_id
+        })
+
+    var inserted_emoji = (yield EmojiPersistenceService.insert(cloned_emoji)).first()
+
+    // Track event.
+    yield EventLocalService.create({
+        session: o.session
+      , event: 'emoji_saved'
+      , properties: {
+            emoji_id: ancestor_emoji_id
+        }
+    })
+
+    // The first cloned emoji will have parent_emoji_id equal to ancestor_emoji_id.
+    // This is to prevent double counting of the event.
+    if (ancestor_emoji_id !== parent_emoji_id) {
+        yield EventLocalService.create({
+            session: o.session
+          , event: 'emoji_saved'
+          , properties: {
+                emoji_id: parent_emoji_id
+            }
+        })
+    }
+
+    return inserted_emoji
+}
+
 module.exports = EmojiLocalService
 
 var SessionLocalService = require('src/session/server/SessionLocalService').get_instance()
   , EmojiCollectionLocalService = require('src/emoji_collection/server/EmojiCollectionLocalService').get_instance()
+  , EventLocalService = require('src/event/server/EventLocalService').get_instance()

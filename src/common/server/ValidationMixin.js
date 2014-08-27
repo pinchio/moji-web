@@ -8,7 +8,7 @@ var _ = require('underscore')
 var ValidationMixin = function() {}
 
 ValidationMixin.prototype.validate_session = function * (session) {
-    if (!session.account_id) {
+    if (!session || !session.account_id) {
         throw new LocalServiceError(this.ns, 'unauthorized', 'Authentication required.', 401)
     }
 }

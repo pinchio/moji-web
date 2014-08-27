@@ -95,28 +95,23 @@ TODO
 - disable editing for downloaded content.
 - disable editing image for author.
 
-1. create POST /emoji?parent_emoji_id=<parent emoji id> // no POST body. This will create a new emoji as a clone of the <parent emoji id>
 
-charlie [9:18 PM]
-2. Create two new columns in emoji (ancestor_emoji_id, parent_emoji_id). These will be populated if parent_emoji_id is set using the above endpoint. Otherwise, they will be blank.
 
-charlie [9:19 PM]
-3. When 1. occurs, ancestor.saved_count += 1, parent.saved_count += 1. New Emoji sent_count = 0, saved_count = 0.
 
-charlie [9:19 PM]
+
 4. If an emoji is sent, emoji.sent_count += 1, ancestor.sent_count += 1.
-
-charlie [9:20 PM]
 5. When emoji is deleted, a deleted_at is set to true, but counters continue to be used.
-
-charlie [9:20 PM]
 6. emojis without parent_emoji_id can be edited by author
-
-charlie [9:20 PM]
 7. emojis with parent_emoji_id cannot be edited - only deleted
 
 CHANGELOG
 ===
+
+2014-8-27
+---
+- POST /emoji?parent_emoji_id=<parent emoji id> // no POST body. This will create a new emoji as a clone of the <parent emoji id>
+- Create two new columns in emoji (ancestor_emoji_id, parent_emoji_id). These will be populated if parent_emoji_id is set using the above endpoint. Otherwise, they will be blank.
+- When 1. occurs, ancestor.saved_count += 1, parent.saved_count += 1. New Emoji sent_count = 0, saved_count = 0.
 
 2014-8-26
 ---

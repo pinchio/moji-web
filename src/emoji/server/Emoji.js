@@ -28,6 +28,8 @@ Emoji.keys = [
   , 'sent_count'
   , 'saved_count'
   , 'emoji_collection_id'
+  , 'ancestor_emoji_id'
+  , 'parent_emoji_id'
   , 'extra_data'
 ]
 
@@ -47,6 +49,8 @@ Emoji.from_create = function(o) {
       , sent_count: 0
       , saved_count: 0
       , emoji_collection_id: o.emoji_collection_id
+      , ancestor_emoji_id: o.ancestor_emoji_id
+      , parent_emoji_id: o.parent_emoji_id
       , extra_data: o.extra_data
     })
 }
@@ -67,6 +71,8 @@ Emoji.from_update = function(o) {
       , sent_count: o.sent_count
       , saved_count: o.saved_count
       , emoji_collection_id: o.emoji_collection_id
+      , ancestor_emoji_id: o.ancestor_emoji_id
+      , parent_emoji_id: o.parent_emoji_id
       , extra_data: o.extra_data
     })
 }
@@ -87,6 +93,8 @@ Emoji.from_db = function(o) {
       , sent_count: o.sent_count
       , saved_count: o.saved_count
       , emoji_collection_id: o.emoji_collection_id
+      , ancestor_emoji_id: o.ancestor_emoji_id
+      , parent_emoji_id: o.parent_emoji_id
       , extra_data: Emoji.text_to_json(o.extra_data)
     })
 }
@@ -143,8 +151,14 @@ Emoji.prototype.to_db = function() {
       , sent_count: this.sent_count
       , saved_count: this.saved_count
       , emoji_collection_id: this.emoji_collection_id
+      , ancestor_emoji_id: this.ancestor_emoji_id
+      , parent_emoji_id: this.parent_emoji_id
       , extra_data: Emoji.json_to_text(this.extra_data)
     }
+}
+
+Emoji.prototype.clone = function(o) {
+    return new Emoji(_.defaults(o, this))
 }
 
 module.exports = Emoji

@@ -14,13 +14,16 @@ var get_url = function(args) {
 }
 
 describe('EmojiHTTPService', function() {
-    describe('post', function() {
+    describe.only('post', function() {
         var username = 'ab' + Date.now()
           , password = 'password'
           , email = 'a' + Date.now() + '@b.com'
           , stored_account
           , stored_jar = request.jar()
           , stored_emoji_collection
+          , stored_emoji
+          , stored_emoji2
+          , stored_emoji3
 
         it('should create session if login correct', function(done) {
             request(
@@ -164,6 +167,8 @@ describe('EmojiHTTPService', function() {
                     assert.equal(body.emoji.created_by, stored_account.id)
                     assert.isDefined(body.emoji.asset_url)
                     assert.equal(body.emoji.emoji_collection_id, stored_emoji_collection.id)
+
+                    stored_emoji = body.emoji
                     done()
                 }
             )
@@ -178,10 +183,81 @@ describe('EmojiHTTPService', function() {
             form.append('asset', fs.createReadStream(path.join(__dirname, '../../asset/panda-dog.jpg')))
         })
 
+        it('should be able to clone emoji', function(done) {
+            var parent_emoji_id = stored_emoji.id
+              , emoji_collection_id = stored_emoji_collection.id
+              , req = request(
+                {
+                    url: get_url('/_/api/emoji?parent_emoji_id=' + parent_emoji_id
+                               + '&emoji_collection_id=' + emoji_collection_id)
+                  , method: 'POST'
+                  , json: true
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    stored_emoji2 = body.emoji
+                    done()
+                }
+            )
+        })
+
+        it('should be able to clone of a cloned emoji', function(done) {
+            var parent_emoji_id = stored_emoji2.id
+              , emoji_collection_id = stored_emoji_collection.id
+              , req = request(
+                {
+                    url: get_url('/_/api/emoji?parent_emoji_id=' + parent_emoji_id
+                               + '&emoji_collection_id=' + emoji_collection_id)
+                  , method: 'POST'
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    stored_emoji3 = body.emoji
+                    done()
+                }
+            )
+        })
+
+        it('should be able to get parent_emoji with correct saved_count', function(done) {
+            var emoji_id = stored_emoji2.id
+              , req = request(
+                {
+                    url: get_url('/_/api/emoji/' + emoji_id)
+                  , method: 'GET'
+                  , json: true
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.equal(body.emoji.saved_count, 1)
+                    done()
+                }
+            )
+        })
+
+        it('should be able to get ancestor_emoji with correct saved_count', function(done) {
+            var emoji_id = stored_emoji.id
+              , req = request(
+                {
+                    url: get_url('/_/api/emoji/' + emoji_id)
+                  , method: 'GET'
+                  , json: true
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.equal(body.emoji.saved_count, 2)
+                    done()
+                }
+            )
+        })
+
         it.skip('should only allow create if user owns it')
     })
 
-    describe('put', function() {
+    describe.skip('put', function() {
         var username = Math.floor(Math.random() * 1000000000)
           , password = 'password'
           , email = uuid.v4().substring(0, 15) + '@b.com'

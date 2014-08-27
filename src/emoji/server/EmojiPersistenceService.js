@@ -20,6 +20,8 @@ var EmojiPersistenceService = function EmojiPersistenceService() {
       , 'sent_count'
       , 'saved_count'
       , 'emoji_collection_id'
+      , 'ancestor_emoji_id'
+      , 'parent_emoji_id'
       , 'extra_data'
     ]
     this.table = 'emoji'
