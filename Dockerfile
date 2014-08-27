@@ -15,9 +15,11 @@ RUN mkdir -p /var/run/sshd
 RUN mkdir -p /var/log/supervisor
 RUN mkdir -p /var/www
 
-#ADD package.json /var/www/package.json
-#ADD npm-shrinkwrap.json /var/www/npm-shrinkwrap.json
-#RUN cd /var/www && npm install --production
+ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+ADD package.json /var/www/package.json
+ADD npm-shrinkwrap.json /var/www/npm-shrinkwrap.json
+RUN cd /var/www && npm install --production
 
 #ADD package.json /tmp/package.json
 #ADD npm-shrinkwrap.json /tmp/npm-shrinkwrap.json
@@ -26,8 +28,6 @@ RUN mkdir -p /var/www
 
 # Configure nginx
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf
-
-ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Install and run server
 ADD . /var/www
