@@ -19,10 +19,10 @@ RUN mkdir -p /var/www
 #ADD npm-shrinkwrap.json /var/www/npm-shrinkwrap.json
 #RUN cd /var/www && npm install --production
 
-ADD package.json /tmp/package.json
-ADD npm-shrinkwrap.json /tmp/npm-shrinkwrap.json
-RUN cd /tmp && npm install --production
-RUN mkdir -p /var/www && cp -a /tmp/node_modules /var/www/
+#ADD package.json /tmp/package.json
+#ADD npm-shrinkwrap.json /tmp/npm-shrinkwrap.json
+#RUN cd /tmp && npm install --production
+#RUN mkdir -p /var/www && cp -a /tmp/node_modules /var/www/
 
 # Configure nginx
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf
