@@ -307,6 +307,33 @@ EmojiLocalService.prototype.increment_counter = function * (o) {
     return updated_emoji
 }
 
+EmojiLocalService.prototype.increment_sent_count = function * (o) {
+    yield this.validate_session(o.session)
+    yield this.validate_uuid(o.id, 'Emoji ids')
+
+    var current_emoji = yield this.get_by_id({session: o.session, id: o.id})
+
+    if (current_emoji === null) {
+        throw new LocalServiceError(this.ns, 'not_found', 'Not found.', 404)
+    }
+
+    var updated_emoji = (yield EmojiPersistenceService.increment({
+            column: 'sent_count'
+          , amount: 1
+          , id: o.id
+        })).first()
+
+    if (updated_emoji.ancestor_emoji_id) {
+        var ancestor_updated_emoji = (yield EmojiPersistenceService.increment({
+                column: 'sent_count'
+              , amount: 1
+              , id: updated_emoji.ancestor_emoji_id
+            })).first()
+    }
+
+    return updated_emoji
+}
+
 EmojiLocalService.prototype.clone = function * (o) {
     yield this.validate_session(o.session)
     yield this.validate_uuid(o.parent_emoji_id, '`parent_emoji_id`')
@@ -350,19 +377,25 @@ EmojiLocalService.prototype.clone = function * (o) {
         session: o.session
       , event: 'emoji_saved'
       , properties: {
-            emoji_id: ancestor_emoji_id
+            emoji_id: parent_emoji_id
         }
+    })
+
+    yield this.increment_counter({
+        id: parent_emoji_id
+      , session: o.session
+      , column: 'saved_count'
+      , amount: 1
     })
 
     // The first cloned emoji will have parent_emoji_id equal to ancestor_emoji_id.
     // This is to prevent double counting of the event.
     if (ancestor_emoji_id !== parent_emoji_id) {
-        yield EventLocalService.create({
-            session: o.session
-          , event: 'emoji_saved'
-          , properties: {
-                emoji_id: parent_emoji_id
-            }
+        yield this.increment_counter({
+            id: ancestor_emoji_id
+          , session: o.session
+          , column: 'saved_count'
+          , amount: 1
         })
     }
 

@@ -25,20 +25,12 @@ EventLocalService.prototype.create = function * (o) {
 
     if (o.event === 'emoji_sent') {
         yield this.validate_uuid(o.properties.emoji_id, '`emoji_id`')
-        yield EmojiLocalService.increment_counter({
+        yield EmojiLocalService.increment_sent_count({
             id: o.properties.emoji_id
           , session: o.session
-          , column: 'sent_count'
-          , amount: 1
         })
     } else if (o.event === 'emoji_saved') {
-        yield this.validate_uuid(o.properties.emoji_id, '`emoji_id`')
-        yield EmojiLocalService.increment_counter({
-            id: o.properties.emoji_id
-          , session: o.session
-          , column: 'saved_count'
-          , amount: 1
-        })
+        // Just save the event.
     } else {
         throw new LocalServiceError(this.ns, 'bad_request', '`event` is not supported.', 400)
     }
