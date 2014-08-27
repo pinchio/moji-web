@@ -5,4 +5,6 @@ var server = require('src/server/server/Server').get_instance()
 
 // TODO: if no process.env set do not pass go.
 
+console.log('hihi')
+
 server.listen(port, host)
