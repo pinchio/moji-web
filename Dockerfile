@@ -15,16 +15,17 @@ RUN mkdir -p /var/run/sshd
 RUN mkdir -p /var/log/supervisor
 RUN mkdir -p /var/www
 
-# ADD package.json /tmp/package.json
-# RUN cd /tmp && npm install
-# RUN mkdir -p /opt/app && cp -a /tmp/node_modules /opt/app/
+#ADD package.json /var/www/package.json
+#ADD npm-shrinkwrap.json /var/www/npm-shrinkwrap.json
+#RUN cd /var/www && npm install --production
+
+ADD package.json /tmp/package.json
+ADD npm-shrinkwrap.json /tmp/npm-shrinkwrap.json
+RUN cd /tmp && npm install --production
+RUN mkdir -p /var/www && cp -a /tmp/node_modules /var/www/
 
 # Configure nginx
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf
-
-ADD package.json /var/www/package.json
-ADD npm-shrinkwrap.json /var/www/npm-shrinkwrap.json
-RUN cd /var/www && npm install --production
 
 ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
