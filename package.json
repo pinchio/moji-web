@@ -5,6 +5,7 @@
   "author": "Mojigram",
   "private": true,
   "scripts": {
+    "build": "node ./node_modules/gulp/bin/gulp.js build",
     "stop": "pm2 stop all",
     "start": "node services | sh",
     "server:start:development": "NODE_ENV=development NODE_PATH=./ node --harmony ./server.js",
