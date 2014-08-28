@@ -13,7 +13,7 @@
 html,
 body {
     height: 100%;
-    overflow: hidden;
+    // overflow: hidden;
 
     -webkit-text-size-adjust: none;
 }
@@ -25,12 +25,12 @@ body {
 }
 
 .pages-container {
-    position: absolute;
-    .position(0, 0, 0, 0);
-    overflow: hidden;
+    // position: absolute;
+    // .position(0, 0, 0, 0);
+    // overflow: hidden;
 
-    width: 100%;
-    height: 100%;
+    // width: 100%;
+    // height: 100%;
     // margin: auto;
 
     z-index: @pages-container-z-index;
@@ -46,11 +46,11 @@ body {
 }
 
 .page-container {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
+    // position: absolute;
+    // top: 0;
+    // right: 0;
+    // bottom: 0;
+    // left: 0;
 
     // z-index: @page-container-z-index;
     // &.current {
@@ -65,17 +65,16 @@ body {
 }
 
 .page-header-container {
-    height: @header-height;
+    // height: @header-height;
 
-    .standalone & {
-        padding-top: @standalone-header-height - @header-height;
-    }
+    // .standalone & {
+    //     padding-top: @standalone-header-height - @header-height;
+    // }
 }
 
 .page-header {
-    // not necessary but might be useful in getting an image under the scroll.
     .clearfix;
-    position: absolute;
+    position: fixed;
     top: 0;
     z-index: @page-header-z-index;
 
@@ -85,6 +84,7 @@ body {
     line-height: @header-height;
 
     background-color: @color-darkest-gray;
+    .font-16-regular(@color: @color-white, @line-height: @header-height);
 
     .standalone & {
         padding-top: @standalone-header-height - @header-height;
@@ -167,24 +167,26 @@ body {
 }
 
 .page-body-container {
-    position: absolute;
-    top: @page-body-top;
-    right: 0;
-    left: 0;
-    bottom: 0;
+    // position: absolute;
+    // top: @page-body-top;
+    // right: 0;
+    // left: 0;
+    // bottom: 0;
 
     width: 100%;
+    min-height: 1200px;
+    margin-top: @page-body-top;
 
-    overflow-x: hidden;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    // overflow-x: hidden;
+    // overflow-y: auto;
+    // -webkit-overflow-scrolling: touch;
 
     .standalone & {
         top: @standalone-page-body-top;
         // height: calc(100% - @standalone-page-body-top);
     }
 
-    background-color: #f8f8f8;
+    background-color: @color-light-gray-lightest;
 
     // position: absolute;
     // top: @page-body-top;
