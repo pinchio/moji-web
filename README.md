@@ -54,6 +54,12 @@ Note:
 - A collection is a set of emojis. An user can have multiple collections. A collection can be empty.
 
 
+NOTES
+===
+- run "node ./node_modules/gulp/bin/gulp.js build" after every change
+- restart server after server side changes
+
+
 TODO
 ===
 - add csrf

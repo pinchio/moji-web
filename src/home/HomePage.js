@@ -23,6 +23,9 @@ var HomePage = React.createClass({
                         scroll_body_to_top={this.scroll_page_to_top} />
                     <div className="page-body-container">
                         <div className="page-body">
+                            <div className="sprite-app-store-badge-container">
+                                <div className="sprite sprite-app-store-badge-en"></div>
+                            </div>
                             <p>asdf</p>
                             <p>asdf</p>
                             <p>asdf</p>
