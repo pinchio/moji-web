@@ -15,16 +15,11 @@ RUN mkdir -p /var/run/sshd
 RUN mkdir -p /var/log/supervisor
 RUN mkdir -p /var/www
 
-ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
 ADD package.json /var/www/package.json
 ADD npm-shrinkwrap.json /var/www/npm-shrinkwrap.json
 RUN cd /var/www && npm install --production
 
-#ADD package.json /tmp/package.json
-#ADD npm-shrinkwrap.json /tmp/npm-shrinkwrap.json
-#RUN cd /tmp && npm install --production
-#RUN mkdir -p /var/www && cp -a /tmp/node_modules /var/www/
+ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Configure nginx
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf
@@ -34,5 +29,5 @@ ADD . /var/www
 
 EXPOSE 80 443 22 10000
 
-#CMD ["/usr/bin/supervisord"]
-CMD cd /var/www && NODE_ENV=production NODE_PATH=./ node --harmony ./server.js
+CMD supervisord -c /etc/supervisor/conf.d/supervisord.conf
+#CMD cd /var/www && NODE_ENV=production NODE_PATH=./ node --harmony ./server.js
