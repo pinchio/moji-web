@@ -4,7 +4,7 @@ var routes = [
       , handler: 'home'
     }
   , {
-        route: '/:username/packs/:pack_id'
+        route: '/:username/packs/:pack_id/edit'
       , handler: 'emoji_collection_edit'
     }
 ]
