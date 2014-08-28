@@ -112,6 +112,8 @@ Emoji.prototype.to_json = function() {
       , asset_url: this.asset_url
       , sent_count: this.sent_count
       , saved_count: this.saved_count
+      , ancestor_emoji_id: this.ancestor_emoji_id
+      , parent_emoji_id: this.parent_emoji_id
       , emoji_collection_id: this.emoji_collection_id
       , extra_data: this.extra_data
     }
@@ -130,6 +132,8 @@ Emoji.prototype.to_privileged = function() {
       , asset_url: this.asset_url
       , sent_count: this.sent_count
       , saved_count: this.saved_count
+      , ancestor_emoji_id: this.ancestor_emoji_id
+      , parent_emoji_id: this.parent_emoji_id
       , emoji_collection_id: this.emoji_collection_id
       , extra_data: this.extra_data
     }

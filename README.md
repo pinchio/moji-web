@@ -88,6 +88,23 @@ TODO
 - disable editing for downloaded content.
 - disable editing image for author.
 
+1. Setup skeleton pages.
+
+charlie [2:22 AM]
+2. Finish https and redirect seo
+
+charlie [2:22 AM]
+3. Support username/full name search
+
+A) following packs
+B) Retrieving packs per user (for profile page)
+C) Trending list of Packs/Mojis ranked by popularity
+D) Dedicated endpoint for Featured Packs/Moji?
+
+also plz include parent_moji_id in the response of GETting and POSTing mojis
+
+- change account.id = username, update existing entries in prod db.
+
 
 CHANGELOG
 ===
