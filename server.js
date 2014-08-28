@@ -3,8 +3,8 @@ var server = require('src/server/server/Server').get_instance()
   , port = config.get('server').port
   , host = '0.0.0.0'
 
-// TODO: if no process.env set do not pass go.
-
-console.log('hihi')
+if (process.env.NODE_ENV === 'development' && !process.env.NODE_OVERRIDE) {
+    process.exit('Please set the `NODE_OVERRIDE` env variable to your config override file name excluding .json.')
+}
 
 server.listen(port, host)
