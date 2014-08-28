@@ -57,12 +57,10 @@ Note:
 TODO
 ===
 - add csrf
-- add https
 - add http -> https redirect
 - add mojigram.com -> www.mojigram redirect
 - should shrinkwrap as part of the pre-commit hook
 - use 201 for POST success
-- sessions should be forever
 - Need to add tags_lower for search purposes.
 - Need to honor deleted_at flag
 - Need to update updated_at flag when things update
@@ -80,24 +78,24 @@ TODO
 - Signature good for 30 days. New signatures blocked.
 
 - during account update
-- send count for each individual emoji
-- save count for each emoji (this is the number of times someone else cloned it)
-- attribution back to original
 - use image_url when creating emoji
 
-- put something on home page that's not an upload form.
 - clear test db before running any tests. this is mainly for duplicate asset upload stuff
 - validation for extraneous fields. If trying to update account.username, error is not thrown.
 
 - password redactor
 
-- need to return attribution to original emoji and recent emoji.
 - disable editing for downloaded content.
 - disable editing image for author.
 
 
 CHANGELOG
 ===
+
+2014-8-28
+---
+- Cleaned up HomePage.js for Jeff. Use HomePage.js for the JS/HTML and use layout.less for css.
+
 
 2014-8-27
 ---
