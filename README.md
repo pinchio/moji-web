@@ -98,6 +98,8 @@ B) Retrieving packs per user (for profile page)
 C) Trending list of Packs/Mojis ranked by popularity
 D) Dedicated endpoint for Featured Packs/Moji?
 
+- expand tags to expand ids for responses.
+
 
 CHANGELOG
 ===

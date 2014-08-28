@@ -1,5 +1,6 @@
 var $ = require('jquery')
   , HomePage = require('../home/HomePage')
+  , EmojiCollectionEditPage = require('../emoji_collection/EmojiCollectionEditPage')
   , app = require('./App').get_instance()
   , routes = require('./routes')
   , page = require('page')
@@ -39,6 +40,11 @@ Router.prototype.home = function(ctx) {
 
     var state = JSON.parse(JSON.stringify(ctx.state))
     var page = new HomePage(state)
+    app.go(page)
+}
+
+Router.prototype.emoji_collection_edit = function(ctx) {
+    var page = new EmojiCollectionEditPage({ctx: ctx})
     app.go(page)
 }
 
