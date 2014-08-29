@@ -58,6 +58,7 @@ NOTES
 ===
 - run "node ./node_modules/gulp/bin/gulp.js build" after every change
 - restart server after server side changes
+- deployment requirements: npm run db:schema:development, make sure the AWS keys are set, restart server, pass all tests
 
 
 TODO
