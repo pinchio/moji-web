@@ -125,6 +125,11 @@ D) Dedicated endpoint for Featured Packs/Moji?
 
 - expand tags to expand ids for responses.
 
+- so it'll be GET /api/featured returning {emojis: [], emoji_collections: []}
+- but we're still gonna store the emojis and emoji_collections on the @mojigram user
+- use local gulp in npm/pre-comimt
+- warning for aws keys
+
 
 CHANGELOG
 ===
