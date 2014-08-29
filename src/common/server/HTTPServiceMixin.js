@@ -39,4 +39,30 @@ HTTPServiceMixin.prototype.handle_not_found = function(that) {
     that.status = 404
 }
 
+// Send in ancestor_emoji_id,ancestor_emoji_id_expanded.created_by
+HTTPServiceMixin.prototype.parse_expand = function(expand) {
+    if (!expand) {
+        return {}
+    }
+
+    var params = expand.split(',')
+      , result = {}
+    // [ancestor_emoji_id, ancestor_emoji_id_expanded.created_by]
+
+    for (var i = 0, ii = params.length; i < ii; ++i) {
+        var param = params[i]
+          , nested_params = param.split('.')
+          , previous = result
+
+        for (var j = 0, jj = nested_params.length; j < jj; ++j) {
+            var nested_param = nested_params[j]
+
+            previous[nested_param] = {}
+            previous = previous[nested_param]
+        }
+    }
+
+    return result
+}
+
 module.exports = HTTPServiceMixin

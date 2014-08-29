@@ -131,15 +131,13 @@ EmojiCollectionLocalService.prototype.upsert = function * (o) {
 EmojiCollectionLocalService.prototype.get_by_id = function * (o) {
     yield this.validate_uuid(o.id, 'Emoji collection ids')
 
-    var emoji_collections = yield EmojiCollectionPersistenceService.select_by_id({id: o.id})
-      , emoji_collection = emoji_collections.first()
+    var emoji_collection = (yield EmojiCollectionPersistenceService.select_by_id({id: o.id})).first()
 
     if (emoji_collection) {
         if (emoji_collection.deleted_at) {
             return null
-        } else if (o.session.account_id === emoji_collection.created_by) {
-            return emoji_collection
-        } else if (emoji_collection.scopes.indexOf('public_read') > -1) {
+        } else if ((o.session.account_id === emoji_collection.created_by)
+                || (emoji_collection.scopes.indexOf('public_read') > -1)) {
             return emoji_collection
         } else {
             return null
@@ -209,4 +207,4 @@ EmojiCollectionLocalService.prototype.delete_by_id = function * (o) {
 
 module.exports = EmojiCollectionLocalService
 
-var SessionLocalService = require('../../session/server/SessionLocalService').get_instance()
+var SessionLocalService = require('src/session/server/SessionLocalService').get_instance()

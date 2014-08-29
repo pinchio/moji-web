@@ -90,6 +90,8 @@ D) Dedicated endpoint for Featured Packs/Moji?
 - use local gulp in npm/pre-comimt
 - warning for aws keys
 
+- make sure deleted emoji minimums are returned when used as ancestor
+
 
 CHANGELOG
 ===

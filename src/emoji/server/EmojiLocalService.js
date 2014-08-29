@@ -3,8 +3,6 @@ var _ = require('underscore')
   , config = require('../../../config')
   , crypto = require('crypto')
   , easy_pbkdf2 = require('easy-pbkdf2')({DEFAULT_HASH_ITERATIONS: 10000, SALT_SIZE: 32, KEY_LENGTH: 256})
-  , Emoji = require('./Emoji')
-  , EmojiPersistenceService = require('./EmojiPersistenceService').get_instance()
   , fs = require('fs')
   , LocalServiceError = require('src/common/server/LocalServiceError')
   , path = require('path')
@@ -228,42 +226,9 @@ EmojiLocalService.prototype.get_by_id = function * (o) {
     }
 }
 
-EmojiLocalService.prototype.get_by_id_extended = function * (o) {
+EmojiLocalService.prototype.get_by_id_privileged = function * (o) {
     yield this.validate_uuid(o.id, 'Emoji ids')
-
-    var emoji = (yield EmojiPersistenceService.select_by_id({id: o.id})).first()
-
-    if (emoji) {
-        if (emoji.deleted_at) {
-            return null
-        } else if ((o.session && o.session.account_id === emoji.created_by)
-                || (emoji.scopes.indexOf('public_read') > -1)) {
-
-            if (emoji.ancestor_emoji_id) {
-                var ancestor_emoji = (yield EmojiPersistenceService.select_by_id({
-                    id: emoji.ancestor_emoji_id})).first()
-
-                if (!ancestor_emoji) {
-                    throw new LocalServiceError(this.ns, 'internal_server_error', 'Internal server error', 500)
-                }
-
-                var ancestor_creator = yield AccountLocalService.get_by_id({
-                    id: ancestor_emoji.created_by})
-
-                return {emoji: emoji, ancestor_emoji: ancestor_emoji, ancestor_creator: ancestor_creator}
-            } else {
-                // No ancestor, return user info on creator.
-                var creator = yield AccountLocalService.get_by_id({id: emoji.created_by})
-
-                return {emoji: emoji, creator: creator}
-            }
-
-        } else {
-            return null
-        }
-    } else {
-        return null
-    }
+    return (yield EmojiPersistenceService.select_by_id({id: o.id})).first()
 }
 
 EmojiLocalService.prototype.get_by_created_by = function * (o) {
@@ -446,6 +411,8 @@ EmojiLocalService.prototype.clone = function * (o) {
 module.exports = EmojiLocalService
 
 var SessionLocalService = require('src/session/server/SessionLocalService').get_instance()
+  , Emoji = require('./Emoji')
+  , EmojiPersistenceService = require('./EmojiPersistenceService').get_instance()
   , EmojiCollectionLocalService = require('src/emoji_collection/server/EmojiCollectionLocalService').get_instance()
   , EventLocalService = require('src/event/server/EventLocalService').get_instance()
   , AccountLocalService = require('src/account/server/AccountLocalService').get_instance()

@@ -224,7 +224,7 @@ describe('EmojiHTTPService', function() {
             var emoji_id = stored_emoji2.id
               , req = request(
                 {
-                    url: get_url('/_/api/emoji/' + emoji_id)
+                    url: get_url('/_/api/emoji/' + emoji_id + '?expand=ancestor_emoji_id,ancestor_emoji_id_expanded.created_by')
                   , method: 'GET'
                   , json: true
                   , jar: stored_jar
@@ -682,7 +682,7 @@ describe('EmojiHTTPService', function() {
 
         it('should get emoji ', function(done) {
             request({
-                    url: get_url('/_/api/emoji/' + stored_emoji.id)
+                    url: get_url('/_/api/emoji/' + stored_emoji.id + '?expand=ancestor_emoji_id,ancestor_emoji_id_expanded.created_by')
                   , method: 'GET'
                   , json: true
                   , jar: stored_jar

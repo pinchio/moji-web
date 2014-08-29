@@ -19,15 +19,11 @@ AccountHTTPService.prototype.get = function() {
                   , id: this.params.id
                 })
 
-            if (account) {
-                if (this.session.account_id === account.id) {
-                    return self.handle_success(this, {account: account.to_privileged()}, 'json')
-                } else {
-                    return self.handle_success(this, {account: account.to_json()}, 'json')
-                }
-            } else {
+            if (!account) {
                 return self.handle_success(this, null)
             }
+
+            return self.handle_success(this, {account: yield account.to_json({session: this.session})}, 'json')
         } catch(e) {
             self.handle_exception(this, e)
         }
@@ -49,7 +45,7 @@ AccountHTTPService.prototype.post = function() {
                   , session: this.session
                 })
 
-            self.handle_success(this, {account: account.to_privileged()}, 'json')
+            self.handle_success(this, {account: yield account.to_json({session: this.session})}, 'json')
         } catch(e) {
             self.handle_exception(this, e)
         }
@@ -71,7 +67,7 @@ AccountHTTPService.prototype.put = function() {
                   , session: this.session
                 })
 
-            self.handle_success(this, {account: account.to_privileged()}, 'json')
+            self.handle_success(this, {account: yield account.to_json({session: this.session})}, 'json')
         } catch(e) {
             self.handle_exception(this, e)
         }

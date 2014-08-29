@@ -27,9 +27,14 @@ SearchHTTPService.prototype.list = function() {
             if (results) {
                 // Results is {emoji_collections=[], emojis=[], users=[]}.
                 return self.handle_success(this, {
-                    emojis: results.emojis.to_json()
-                  , emoji_collections: results.emoji_collections.to_json()
-                  // , accounts: results.accounts.to_json()
+                    emojis: yield results.emojis.to_json({
+                        expand: self.parse_expand(this.query.expand)
+                      , session: this.session
+                    })
+                  , emoji_collections: yield results.emoji_collections.to_json({
+                        expand: self.parse_expand(this.query.expand)
+                      , session: this.session
+                    })
                 }, 'json')
             } else {
                 return self.handle_success(this, null)

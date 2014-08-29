@@ -23,7 +23,8 @@ SessionLocalService.prototype.create_by_account__session = function * (o) {
 
     o.session.account_id = o.account.id
 
-    return o.session
+    // TODO: should not really return account.
+    return o.account
 }
 
 SessionLocalService.prototype.del = function * (o) {

@@ -71,32 +71,20 @@ EmojiCollection.from_db = function(o) {
     })
 }
 
-EmojiCollection.prototype.to_json = function() {
-    return {
-        id: this.id
-      , created_at: EmojiCollection.from_moment(this.created_at)
-      , updated_at: EmojiCollection.from_moment(this.updated_at)
-      , slug_name: this.slug_name
-      , display_name: this.display_name
-      , tags: this.tags
-      , scopes: this.scopes
-      , created_by: this.created_by
-      , extra_data: this.extra_data
-    }
-}
+EmojiCollection.prototype.to_json = function * (o) {
+    var result = {}
 
-EmojiCollection.prototype.to_privileged = function() {
-    return {
-        id: this.id
-      , created_at: EmojiCollection.from_moment(this.created_at)
-      , updated_at: EmojiCollection.from_moment(this.updated_at)
-      , slug_name: this.slug_name
-      , display_name: this.display_name
-      , tags: this.tags
-      , scopes: this.scopes
-      , created_by: this.created_by
-      , extra_data: this.extra_data
-    }
+    result.id = this.id
+    result.created_at = EmojiCollection.from_moment(this.created_at)
+    result.updated_at = EmojiCollection.from_moment(this.updated_at)
+    result.slug_name = this.slug_name
+    result.display_name = this.display_name
+    result.tags = this.tags
+    result.scopes = this.scopes
+    result.created_by = this.created_by
+    result.extra_data = this.extra_data
+
+    return result
 }
 
 EmojiCollection.prototype.to_db = function() {

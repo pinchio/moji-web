@@ -27,7 +27,10 @@ EmojiCollectionHTTPService.prototype.post = function() {
                   , session: this.session
                 })
 
-            self.handle_success(this, {emoji_collection: emoji_collection.to_privileged()}, 'json')
+            return self.handle_success(this, {emoji_collection: yield emoji_collection.to_json({
+                expand: self.parse_expand(this.query.expand)
+              , session: this.session
+            })}, 'json')
         } catch(e) {
             self.handle_exception(this, e)
         }
@@ -51,7 +54,10 @@ EmojiCollectionHTTPService.prototype.put = function() {
                   , session: this.session
                 })
 
-            self.handle_success(this, {emoji_collection: emoji_collection.to_privileged()}, 'json')
+            return self.handle_success(this, {emoji_collection: yield emoji_collection.to_json({
+                expand: self.parse_expand(this.query.expand)
+              , session: this.session
+            })}, 'json')
         } catch(e) {
             self.handle_exception(this, e)
         }
@@ -69,15 +75,14 @@ EmojiCollectionHTTPService.prototype.get = function() {
                   , session: this.session
                 })
 
-            if (emoji_collection) {
-                if (this.session.account_id === emoji_collection.created_by) {
-                    return self.handle_success(this, {emoji_collection: emoji_collection.to_privileged()}, 'json')
-                } else {
-                    return self.handle_success(this, {emoji_collection: emoji_collection.to_json()}, 'json')
-                }
-            } else {
+            if (!emoji_collection) {
                 return self.handle_success(this, null)
             }
+
+            return self.handle_success(this, {emoji_collection: yield emoji_collection.to_json({
+                expand: self.parse_expand(this.query.expand)
+              , session: this.session
+            })}, 'json')
         } catch(e) {
             self.handle_exception(this, e)
         }
@@ -102,11 +107,14 @@ EmojiCollectionHTTPService.prototype.list = function() {
                   , scopes: ['public_read']
                 })
 
-            if (emoji_collections) {
-                return self.handle_success(this, {emoji_collections: emoji_collections.to_json()}, 'json')
-            } else {
-                return self.handle_success(this, null)
+            if (!emoji_collections) {
+                return self.handle_success(this, {emoji_collections: []}, 'json')
             }
+
+            return self.handle_success(this, {emoji_collections: yield emoji_collections.to_json({
+                expand: self.parse_expand(this.query.expand)
+              , session: this.session
+            })}, 'json')
         } catch(e) {
             self.handle_exception(this, e)
         }
@@ -124,11 +132,11 @@ EmojiCollectionHTTPService.prototype.del = function() {
                   , session: this.session
                 })
 
-            if (emoji_collection) {
-                return self.handle_success(this, {}, 'json')
-            } else {
+            if (!emoji_collection) {
                 return self.handle_success(this, null)
             }
+
+            return self.handle_success(this, {}, 'json')
         } catch(e) {
             self.handle_exception(this, e)
         }

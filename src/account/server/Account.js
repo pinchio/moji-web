@@ -72,29 +72,6 @@ Account.from_db = function(o) {
     })
 }
 
-Account.prototype.to_json = function() {
-    return {
-        id: this.id
-      , created_at: Account.from_moment(this.created_at)
-      , username: this.username
-      , profile_image_url: this.profile_image_url
-    }
-}
-
-Account.prototype.to_privileged = function() {
-    return {
-        id: this.id
-      , created_at: Account.from_moment(this.created_at)
-      , updated_at: Account.from_moment(this.updated_at)
-      , username: this.username
-      , email: this.email
-      , full_name: this.full_name
-      , profile_image_url: this.profile_image_url
-      , born_at: this.born_at
-      , extra_data: this.extra_data
-    }
-}
-
 Account.prototype.to_db = function() {
     return {
         id: this.id
@@ -108,6 +85,41 @@ Account.prototype.to_db = function() {
       , born_at: Account.from_moment(this.born_at)
       , extra_data: Account.json_to_text(this.extra_data)
     }
+}
+
+Account.prototype.is_privileged = function(session) {
+    return session && session.account_id === this.id
+}
+
+Account.prototype.to_json = function * (o) {
+    var result = {}
+    result.id = this.id
+    result.created_at = Account.from_moment(this.created_at)
+
+    if (this.is_privileged(o.session)) {
+        result.updated_at = Account.from_moment(this.updated_at)
+    }
+
+    result.username = this.username
+
+    if (this.is_privileged(o.session)) {
+        result.email = this.email
+    }
+
+    if (this.is_privileged(o.session)) {
+        result.full_name = this.full_name
+    }
+
+    // Never return password.
+    result.profile_image_url = this.profile_image_url
+
+    if (this.is_privileged(o.session)) {
+        result.born_at = this.born_at
+    }
+
+    result.extra_data = this.extra_data
+
+    return result
 }
 
 module.exports = Account

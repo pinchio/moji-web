@@ -136,7 +136,10 @@ EmojiHTTPService.prototype.post = function() {
                     })
             }
 
-            return self.handle_success(this, {emoji: emoji.to_privileged()}, 'json')
+            return self.handle_success(this, {emoji: yield emoji.to_json({
+                expand: self.parse_expand(this.query.expand)
+              , session: this.session
+            })}, 'json')
         } catch(e) {
             self.handle_exception(this, e)
         }
@@ -148,32 +151,20 @@ EmojiHTTPService.prototype.get = function() {
 
     return function * (next) {
         try {
-            var o = yield EmojiLocalService.get_by_id_extended({
+            var emoji = yield EmojiLocalService.get_by_id({
                     req: this.request
                   , id: this.params.id
                   , session: this.session
                 })
 
-            if (o && o.emoji) {
-                var ancestor_emoji = o.ancestor_emoji && o.ancestor_emoji.to_minimum()
-                  , ancestor_creator = o.ancestor_creator && o.ancestor_creator.to_json()
-                  , creator = o.creator && o.creator.to_json()
-
-                if (this.session.account_id === o.emoji.created_by) {
-                    var emoji = o.emoji.to_privileged()
-                } else {
-                    var emoji = o.emoji.to_json()
-                }
-
-                return self.handle_success(this, {
-                    emoji: emoji
-                  , ancestor_emoji: ancestor_emoji
-                  , ancestor_creator: ancestor_creator
-                  , creator: creator
-                }, 'json')
-            } else {
+            if (!emoji) {
                 return self.handle_success(this, null)
             }
+
+            return self.handle_success(this, {emoji: yield emoji.to_json({
+                expand: self.parse_expand(this.query.expand)
+              , session: this.session
+            })}, 'json')
         } catch(e) {
             self.handle_exception(this, e)
         }
@@ -199,11 +190,14 @@ EmojiHTTPService.prototype.list = function() {
                     })
             }
 
-            if (emojis) {
-                return self.handle_success(this, {emojis: emojis.to_json()}, 'json')
-            } else {
-                return self.handle_success(this, null)
+            if (!emojis) {
+                return self.handle_success(this, {emojis: []}, 'json')
             }
+
+            return self.handle_success(this, {emojis: yield emojis.to_json({
+                expand: self.parse_expand(this.query.expand)
+              , session: this.session
+            })}, 'json')
         } catch(e) {
             self.handle_exception(this, e)
         }
@@ -221,11 +215,11 @@ EmojiHTTPService.prototype.del = function() {
                   , session: this.session
                 })
 
-            if (emoji) {
-                return self.handle_success(this, {}, 'json')
-            } else {
+            if (!emoji) {
                 return self.handle_success(this, null)
             }
+
+            return self.handle_success(this, {}, 'json')
         } catch(e) {
             self.handle_exception(this, e)
         }

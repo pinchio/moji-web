@@ -19,11 +19,11 @@ CollectionMixin.prototype.first = function() {
     return (this.list.length === 1) ? this.list[0] : null
 }
 
-CollectionMixin.prototype.to_json = function() {
+CollectionMixin.prototype.to_json = function * (o) {
     var result = []
 
     for (var i = 0, ii = this.list.length; i < ii; ++i) {
-        result.push(this.list[i].to_json())
+        result.push(yield this.list[i].to_json({session: o.session, expand: o.expand}))
     }
 
     return result
