@@ -27,15 +27,15 @@ v2 - 2014-09-03
 ---
 - [client] App design polish
 - [client] Show and post send counts and attribution
-- [server] Track send counts and attribution
+- [server] Track send counts and attribution [Charlie - Done]
 - [server] Admin priviledges
 
 v3 - 2014-09-10
 ---
+- [server] Expand ancestor_emoji [Charlie - Done]
+- [server] account.id = username [Charlie - Skip, fully encapsulated by above]
+- [server] Unified Search [Charlie - Done]
 - [server] Featured endpoint
-- [server] Expand ancestor_emoji
-- [server] account.id = username
-- [server] Unified Search
 - [server] Following packs
 - [server] Retrieving packs per user (for profile page)
 
@@ -95,6 +95,11 @@ D) Dedicated endpoint for Featured Packs/Moji?
 
 CHANGELOG
 ===
+
+2014-8-29
+---
+- curl localhost:10000/_/api/emoji/fea09bb6-4785-4416-bf50-203043d8a96f?expand=emoji.created_by&emoji.ancestor_emoji_id
+- unified search including accounts (full_name and username)
 
 2014-8-28
 ---

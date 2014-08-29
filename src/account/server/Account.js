@@ -106,9 +106,7 @@ Account.prototype.to_json = function * (o) {
         result.email = this.email
     }
 
-    if (this.is_privileged(o.session)) {
-        result.full_name = this.full_name
-    }
+    result.full_name = this.full_name
 
     // Never return password.
     result.profile_image_url = this.profile_image_url

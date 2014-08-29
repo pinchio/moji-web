@@ -3,8 +3,6 @@ var _ = require('underscore')
   , config = require('../../../config')
   , crypto = require('crypto')
   , easy_pbkdf2 = require('easy-pbkdf2')({DEFAULT_HASH_ITERATIONS: 10000, SALT_SIZE: 32, KEY_LENGTH: 256})
-  , EmojiCollection = require('./EmojiCollection')
-  , EmojiCollectionPersistenceService = require('./EmojiCollectionPersistenceService').get_instance()
   , fs = require('fs')
   , LocalServiceError = require('src/common/server/LocalServiceError')
   , Moment = require('moment')
@@ -207,4 +205,6 @@ EmojiCollectionLocalService.prototype.delete_by_id = function * (o) {
 
 module.exports = EmojiCollectionLocalService
 
-var SessionLocalService = require('src/session/server/SessionLocalService').get_instance()
+var EmojiCollection = require('./EmojiCollection')
+  , EmojiCollectionPersistenceService = require('./EmojiCollectionPersistenceService').get_instance()
+  , SessionLocalService = require('src/session/server/SessionLocalService').get_instance()

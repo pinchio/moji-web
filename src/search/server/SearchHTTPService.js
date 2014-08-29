@@ -26,7 +26,6 @@ SearchHTTPService.prototype.list = function() {
               , expand = self.parse_expand(this.query.expand)
 
             if (results) {
-                // Results is {emoji_collections=[], emojis=[], users=[]}.
                 return self.handle_success(this, {
                     emojis: yield results.emojis.to_json({
                         expand: expand && expand.emojis
@@ -34,6 +33,10 @@ SearchHTTPService.prototype.list = function() {
                     })
                   , emoji_collections: yield results.emoji_collections.to_json({
                         expand: expand && expand.emoji_collections
+                      , session: this.session
+                    })
+                  , accounts: yield results.accounts.to_json({
+                        expand: expand && expand.accounts
                       , session: this.session
                     })
                 }, 'json')

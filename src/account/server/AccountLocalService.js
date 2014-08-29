@@ -140,6 +140,17 @@ AccountLocalService.prototype.get_by_username_password = function * (o) {
     }
 }
 
+AccountLocalService.prototype.get_by_query = function * (o) {
+    yield this.validate_session(o.session)
+    yield this.validate_query(o.query)
+
+    var accounts = yield AccountPersistenceService.select_by_query({
+            query: o.query
+        })
+
+    return accounts
+}
+
 module.exports = AccountLocalService
 
 var SessionLocalService = require('src/session/server/SessionLocalService').get_instance()

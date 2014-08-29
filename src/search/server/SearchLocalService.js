@@ -25,11 +25,16 @@ SearchLocalService.prototype.get_by_query = function * (o) {
           , created_by: o.session.account_id
           , session: o.session
         })
+      , accounts = yield AccountLocalService.get_by_query({
+            query: query
+          , session: o.session
+        })
 
-    return {emojis: emojis, emoji_collections: emoji_collections}
+    return {emojis: emojis, emoji_collections: emoji_collections, accounts: accounts}
 }
 
 module.exports = SearchLocalService
 
-var EmojiCollectionLocalService = require('../../emoji_collection/server/EmojiCollectionLocalService').get_instance()
-  , EmojiLocalService = require('../../emoji/server/EmojiLocalService').get_instance()
+var AccountLocalService = require('src/account/server/AccountLocalService').get_instance()
+  , EmojiCollectionLocalService = require('src/emoji_collection/server/EmojiCollectionLocalService').get_instance()
+  , EmojiLocalService = require('src/emoji/server/EmojiLocalService').get_instance()

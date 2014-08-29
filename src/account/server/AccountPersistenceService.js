@@ -32,4 +32,20 @@ AccountPersistenceService.prototype.select_by_username = function * (req) {
     return yield this.query({query: query, values: values})
 }
 
+AccountPersistenceService.prototype.select_by_query = function * (req) {
+   var query = 'select * '
+              + 'from ' + this.table + ' '
+              + 'where ('
+                  + 'to_tsvector(\'english\', username) '
+                  + '@@ to_tsquery(\'english\', $1) or '
+                  + 'to_tsvector(\'english\', full_name) '
+                  + '@@ to_tsquery(\'english\', $1)'
+              + ') '
+              + 'order by updated_at desc '
+              + 'limit 100'
+      , values = [req.query]
+
+    return yield this.query({query: query, values: values})
+}
+
 module.exports = AccountPersistenceService

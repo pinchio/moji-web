@@ -82,6 +82,18 @@ EmojiCollection.prototype.to_json = function * (o) {
     result.tags = this.tags
     result.scopes = this.scopes
     result.created_by = this.created_by
+
+    if (result.created_by && o.expand && o.expand.created_by) {
+        result.created_by_expanded = yield AccountLocalService.get_by_id({id: this.created_by})
+
+        if (result.created_by_expanded) {
+            result.created_by_expanded = yield result.created_by_expanded.to_json({
+                expand: o.expand.created_by_expanded
+              , session: o.session
+            })
+        }
+    }
+
     result.extra_data = this.extra_data
 
     return result
@@ -103,3 +115,5 @@ EmojiCollection.prototype.to_db = function() {
 }
 
 module.exports = EmojiCollection
+
+var AccountLocalService = require('src/account/server/AccountLocalService').get_instance()
