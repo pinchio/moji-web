@@ -29,7 +29,7 @@ var HomePage = React.createClass({
                                 </div>
                                 <p>Create your own stickers</p>
                                 <br/><br/>
-                                <a target="_blank" href="https://itunes.apple.com/us/app/imojiapp/id912008559?mt=8">
+                                <a target="_blank" href="ttps://itunes.apple.com/us/app/mojigram/id912008559?ls=1&mt=8">
                                     <div className="sprite sprite-app-store-badge-en"></div>
                                 </a>
                             </div>
