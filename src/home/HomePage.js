@@ -29,14 +29,14 @@ var HomePage = React.createClass({
                                 </div>
                                 <p>Create your own stickers</p>
                                 <br/><br/>
-                                <a href="https://itunes.apple.com/us/app/imojiapp/id912008559?mt=8">
+                                <a target="_blank" href="https://itunes.apple.com/us/app/imojiapp/id912008559?mt=8">
                                     <div className="sprite sprite-app-store-badge-en"></div>
                                 </a>
                             </div>
                         </div>
                     </div>
                     <div className="footer">
-                        © 2014, Mojigram. <a href="mailto:direct@mojigram.com">Contact Us</a>
+                        © 2014, Mojigram. <a href="mailto:direct@mojigram.com" target="_blank" >Contact Us</a>
                     </div>
                 </div>
             </div>
