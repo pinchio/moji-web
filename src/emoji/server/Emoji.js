@@ -153,7 +153,7 @@ Emoji.prototype.to_json = function * (o) {
         result.created_by = this.created_by
     }
 
-    if (result.created_by && o.expand.created_by) {
+    if (result.created_by && o.expand && o.expand.created_by) {
         result.created_by_expanded = yield AccountLocalService.get_by_id({id: this.created_by})
 
         if (result.created_by_expanded) {
@@ -175,7 +175,7 @@ Emoji.prototype.to_json = function * (o) {
         result.ancestor_emoji_id = this.ancestor_emoji_id
     }
 
-    if (result.ancestor_emoji_id && o.expand.ancestor_emoji_id) {
+    if (result.ancestor_emoji_id && o.expand && o.expand.ancestor_emoji_id) {
         result.ancestor_emoji_id_expanded = yield EmojiLocalService.get_by_id_privileged({id: this.ancestor_emoji_id})
 
         if (result.ancestor_emoji_id_expanded) {

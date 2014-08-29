@@ -23,16 +23,17 @@ SearchHTTPService.prototype.list = function() {
                   , session: this.session
                   , req: this.request
                 })
+              , expand = self.parse_expand(this.query.expand)
 
             if (results) {
                 // Results is {emoji_collections=[], emojis=[], users=[]}.
                 return self.handle_success(this, {
                     emojis: yield results.emojis.to_json({
-                        expand: self.parse_expand(this.query.expand)
+                        expand: expand && expand.emojis
                       , session: this.session
                     })
                   , emoji_collections: yield results.emoji_collections.to_json({
-                        expand: self.parse_expand(this.query.expand)
+                        expand: expand && expand.emoji_collections
                       , session: this.session
                     })
                 }, 'json')

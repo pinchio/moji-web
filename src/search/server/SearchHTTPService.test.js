@@ -419,7 +419,7 @@ describe('SearchHTTPService', function() {
         it('should not find deleted emoji collections', function(done) {
             var query = encodeURIComponent('cute')
             request({
-                    url: get_url('/_/api/search?q=' + query)
+                    url: get_url('/_/api/search?q=' + query + '&expand=emojis.created_by,emojis.ancestor_emoji_id,emojis.ancestor_emoji_id_expanded.created_by')
                   , method: 'GET'
                   , json: true
                   , jar: stored_jar

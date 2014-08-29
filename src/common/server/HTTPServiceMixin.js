@@ -47,7 +47,7 @@ HTTPServiceMixin.prototype.parse_expand = function(expand) {
 
     var params = expand.split(',')
       , result = {}
-    // [ancestor_emoji_id, ancestor_emoji_id_expanded.created_by]
+    // [emoji.ancestor_emoji_id, emoji.ancestor_emoji_id_expanded.created_by]
 
     for (var i = 0, ii = params.length; i < ii; ++i) {
         var param = params[i]
@@ -57,7 +57,7 @@ HTTPServiceMixin.prototype.parse_expand = function(expand) {
         for (var j = 0, jj = nested_params.length; j < jj; ++j) {
             var nested_param = nested_params[j]
 
-            previous[nested_param] = {}
+            previous[nested_param] = previous[nested_param] || {}
             previous = previous[nested_param]
         }
     }

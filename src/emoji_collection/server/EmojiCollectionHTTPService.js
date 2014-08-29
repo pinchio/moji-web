@@ -26,9 +26,10 @@ EmojiCollectionHTTPService.prototype.post = function() {
                   , extra_data: this.request.body && this.request.body.extra_data
                   , session: this.session
                 })
+              , expand = self.parse_expand(this.query.expand)
 
             return self.handle_success(this, {emoji_collection: yield emoji_collection.to_json({
-                expand: self.parse_expand(this.query.expand)
+                expand: expand && expand.emoji_collection
               , session: this.session
             })}, 'json')
         } catch(e) {
@@ -53,9 +54,10 @@ EmojiCollectionHTTPService.prototype.put = function() {
                   , extra_data: this.request.body && this.request.body.extra_data
                   , session: this.session
                 })
+              , expand = self.parse_expand(this.query.expand)
 
             return self.handle_success(this, {emoji_collection: yield emoji_collection.to_json({
-                expand: self.parse_expand(this.query.expand)
+                expand: expand && expand.emoji_collection
               , session: this.session
             })}, 'json')
         } catch(e) {
@@ -74,13 +76,14 @@ EmojiCollectionHTTPService.prototype.get = function() {
                   , id: this.params.id
                   , session: this.session
                 })
+              , expand = self.parse_expand(this.query.expand)
 
             if (!emoji_collection) {
                 return self.handle_success(this, null)
             }
 
             return self.handle_success(this, {emoji_collection: yield emoji_collection.to_json({
-                expand: self.parse_expand(this.query.expand)
+                expand: expand && expand.emoji_collection
               , session: this.session
             })}, 'json')
         } catch(e) {
@@ -106,13 +109,14 @@ EmojiCollectionHTTPService.prototype.list = function() {
                   , created_by: created_by
                   , scopes: ['public_read']
                 })
+              , expand = self.parse_expand(this.query.expand)
 
             if (!emoji_collections) {
                 return self.handle_success(this, {emoji_collections: []}, 'json')
             }
 
             return self.handle_success(this, {emoji_collections: yield emoji_collections.to_json({
-                expand: self.parse_expand(this.query.expand)
+                expand: expand && expand.emoji_collections
               , session: this.session
             })}, 'json')
         } catch(e) {

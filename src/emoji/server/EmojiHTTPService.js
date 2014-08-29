@@ -136,8 +136,10 @@ EmojiHTTPService.prototype.post = function() {
                     })
             }
 
+            var expand = self.parse_expand(this.query.expand)
+
             return self.handle_success(this, {emoji: yield emoji.to_json({
-                expand: self.parse_expand(this.query.expand)
+                expand: expand && expand.emoji
               , session: this.session
             })}, 'json')
         } catch(e) {
@@ -161,8 +163,10 @@ EmojiHTTPService.prototype.get = function() {
                 return self.handle_success(this, null)
             }
 
+            var expand = self.parse_expand(this.query.expand)
+
             return self.handle_success(this, {emoji: yield emoji.to_json({
-                expand: self.parse_expand(this.query.expand)
+                expand: expand && expand.emoji
               , session: this.session
             })}, 'json')
         } catch(e) {
@@ -194,8 +198,10 @@ EmojiHTTPService.prototype.list = function() {
                 return self.handle_success(this, {emojis: []}, 'json')
             }
 
+            var expand = self.parse_expand(this.query.expand)
+
             return self.handle_success(this, {emojis: yield emojis.to_json({
-                expand: self.parse_expand(this.query.expand)
+                expand: expand && expand.emoji
               , session: this.session
             })}, 'json')
         } catch(e) {
