@@ -65,8 +65,9 @@ RELEASES
 
 v2 - 2014-09-03
 ---
-TBD
-
+- [client] app design polish
+- [client] show and post send counts and attribution
+- [serve] track send counts and attribution
 
 v3 - 2014-09-10
 ---
