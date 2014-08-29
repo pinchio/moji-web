@@ -65,13 +65,19 @@ RELEASES
 
 v2 - 2014-09-03
 ---
-- [client] app design polish
-- [client] show and post send counts and attribution
-- [serve] track send counts and attribution
+- [client] App design polish
+- [client] Show and post send counts and attribution
+- [server] Track send counts and attribution
+- [server] Admin priviledges
 
 v3 - 2014-09-10
 ---
-TBD
+- [server] Featured endpoint
+- [server] Expand ancestor_emoji
+- [server] account.id = username
+- [server] Unified Search
+- [server] Following packs
+- [server] Retrieving packs per user (for profile page)
 
 TODO
 ===
