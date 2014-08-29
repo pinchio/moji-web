@@ -25,24 +25,24 @@ SearchHTTPService.prototype.list = function() {
                 })
               , expand = self.parse_expand(this.query.expand)
 
-            if (results) {
-                return self.handle_success(this, {
-                    emojis: yield results.emojis.to_json({
-                        expand: expand && expand.emojis
-                      , session: this.session
-                    })
-                  , emoji_collections: yield results.emoji_collections.to_json({
-                        expand: expand && expand.emoji_collections
-                      , session: this.session
-                    })
-                  , accounts: yield results.accounts.to_json({
-                        expand: expand && expand.accounts
-                      , session: this.session
-                    })
-                }, 'json')
-            } else {
+            if (!results) {
                 return self.handle_success(this, null)
             }
+
+            return self.handle_success(this, {
+                emojis: yield results.emojis.to_json({
+                    expand: expand && expand.emojis
+                  , session: this.session
+                })
+              , emoji_collections: yield results.emoji_collections.to_json({
+                    expand: expand && expand.emoji_collections
+                  , session: this.session
+                })
+              , accounts: yield results.accounts.to_json({
+                    expand: expand && expand.accounts
+                  , session: this.session
+                })
+            }, 'json')
         } catch(e) {
             self.handle_exception(this, e)
         }

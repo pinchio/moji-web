@@ -145,17 +145,20 @@ EmojiCollectionLocalService.prototype.get_by_id = function * (o) {
     }
 }
 
+// FIXME: shouldnt have to pass in scopes.
 EmojiCollectionLocalService.prototype.get_by_created_by__scopes = function * (o) {
     yield this.validate_session(o.session)
     yield this.validate_uuid(o.created_by, 'Emoji collection created by ids')
     yield this.validate_scopes(o.scopes)
 
     if (o.session.account_id !== o.created_by) {
+        // If not user, gets all public.
         var emoji_collections = yield EmojiCollectionPersistenceService.select_by_created_by__scopes__not_deleted({
             created_by: o.created_by
           , scopes: o.scopes
         })
     } else {
+        // If user, gets public and private.
         var emoji_collections = yield EmojiCollectionPersistenceService.select_by_created_by__not_deleted({
             created_by: o.created_by
         })

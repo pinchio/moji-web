@@ -68,6 +68,7 @@ var Server = function Server() {
     this.app.route('/_/api/emoji/:id').del(EmojiHTTPService.del())
 
     this.app.route('/_/api/search').get(SearchHTTPService.list())
+    this.app.route('/_/api/featured').get(FeaturedHTTPService.list())
 
     this.app.route('/_/api/event').post(EventHTTPService.post())
 
@@ -95,6 +96,7 @@ var AccountHTTPService = require('src/account/server/AccountHTTPService').get_in
   , EmojiHTTPService = require('src/emoji/server/EmojiHTTPService').get_instance()
   , EmojiCollectionHTTPService = require('src/emoji_collection/server/EmojiCollectionHTTPService').get_instance()
   , EventHTTPService = require('src/event/server/EventHTTPService').get_instance()
+  , FeaturedHTTPService = require('src/featured/server/FeaturedHTTPService').get_instance()
   , HomeHTTPService = require('src/home/server/HomeHTTPService').get_instance()
   , SearchHTTPService = require('src/search/server/SearchHTTPService').get_instance()
   , SessionHTTPService = require('src/session/server/SessionHTTPService').get_instance()

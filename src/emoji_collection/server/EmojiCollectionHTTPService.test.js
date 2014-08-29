@@ -1016,7 +1016,7 @@ describe('EmojiCollectionHTTPService', function() {
             form.append('tags[]', tags[0])
             form.append('tags[]', tags[1])
             form.append('scopes[]', 'public_read')
-            form.append('asset', fs.createReadStream(path.join(__dirname, '../../emoji/panda-dog.jpg')))
+            form.append('asset', fs.createReadStream(path.join(__dirname, '../../asset/panda-dog.jpg')))
         })
 
         it('should find emoji collection as mojigram user', function(done) {
@@ -1093,6 +1093,21 @@ describe('EmojiCollectionHTTPService', function() {
         it('should get emojis as another user', function(done) {
             request({
                     url: get_url('/_/api/emoji?emoji_collection_id=' + stored_emoji_collection.id)
+                  , method: 'GET'
+                  , json: true
+                  , jar: stored_jar2
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.isDefined(body.emojis)
+                    assert.deepEqual(body.emojis[0], stored_emoji)
+                    done()
+            })
+        })
+
+        it('should get featured emojis as another user', function(done) {
+            request({
+                    url: get_url('/_/api/featured')
                   , method: 'GET'
                   , json: true
                   , jar: stored_jar2
