@@ -17,15 +17,13 @@ SessionLocalService.prototype.create = function * (o) {
 }
 
 SessionLocalService.prototype.create_by_account__session = function * (o) {
-    var account = o.account
-
-    if (account) {
-        o.session.account_id = account.id
-    } else {
+    if (!o.account) {
         throw new LocalServiceError(this.ns, 'access_denied', 'Invalid username or password', 403)
     }
 
-    return account
+    o.session.account_id = o.account.id
+
+    return o.session
 }
 
 SessionLocalService.prototype.del = function * (o) {
