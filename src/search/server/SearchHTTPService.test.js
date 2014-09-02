@@ -1,5 +1,4 @@
 var assert = require('chai').assert
-  , server = require('src/server/server/Server').get_instance()
   , config = require('config')
   , host = config.get('server').host
   , port = config.get('server').port
@@ -64,7 +63,7 @@ describe('SearchHTTPService', function() {
         })
 
         it('should create public emoji', function(done) {
-            this.timeout(10000)
+            this.timeout(60000)
             var display_name = 'Cute emoji'
               , tags = ['cat', 'tv', 'searchemoji']
             var req = request(
@@ -134,7 +133,7 @@ describe('SearchHTTPService', function() {
         })
 
         it('should create private emoji', function(done) {
-            this.timeout(10000)
+            this.timeout(60000)
             var display_name = 'Push'
               , tags = ['cat', 'pusheen', 'searchemoji']
               , req = request(
@@ -180,7 +179,7 @@ describe('SearchHTTPService', function() {
         })
 
         it('should create private emoji thats a duplicate', function(done) {
-            this.timeout(10000)
+            this.timeout(60000)
             var display_name = 'Panda'
               , tags = ['panda', 'searchemoji']
               , req = request(

@@ -1,7 +1,6 @@
 var assert = require('chai').assert
   , _ = require('underscore')
   , fs = require('fs')
-  , server = require('src/server/server/Server').get_instance()
   , config = require('config')
   , host = config.get('server').host
   , port = config.get('server').port
@@ -78,7 +77,7 @@ describe('AssetHTTPService', function() {
         })
 
        it.skip('should create asset', function(done) {
-            this.timeout(10000)
+            this.timeout(60000)
             var req = request(
                 {
                     url: get_url('/_/api/asset')

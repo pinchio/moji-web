@@ -18,6 +18,17 @@ var config = convict({
       , 'env': 'NODE_OVERRIDE'
       , 'arg': 'override'
     }
+  , 'path': {
+        'doc': 'path'
+      , 'format': function(value) {
+            if (!value || !value.length || value.length < 1) {
+                throw new Error('Must supply env variable NODE_PATH.')
+            }
+        }
+      , 'default': ''
+      , 'env': 'NODE_PATH'
+      , 'arg': 'path'
+    }
   , 'project_path': {
         'doc': 'Project path'
       , 'format': '*'
@@ -35,6 +46,26 @@ var config = convict({
             'format': '*'
           , 'default': '0.0.0.0'
           , 'env': 'NODE_HOST'
+        }
+    }
+ , 'aws': {
+        'aws_access_key_id': {
+            'format': function(value) {
+                if (!value || !value.length || value.length < 10) {
+                    throw new Error('Must supply env variable AWS_ACCESS_KEY_ID.')
+                }
+            }
+          , 'default': ''
+          , 'env': 'AWS_ACCESS_KEY_ID'
+        }
+      , 'aws_secret_access_key': {
+            'format': function(value) {
+                if (!value || !value.length || value.length < 10) {
+                    throw new Error('Must supply env variable AWS_SECRET_ACCESS_KEY.')
+                }
+            }
+          , 'default': ''
+          , 'env': 'AWS_SECRET_ACCESS_KEY'
         }
     }
  , 's3': {
@@ -78,6 +109,21 @@ var config = convict({
     }
 })
 
+config.validate()
+
+config.loadFile(path.join(__dirname, config.get('env') + '.json'))
+
+if (process.env.NODE_ENV === 'development' && !config.get('override_env')) {
+    console.log('Please set the `NODE_OVERRIDE` env variable to your config override file name excluding .json.')
+    process.exit()
+}
+
+if (config.get('override_env')) {
+    config.loadFile(path.join(__dirname, config.get('override_env') + '.json'))
+}
+
+config.validate()
+
 var get_conn_string = function(config) {
     return [
         'postgres://', config.get('db.user'), ':', config.get('db.pass')
@@ -85,14 +131,6 @@ var get_conn_string = function(config) {
     ].join('')
 }
 
-config.loadFile(path.join(__dirname, config.get('env') + '.json'))
-
-if (config.get('override_env')) {
-    config.loadFile(path.join(__dirname, config.get('override_env') + '.json'))
-}
-
 config.set('conn_string', get_conn_string(config))
-
-config.validate()
 
 module.exports = config

@@ -1,7 +1,6 @@
 var assert = require('chai').assert
   , _ = require('underscore')
   , fs = require('fs')
-  , server = require('src/server/server/Server').get_instance()
   , config = require('config')
   , host = config.get('server').host
   , port = config.get('server').port
@@ -144,7 +143,7 @@ describe('EmojiHTTPService', function() {
         })
 
         it('should create emoji', function(done) {
-            this.timeout(10000)
+            this.timeout(60000)
             var display_name = 'Super emoji'
               , tags = ['cats', 'dogs']
             var req = request(
@@ -410,7 +409,7 @@ describe('EmojiHTTPService', function() {
         })
 
         it('should create emoji', function(done) {
-            this.timeout(10000)
+            this.timeout(60000)
 
             var id = uuid.v4()
               , display_name = 'Super emoji'
@@ -498,7 +497,7 @@ describe('EmojiHTTPService', function() {
         })
 
         it('should update emoji if no conflict', function(done) {
-            this.timeout(10000)
+            this.timeout(60000)
             var display_name = 'Updated Emoji'
             var req = request({
                     url: get_url('/_/api/emoji/' + stored_emoji.id)
@@ -530,7 +529,7 @@ describe('EmojiHTTPService', function() {
         })
 
         it('should not update emoji if conflict, but dont return error', function(done) {
-            this.timeout(10000)
+            this.timeout(60000)
             var display_name = 'Updated Again Emoji'
             var req = request({
                     url: get_url('/_/api/emoji/' + stored_emoji.id)
@@ -639,7 +638,7 @@ describe('EmojiHTTPService', function() {
         })
 
         it('should create emoji', function(done) {
-            this.timeout(10000)
+            this.timeout(60000)
             var display_name = 'Super emoji'
               , tags = ['cats', 'dogs']
             var req = request(
@@ -710,7 +709,7 @@ describe('EmojiHTTPService', function() {
         })
 
         it('should create emoji with no scopes', function(done) {
-            this.timeout(10000)
+            this.timeout(60000)
             var display_name = 'Super emoji'
               , tags = ['cats', 'dogs']
             var req = request(
@@ -848,7 +847,7 @@ describe('EmojiHTTPService', function() {
         })
 
         it('should create emoji in first collection', function(done) {
-            this.timeout(10000)
+            this.timeout(60000)
             var display_name = 'Super emoji'
               , tags = ['cats', 'dogs']
             var req = request(
@@ -876,7 +875,7 @@ describe('EmojiHTTPService', function() {
         })
 
         it('should create another emoji in first collection', function(done) {
-            this.timeout(10000)
+            this.timeout(60000)
             var display_name = 'Super emoji 2'
               , tags = ['cats', 'dogs']
             var req = request(
@@ -904,7 +903,7 @@ describe('EmojiHTTPService', function() {
         })
 
         it('should create emoji in second collection', function(done) {
-            this.timeout(10000)
+            this.timeout(60000)
             var display_name = 'Super emoji 3'
               , tags = ['cats', 'dogs']
             var req = request(

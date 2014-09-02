@@ -5,7 +5,6 @@ var assert = require('chai').assert
   , path = require('path')
   , port = config.get('server').port
   , request = require('request')
-  , server = require('src/server/server/Server').get_instance()
   , uuid = require('node-uuid')
 
 var get_url = function(args) {
@@ -60,7 +59,7 @@ describe('EventHTTPService', function() {
         })
 
         it('should create emoji', function(done) {
-            this.timeout(10000)
+            this.timeout(60000)
             var display_name = ''
               , tags = []
               , req = request(

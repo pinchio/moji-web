@@ -35,9 +35,9 @@ v3 - 2014-09-10
 - [server] Expand ancestor_emoji [Charlie - Done]
 - [server] account.id = username [Charlie - Skip, fully encapsulated by above]
 - [server] Unified Search [Charlie - Done]
-- [server] Featured endpoint
 - [server] Following packs
 - [server] Retrieving packs per user (for profile page)
+- [server] Featured endpoint [Charlie - Done with emojis, waiting for following packs for rest]
 
 TODO
 ===
@@ -88,7 +88,6 @@ D) Dedicated endpoint for Featured Packs/Moji?
 - so it'll be GET /api/featured returning {emojis: [], emoji_collections: []}
 - but we're still gonna store the emojis and emoji_collections on the @mojigram user
 - use local gulp in npm/pre-comimt
-- warning for aws keys
 
 - make sure deleted emoji minimums are returned when used as ancestor
 
@@ -100,6 +99,7 @@ CHANGELOG
 ---
 - curl localhost:10000/_/api/emoji/fea09bb6-4785-4416-bf50-203043d8a96f?expand=emoji.created_by&emoji.ancestor_emoji_id
 - unified search including accounts (full_name and username)
+- Done with featured emojis
 
 2014-8-28
 ---

@@ -1,6 +1,5 @@
 var assert = require('chai').assert
   , fs = require('fs')
-  , server = require('src/server/server/Server').get_instance()
   , config = require('config')
   , host = config.get('server').host
   , port = config.get('server').port
@@ -990,7 +989,7 @@ describe('EmojiCollectionHTTPService', function() {
         })
 
         it('should create emoji', function(done) {
-            this.timeout(10000)
+            this.timeout(60000)
 
             var display_name = 'Super emoji'
               , tags = ['cats', 'dogs']
