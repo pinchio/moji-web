@@ -194,6 +194,19 @@ Emoji.prototype.to_json = function * (o) {
         result.emoji_collection_id = this.emoji_collection_id
     }
 
+    if (result.emoji_collection_id && o.expand && o.expand.emoji_collection_id) {
+        result.emoji_collection_id_expanded = yield EmojiCollectionLocalService.get_by_id_privileged({
+            id: this.emoji_collection_id
+        })
+
+        if (result.emoji_collection_id_expanded) {
+            result.emoji_collection_id_expanded = yield result.emoji_collection_id_expanded.to_json({
+                expand: o.expand.emoji_collection_id_expanded
+              , session: o.session
+            })
+        }
+    }
+
     if (!this.deleted_at) {
         result.extra_data = this.extra_data
     }
@@ -209,3 +222,4 @@ module.exports = Emoji
 
 var AccountLocalService = require('src/account/server/AccountLocalService').get_instance()
   , EmojiLocalService = require('src/emoji/server/EmojiLocalService').get_instance()
+  , EmojiCollectionLocalService = require('src/emoji_collection/server/EmojiCollectionLocalService').get_instance()

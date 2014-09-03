@@ -145,6 +145,12 @@ EmojiCollectionLocalService.prototype.get_by_id = function * (o) {
     }
 }
 
+EmojiCollectionLocalService.prototype.get_by_id_privileged = function * (o) {
+    yield this.validate_uuid(o.id, 'Emoji collection ids')
+
+    return (yield EmojiCollectionPersistenceService.select_by_id({id: o.id})).first()
+}
+
 // FIXME: shouldnt have to pass in scopes.
 EmojiCollectionLocalService.prototype.get_by_created_by__scopes = function * (o) {
     yield this.validate_session(o.session)
