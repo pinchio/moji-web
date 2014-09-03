@@ -1,6 +1,4 @@
 var _ = require('underscore')
-  , Event = require('./Event')
-  , EventPersistenceService = require('./EventPersistenceService').get_instance()
   , LocalServiceError = require('src/common/server/LocalServiceError')
   , StaticMixin = require('src/common/StaticMixin')
   , uuid = require('node-uuid')
@@ -65,3 +63,5 @@ module.exports = EventLocalService
 
 var EmojiLocalService = require('src/emoji/server/EmojiLocalService').get_instance()
   , EmojiCollectionLocalService = require('src/emoji_collection/server/EmojiCollectionLocalService').get_instance()
+  , Event = require('./Event')
+  , EventPersistenceService = require('./EventPersistenceService').get_instance()

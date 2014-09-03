@@ -1,5 +1,6 @@
 var CollectionMixin = function() {}
 
+// FIXME: this is dangerous in that everyone shares this copy.
 CollectionMixin.keys = ['list']
 
 CollectionMixin.from_db = function(raw) {

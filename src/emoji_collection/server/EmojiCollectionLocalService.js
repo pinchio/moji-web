@@ -190,8 +190,7 @@ EmojiCollectionLocalService.prototype.delete_by_id = function * (o) {
     yield this.validate_session(o.session)
     yield this.validate_uuid(o.id, 'Emoji collection ids')
 
-    var emoji_collections = yield EmojiCollectionPersistenceService.select_by_id({id: o.id})
-      , emoji_collection = emoji_collections.first()
+    var emoji_collection = (yield EmojiCollectionPersistenceService.select_by_id({id: o.id})).first()
 
     if (emoji_collection) {
         if (emoji_collection.deleted_at) {

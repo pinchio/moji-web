@@ -91,9 +91,15 @@ D) Dedicated endpoint for Featured Packs/Moji?
 
 - make sure deleted emoji minimums are returned when used as ancestor
 
+- use marketing names (Moji, Pack)
+
 
 CHANGELOG
 ===
+
+2014-9-02
+---
+- url: get_url('/_/api/emoji/' + emoji_id + '?expand=emoji.ancestor_emoji_id,emoji.ancestor_emoji_id_expanded.created_by,emoji.ancestor_emoji_id_expanded.emoji_collection_id' for ancestor expansion
 
 2014-8-29
 ---

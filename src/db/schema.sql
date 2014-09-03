@@ -76,3 +76,13 @@ CREATE TABLE emoji_collection (
     created_by      char(36),
     extra_data      text
 );
+
+DROP TABLE emoji_collection_follower;
+CREATE TABLE emoji_collection_follower (
+    id              char(36) PRIMARY KEY,
+    created_at      timestamptz,
+    deleted_at      timestamptz,
+    emoji_collection_id char(36),
+    follower        char(36),
+    UNIQUE(emoji_collection_id, follower)
+);

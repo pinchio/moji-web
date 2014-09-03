@@ -20,9 +20,9 @@ EventHTTPService.prototype.post = function() {
                   , session: this.session
                 })
 
-            self.handle_success(this, {}, 'json')
+            return self.handle_success(this, {}, 'json')
         } catch(e) {
-            self.handle_exception(this, e)
+            return self.handle_exception(this, e)
         }
     }
 }
