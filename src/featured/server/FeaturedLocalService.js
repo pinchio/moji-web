@@ -22,9 +22,17 @@ FeaturedLocalService.prototype.get = function * (o) {
     if (!emoji_collections.list.length) {
         var emojis = new Emojis({list: []})
     } else {
-        // TODO: Logic to pick out featured.
         var featured_collection = emoji_collections.list[0]
-          , emojis = yield EmojiLocalService.get_by_emoji_collection_id__scopes({
+        for (var i = 0, ii = emoji_collections.list.length; i < ii; ++i) {
+            var collection = emoji_collections.list[i]
+
+            if (collection.display_name === 'Featured') {
+                featured_collection = collection
+                break;
+            }
+        }
+
+        var emojis = yield EmojiLocalService.get_by_emoji_collection_id__scopes({
                 emoji_collection_id: featured_collection.id
               , scopes: ['public_read']
               , session: o.session
