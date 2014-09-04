@@ -8,7 +8,6 @@ var EmojiCollectionFollowerPersistenceService = function EmojiCollectionFollower
     this.columns = [
         'id'
       , 'created_at'
-      , 'deleted_at'
       , 'emoji_collection_id'
       , 'follower'
     ]

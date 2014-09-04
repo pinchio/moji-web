@@ -5,7 +5,6 @@ var HTTPServiceMixin = require('src/common/server/HTTPServiceMixin')
   , co_busboy = require('co-busboy')
   , fs = require('fs')
   , uuid = require('node-uuid')
-  , co = require('co')
   , thunkify = require('thunkify')
   , LocalServiceError = require('src/common/server/LocalServiceError')
 

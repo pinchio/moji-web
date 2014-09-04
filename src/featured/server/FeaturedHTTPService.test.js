@@ -1,4 +1,5 @@
 var assert = require('chai').assert
+  , co_mocha = require('co-mocha')
   , config = require('config')
   , host = config.get('server').host
   , port = config.get('server').port

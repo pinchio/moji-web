@@ -178,4 +178,12 @@ QueryMixin.prototype.increment = function * (req) {
     return yield this.query({query: query, values: values})
 }
 
+QueryMixin.prototype.delete_by_id = function * (req) {
+    var query = 'delete from ' + this.table + ' '
+              + 'where id = $1 '
+      , values = [req.id]
+
+    return yield this.query({query: query, values: values})
+}
+
 module.exports = QueryMixin

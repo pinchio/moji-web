@@ -52,6 +52,7 @@
     "backbone": "1.1.1",
     "browserify": "4.2.0",
     "chai": "1.9.1",
+    "co-mocha": "1.0.1",
     "cortexjs": "0.6.0",
     "fastclick": "1.0.1",
     "file": "0.2.2",

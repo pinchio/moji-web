@@ -30,6 +30,31 @@ EmojiCollectionFollowerHTTPService.prototype.post = function() {
     }
 }
 
+EmojiCollectionFollowerHTTPService.prototype.get = function() {
+    var self = this
+
+    return function * (next) {
+        try {
+            var emoji_collection_follower = yield EmojiCollectionFollowerLocalService.get_by_id({
+                    id: this.params.id
+                  , session: this.session
+                })
+              , expand = self.parse_expand(this.query.expand)
+
+            if (!emoji_collection_follower) {
+                return self.handle_success(this, null)
+            }
+
+            return self.handle_success(this, {emoji_collection_follower: yield emoji_collection_follower.to_json({
+                expand: expand && expand.emoji_collection_follower
+              , session: this.session
+            })}, 'json')
+        } catch(e) {
+            self.handle_exception(this, e)
+        }
+    }
+}
+
 EmojiCollectionFollowerHTTPService.prototype.del = function() {
     var self = this
 
