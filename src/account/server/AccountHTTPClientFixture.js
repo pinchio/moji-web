@@ -9,8 +9,6 @@ var AccountHTTPClientFixture = function AccountHTTPClientFixture() {
 _.extend(AccountHTTPClientFixture, StaticMixin)
 
 AccountHTTPClientFixture.prototype.post = function * (o) {
-    o.ctx.jar = o.ctx.jar || request.jar()
-
     var body = _.defaults({
             username: Math.floor(Math.random() * 1000000000)
           , password: 'password'
@@ -19,19 +17,7 @@ AccountHTTPClientFixture.prototype.post = function * (o) {
         }, o.body)
       , result = yield AccountHTTPClient.post({body: body, jar: o.ctx.jar})
 
-    o.ctx.responses = o.ctx.responses || []
-    o.ctx.responses.push(result[0])
-
-    // Fields are {key -> value}
-    // Maps ctx[value] = result[key]
-    if (o.fields) {
-        var keys = Object.keys(o.fields)
-
-        for (var i = 0, ii = keys.length; i < ii; ++i) {
-            var key = keys[i]
-            o.ctx[o.fields[key]] = result[1][key]
-        }
-    }
+    o.ctx.update(result, o.fields)
 
     return result
 }
