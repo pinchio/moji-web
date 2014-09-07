@@ -93,6 +93,8 @@ D) Dedicated endpoint for Featured Packs/Moji?
 
 - use marketing names (Moji, Pack)
 
+- should not be able to create account while logged in?
+
 
 CHANGELOG
 ===
