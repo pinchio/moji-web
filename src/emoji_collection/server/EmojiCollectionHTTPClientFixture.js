@@ -9,10 +9,10 @@ var EmojiCollectionHTTPClientFixture = function EmojiCollectionHTTPClientFixture
 _.extend(EmojiCollectionHTTPClientFixture, StaticMixin)
 
 EmojiCollectionHTTPClientFixture.prototype.post = function * (o) {
-    var body = _.defaults({
+    var body = _.defaults({}, o.body, {
             tags: ['fixture']
           , scopes: ['public_read']
-        }, o.body)
+        })
       , result = yield EmojiCollectionHTTPClient.post({body: body, jar: o.ctx.jar})
 
     o.ctx.update(result, o.fields)

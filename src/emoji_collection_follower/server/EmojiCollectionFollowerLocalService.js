@@ -13,13 +13,12 @@ _.extend(EmojiCollectionFollowerLocalService.prototype, ValidationMixin.prototyp
 EmojiCollectionFollowerLocalService.prototype.create = function * (o) {
     yield this.validate_session(o.session)
     yield this.validate_uuid(o.emoji_collection_id, 'Emoji collection ids')
-    yield this.validate_uuid(o.follower, 'Follower ids')
 
     var emoji_collection_follower = EmojiCollectionFollower.from_create({
             emoji_collection_id: o.emoji_collection_id
-          , follower: o.follower
+          , follower: o.session.account_id
         })
-      , inserted_emoji_collection_follower = yield this.insert(emoji_collection_follower)
+      , inserted_emoji_collection_follower = yield EmojiCollectionFollowerPersistenceService.insert(emoji_collection_follower)
 
     return inserted_emoji_collection_follower
 }

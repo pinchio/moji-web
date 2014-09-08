@@ -6,7 +6,7 @@ var Context = function Context () {
 }
 
 Context.prototype.update = function(result, fields) {
-    this.responses.push(result[0])
+    this.responses.unshift(result[0])
 
     if (fields) {
         var keys = Object.keys(fields)
