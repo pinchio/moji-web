@@ -253,6 +253,22 @@ describe('EmojiHTTPService', function() {
             )
         })
 
+        it.skip('should find emojis if matching one tag', function(done) {
+            var query = encodeURIComponent('cats')
+            request({
+                    url: get_url('/_/api/search?q=' + query)// + '&expand=emojis.created_by,emojis.emoji_collection_id,emojis.ancestor_emoji_id,emojis.ancestor_emoji_id_expanded.created_by')
+                  , method: 'GET'
+                  , json: true
+                  , jar: stored_jar
+                }
+              , function(e, d, body) {
+                    assert.equal(d.statusCode, 200)
+                    assert.isDefined(body.emojis)
+                    assert.deepEqual(body.emojis[0], stored_emoji)
+                    done()
+            })
+        })
+
         it.skip('should only allow create if user owns it')
     })
 

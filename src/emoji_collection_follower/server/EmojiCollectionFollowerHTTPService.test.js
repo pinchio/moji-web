@@ -10,7 +10,7 @@ var assert = require('chai').assert
   , Context = require('src/common/server/Context')
 
 // FIXME: maybe rename Context to TestContext
-describe.only('EmojiCollectionFollowerHTTPService', function() {
+describe('EmojiCollectionFollowerHTTPService', function() {
     describe('post', function () {
         it('should not be allowed to follow when not logged in', function * () {
             var ctx1 = new Context()

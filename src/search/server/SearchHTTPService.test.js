@@ -243,7 +243,7 @@ describe('SearchHTTPService', function() {
         it('should find emojis if matching one tag', function(done) {
             var query = encodeURIComponent('cats')
             request({
-                    url: get_url('/_/api/search?q=' + query)
+                    url: get_url('/_/api/search?q=' + query)// + '&expand=emojis.created_by,emojis.emoji_collection_id,emojis.ancestor_emoji_id,emojis.ancestor_emoji_id_expanded.created_by')
                   , method: 'GET'
                   , json: true
                   , jar: stored_jar
