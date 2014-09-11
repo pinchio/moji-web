@@ -1,340 +1,181 @@
 var assert = require('chai').assert
+  , co_mocha = require('co-mocha')
   , config = require('config')
   , host = config.get('server').host
   , path = require('path')
   , port = config.get('server').port
   , request = require('request')
   , uuid = require('node-uuid')
-
-var get_url = function(args) {
-    return 'http://' + host + ':' + port + path.join.apply(path, Array.prototype.slice.call(arguments))
-}
+  , AccountHTTPClient = require('src/account/server/AccountHTTPClient').get_instance()
+  , AccountHTTPClientFixture = require('src/account/server/AccountHTTPClientFixture').get_instance()
+  , Context = require('src/common/server/Context')
 
 describe('AccountHTTPService', function() {
-    // before(function() {
-    //     server.listen(port, host)
-    // })
+    describe.only('post', function() {
+        it('should create account if username and email unique', function * () {
+            var ctx = new Context()
+              , result = yield AccountHTTPClientFixture.post({ctx: ctx})
 
-    // after(function() {
-    //     server.close()
-    // })
-    var stored_account
-      , stored_jar
+            assert.equal(result.statusCode, 200)
+            assert.isDefined(result.body)
+            assert.isObject(result.body)
+            assert.isDefined(result.body.account)
+            assert.equal(result.body.account.username, result.req_body.username)
+            assert.equal(result.body.account.email, result.req_body.email)
+            assert.isUndefined(result.body.account.password)
+            assert.equal(result.body.account.profile_image_url, result.req_body.profile_image_url)
 
-    describe('post', function() {
-        var username = Math.floor(Math.random() * 1000000000)
-          , password = 'password'
-          , email = uuid.v4().substring(0, 15) + '@b.com'
-          , profile_image_url = 'someurl.png'
+            var cookies = ctx.jar.getCookieString(AccountHTTPClient.get_url())
+              , cookie_map = {}
 
-        it('should create account if username and email unique', function(done) {
-            stored_jar = request.jar()
+            cookies.split('; ').forEach(function(cookie) {
+                var key_value = cookie.split('=')
 
-            request({
-                    url: get_url('/_/api/account')
-                  , method: 'POST'
-                  , json: {
-                        username: username
-                      , password: password
-                      , email: email
-                      , profile_image_url: profile_image_url
-                    }
-                  , jar: stored_jar
-                }
-              , function(e, d, body) {
-                    assert.equal(d.statusCode, 200)
-                    assert.isDefined(body, 'body should be defined')
-                    assert.isObject(body, 'body is an object')
-                    assert.isDefined(body.account, 'account should be defined')
-                    assert.equal(body.account.username, username, 'username should match')
-                    assert.equal(body.account.email, email, 'email should match')
-                    assert.isUndefined(body.account.password, 'password should not be defined')
-                    assert.equal(body.account.profile_image_url, profile_image_url)
-
-                    var cookies = stored_jar.getCookieString(get_url())
-                      , cookie_map = {}
-
-                    cookies.split('; ').forEach(function(cookie) {
-                        var key_value = cookie.split('=')
-
-                        cookie_map[key_value[0]] = key_value[1]
-                    })
-
-                    assert.isDefined(cookie_map['koa:sess'])
-                    assert.isDefined(cookie_map['koa:sess.sig'])
-
-                    stored_account = body.account
-                    done()
+                cookie_map[key_value[0]] = key_value[1]
             })
+
+            assert.isDefined(cookie_map['koa:sess'])
+            assert.isDefined(cookie_map['koa:sess.sig'])
         })
 
-        it('should create account if without born_at if born_at not set', function(done) {
-            var username = Math.floor(Math.random() * 1000000000)
-              , password = 'password'
-              , email = uuid.v4().substring(0, 15) + '@b.com'
-              , stored_jar = request.jar()
+        it.skip('should create account if username and fb_id unique', function * () {
+            var ctx = new Context()
+              , result = yield AccountHTTPClientFixture.post_by_fb_access_token({ctx: ctx})
 
-            request({
-                    url: get_url('/_/api/account')
-                  , method: 'POST'
-                  , json: {
-                        username: username
-                      , password: password
-                      , email: email
-                    }
-                  , jar: stored_jar
-                }
-              , function(e, d, body) {
-                    assert.equal(d.statusCode, 200)
-                    assert.equal(body.account.born_at, null)
-                    done()
+            assert.equal(result.statusCode, 200)
+            assert.isDefined(result.body)
+            assert.isObject(result.body)
+            assert.isDefined(result.body.account)
+            assert.equal(result.body.account.username, result.req_body.username)
+            assert.equal(result.body.account.email, result.req_body.email)
+            assert.isUndefined(result.body.account.password)
+            assert.equal(result.body.account.profile_image_url, result.req_body.profile_image_url)
+
+            var cookies = ctx.jar.getCookieString(AccountHTTPClient.get_url())
+              , cookie_map = {}
+
+            cookies.split('; ').forEach(function(cookie) {
+                var key_value = cookie.split('=')
+
+                cookie_map[key_value[0]] = key_value[1]
             })
+
+            assert.isDefined(cookie_map['koa:sess'])
+            assert.isDefined(cookie_map['koa:sess.sig'])
         })
 
-        it('should not allow duplicate username', function(done) {
-            request({
-                    url: get_url('/_/api/account')
-                  , method: 'POST'
-                  , json: {
-                        username: username
-                      , password: password
-                      , email: email
-                    }
-                }
-              , function(e, d, body) {
-                    assert.equal(d.statusCode, 409)
-                    assert.equal(body.type, 'conflict')
-                    assert.equal(body.description, 'Username is taken.')
-                    done()
-            })
+        it('should create account if without born_at if born_at not set', function * () {
+            var ctx = new Context()
+              , result = yield AccountHTTPClientFixture.post({ctx: ctx, body: {born_at: null}})
+
+            assert.equal(result.statusCode, 200)
+            assert.equal(result.body.account.born_at, null)
         })
 
-        it('should not allow duplicate email', function(done) {
-            request({
-                    url: get_url('/_/api/account')
-                  , method: 'POST'
-                  , json: {
-                        username: 'ab' + Date.now()
-                      , password: password
-                      , email: email
-                    }
-                }
-              , function(e, d, body) {
-                    assert.equal(d.statusCode, 409)
-                    assert.equal(body.type, 'conflict')
-                    assert.equal(body.description, 'Email is taken.')
-                    done()
-            })
+        it('should not allow duplicate username', function * () {
+            var ctx = new Context()
+              , result = yield AccountHTTPClientFixture.post({ctx: ctx})
+              , result2 = yield AccountHTTPClientFixture.post({ctx: ctx, body: {username: result.req_body.username}})
+
+            assert.equal(result2.statusCode, 409)
+            assert.equal(result2.body.type, 'conflict')
+            assert.equal(result2.body.description, 'Username is taken.')
         })
 
-        it('should not allow empty usernames', function(done) {
-            request({
-                    url: get_url('/_/api/account')
-                  , method: 'POST'
-                  , json: {
-                        username: null
-                      , password: password
-                    }
-                }
-              , function(e, d, body) {
-                    assert.equal(d.statusCode, 400)
-                    assert.equal(body.type, 'bad_request')
-                    assert.equal(body.description, 'Username must be between 3 and 15 characters.')
-                    done()
-            })
+        it('should not allow duplicate email', function * () {
+            var ctx = new Context()
+              , result = yield AccountHTTPClientFixture.post({ctx: ctx})
+              , result2 = yield AccountHTTPClientFixture.post({ctx: ctx, body: {email: result.req_body.email}})
+
+            assert.equal(result2.statusCode, 409)
+            assert.equal(result2.body.type, 'conflict')
+            assert.equal(result2.body.description, 'Email is taken.')
         })
 
-        it('should not allow short usernames', function(done) {
-            request({
-                    url: get_url('/_/api/account')
-                  , method: 'POST'
-                  , json: {
-                        username: 'a'
-                      , password: password
-                    }
-                }
-              , function(e, d, body) {
-                    assert.equal(d.statusCode, 400)
-                    assert.equal(body.type, 'bad_request')
-                    assert.equal(body.description, 'Username must be between 3 and 15 characters.')
-                    done()
-            })
+        it('should not allow empty usernames', function * () {
+            var ctx = new Context()
+              , result = yield AccountHTTPClientFixture.post({ctx: ctx, body: {username: null}})
+
+            assert.equal(result.statusCode, 400)
+            assert.equal(result.body.type, 'bad_request')
+            assert.equal(result.body.description, 'Username must be between 3 and 15 characters.')
         })
 
-        it('should not allow long usernames', function(done) {
-            // Date.now() is 13 chars.
-            request({
-                    url: get_url('/_/api/account')
-                  , method: 'POST'
-                  , json: {
-                        username: '1234567890123456'
-                      , password: password
-                    }
-                }
-              , function(e, d, body) {
-                    assert.equal(d.statusCode, 400)
-                    assert.equal(body.type, 'bad_request')
-                    assert.equal(body.description, 'Username must be between 3 and 15 characters.')
-                    done()
-            })
+        it('should not allow short usernames', function * () {
+            var result = yield AccountHTTPClientFixture.post({ctx: new Context(), body: {username: 'a'}})
+            assert.equal(result.statusCode, 400)
+            assert.equal(result.body.type, 'bad_request')
+            assert.equal(result.body.description, 'Username must be between 3 and 15 characters.')
         })
 
-        it('should not allow non-alphanumeric characters in username', function(done) {
-            request({
-                    url: get_url('/_/api/account')
-                  , method: 'POST'
-                  , json: {
-                        username: '___'
-                      , password: password
-                    }
-                }
-              , function(e, d, body) {
-                    assert.equal(d.statusCode, 400)
-                    assert.equal(body.type, 'bad_request')
-                    assert.equal(body.description, 'Username can only contain letters and numbers.')
-                    done()
-            })
+        it('should not allow long usernames', function * () {
+            var result = yield AccountHTTPClientFixture.post({ctx: new Context(), body: {username: '1234567890123456'}})
+            assert.equal(result.statusCode, 400)
+            assert.equal(result.body.type, 'bad_request')
+            assert.equal(result.body.description, 'Username must be between 3 and 15 characters.')
         })
 
-        it('should not allow empty passwords', function(done) {
-            request({
-                    url: get_url('/_/api/account')
-                  , method: 'POST'
-                  , json: {
-                        username: username
-                      , password: null
-                    }
-                }
-              , function(e, d, body) {
-                    assert.equal(d.statusCode, 400)
-                    assert.equal(body.type, 'bad_request')
-                    assert.equal(body.description, 'Password must be between 6 and 50 characters.')
-                    done()
-            })
+        it('should not allow non-alphanumeric characters in username', function * () {
+            var result = yield AccountHTTPClientFixture.post({ctx: new Context(), body: {username: '___'}})
+            assert.equal(result.statusCode, 400)
+            assert.equal(result.body.type, 'bad_request')
+            assert.equal(result.body.description, 'Username can only contain letters and numbers.')
         })
 
-        it('should not allow short passwords', function(done) {
-            request({
-                    url: get_url('/_/api/account')
-                  , method: 'POST'
-                  , json: {
-                        username: username
-                      , password: '12345'
-                    }
-                }
-              , function(e, d, body) {
-                    assert.equal(d.statusCode, 400)
-                    assert.equal(body.type, 'bad_request')
-                    assert.equal(body.description, 'Password must be between 6 and 50 characters.')
-                    done()
-            })
+        it('should not allow empty passwords', function * () {
+            var result = yield AccountHTTPClientFixture.post({ctx: new Context(), body: {password: null}})
+            assert.equal(result.statusCode, 400)
+            assert.equal(result.body.type, 'bad_request')
+            assert.equal(result.body.description, 'Password must be between 6 and 50 characters.')
         })
 
-        it('should not allow long passwords', function(done) {
-            request({
-                    url: get_url('/_/api/account')
-                  , method: 'POST'
-                  , json: {
-                        username: username
-                      , password: (Array(52)).join('a')
-                    }
-                }
-              , function(e, d, body) {
-                    assert.equal(d.statusCode, 400)
-                    assert.equal(body.type, 'bad_request')
-                    assert.equal(body.description, 'Password must be between 6 and 50 characters.')
-                    done()
-            })
+        it('should not allow short passwords', function * () {
+            var result = yield AccountHTTPClientFixture.post({ctx: new Context(), body: {password: '12345'}})
+            assert.equal(result.statusCode, 400)
+            assert.equal(result.body.type, 'bad_request')
+            assert.equal(result.body.description, 'Password must be between 6 and 50 characters.')
         })
 
-        it('should not allow non-alphanumeric characters in password', function(done) {
-            request({
-                    url: get_url('/_/api/account')
-                  , method: 'POST'
-                  , json: {
-                        username: username
-                      , password: '12345670__'
-                    }
-                }
-              , function(e, d, body) {
-                    assert.equal(d.statusCode, 400)
-                    assert.equal(body.type, 'bad_request')
-                    assert.equal(body.description, 'Password can only contain letters and numbers.')
-                    done()
-            })
+        it('should not allow long passwords', function * () {
+            var result = yield AccountHTTPClientFixture.post({ctx: new Context(), body: {password: (Array(52)).join('a')}})
+            assert.equal(result.statusCode, 400)
+            assert.equal(result.body.type, 'bad_request')
+            assert.equal(result.body.description, 'Password must be between 6 and 50 characters.')
         })
 
-        it('should not allow empty emails', function(done) {
-            request({
-                    url: get_url('/_/api/account')
-                  , method: 'POST'
-                  , json: {
-                        username: username
-                      , password: password
-                      , email: null
-                    }
-                }
-              , function(e, d, body) {
-                    assert.equal(d.statusCode, 400)
-                    assert.equal(body.type, 'bad_request')
-                    assert.equal(body.description, 'Email is not valid.')
-                    done()
-            })
+        it('should not allow non-alphanumeric characters in password', function * () {
+            var result = yield AccountHTTPClientFixture.post({ctx: new Context(), body: {password: '12345670__'}})
+            assert.equal(result.statusCode, 400)
+            assert.equal(result.body.type, 'bad_request')
+            assert.equal(result.body.description, 'Password can only contain letters and numbers.')
         })
 
-        it('should not allow invalid emails', function(done) {
-            request({
-                    url: get_url('/_/api/account')
-                  , method: 'POST'
-                  , json: {
-                        username: username
-                      , password: password
-                      , email: 'a@b'
-                    }
-                }
-              , function(e, d, body) {
-                    assert.equal(d.statusCode, 400)
-                    assert.equal(body.type, 'bad_request')
-                    assert.equal(body.description, 'Email is not valid.')
-                    done()
-            })
+        it('should not allow empty emails', function * () {
+            var result = yield AccountHTTPClientFixture.post({ctx: new Context(), body: {email: null}})
+            assert.equal(result.statusCode, 400)
+            assert.equal(result.body.type, 'bad_request')
+            assert.equal(result.body.description, 'Email is not valid.')
         })
 
-        it('should not allow invalid emails', function(done) {
-            request({
-                    url: get_url('/_/api/account')
-                  , method: 'POST'
-                  , json: {
-                        username: username
-                      , password: password
-                      , email: '@b.com'
-                    }
-                }
-              , function(e, d, body) {
-                    assert.equal(d.statusCode, 400)
-                    assert.equal(body.type, 'bad_request')
-                    assert.equal(body.description, 'Email is not valid.')
-                    done()
-            })
+        it('should not allow invalid emails', function * () {
+            var result = yield AccountHTTPClientFixture.post({ctx: new Context(), body: {email: 'a@b'}})
+            assert.equal(result.statusCode, 400)
+            assert.equal(result.body.type, 'bad_request')
+            assert.equal(result.body.description, 'Email is not valid.')
         })
 
-        it('should not allow bad profile_image_urls', function(done) {
-            request({
-                    url: get_url('/_/api/account')
-                  , method: 'POST'
-                  , json: {
-                        username: username
-                      , password: password
-                      , email: 'a@b.com'
-                      , profile_image_url: 'bad.exe'
-                    }
-                }
-              , function(e, d, body) {
-                    assert.equal(d.statusCode, 400)
-                    assert.equal(body.type, 'bad_request')
-                    assert.equal(body.description, 'Profile image url extension not supported.')
-                    done()
-            })
+        it('should not allow invalid emails', function * () {
+            var result = yield AccountHTTPClientFixture.post({ctx: new Context(), body: {email: '@b.com'}})
+            assert.equal(result.statusCode, 400)
+            assert.equal(result.body.type, 'bad_request')
+            assert.equal(result.body.description, 'Email is not valid.')
+        })
+
+        it('should not allow bad profile_image_urls', function * () {
+            var result = yield AccountHTTPClientFixture.post({ctx: new Context(), body: {profile_image_url: 'bad.exe'}})
+            assert.equal(result.statusCode, 400)
+            assert.equal(result.body.type, 'bad_request')
+            assert.equal(result.body.description, 'Profile image url extension not supported.')
         })
     })
 

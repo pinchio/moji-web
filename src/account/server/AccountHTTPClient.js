@@ -17,7 +17,7 @@ AccountHTTPClient.prototype.post = function * (o) {
         }
       , result = yield this.request(req)
 
-    return result
+    return result[0]
 }
 
 module.exports = AccountHTTPClient

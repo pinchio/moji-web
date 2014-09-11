@@ -24,6 +24,8 @@ Account.keys = [
   , 'password'
   , 'profile_image_url'
   , 'born_at'
+  , 'fb_id'
+  , 'fb_access_token'
   , 'extra_data'
 ]
 
@@ -38,6 +40,8 @@ Account.from_create = function(o) {
       , password: o.password
       , profile_image_url: o.profile_image_url
       , born_at: Account.to_moment(o.born_at)
+      , fb_id: o.fb_id
+      , fb_access_token: o.fb_access_token
       , extra_data: o.extra_data
     })
 }
@@ -53,6 +57,8 @@ Account.from_update = function(o) {
       , password: o.password
       , profile_image_url: o.profile_image_url
       , born_at: Account.to_moment(o.born_at)
+      , fb_id: o.fb_id
+      , fb_access_token: o.fb_access_token
       , extra_data: o.extra_data
     })
 }
@@ -68,6 +74,8 @@ Account.from_db = function(o) {
       , password: o.password
       , profile_image_url: o.profile_image_url
       , born_at: Account.to_moment(o.born_at)
+      , fb_id: o.fb_id
+      , fb_access_token: o.fb_access_token
       , extra_data: Account.text_to_json(o.extra_data)
     })
 }
@@ -83,6 +91,8 @@ Account.prototype.to_db = function() {
       , password: this.password
       , profile_image_url: this.profile_image_url
       , born_at: Account.from_moment(this.born_at)
+      , fb_id: this.fb_id
+      , fb_access_token: this.fb_access_token
       , extra_data: Account.json_to_text(this.extra_data)
     }
 }

@@ -1,6 +1,4 @@
 var _ = require('underscore')
-  , Account = require('./Account')
-  , AccountPersistenceService = require('./AccountPersistenceService').get_instance()
   , easy_pbkdf2 = require('easy-pbkdf2')({DEFAULT_HASH_ITERATIONS: 10000, SALT_SIZE: 32, KEY_LENGTH: 256})
   , LocalServiceError = require('src/common/server/LocalServiceError')
   , StaticMixin = require('src/common/StaticMixin')
@@ -52,10 +50,6 @@ AccountLocalService.prototype.create = function * (o) {
 
     try {
         var account = (yield AccountPersistenceService.insert(account)).first()
-          , session = yield SessionLocalService.create_by_account__session({
-                account: account
-              , session: o.session
-            })
     } catch (e) {
         if (e && e.type === 'db_duplicate_key_error') {
             if (e.detail) {
@@ -73,6 +67,72 @@ AccountLocalService.prototype.create = function * (o) {
             throw e
         }
     }
+
+    yield SessionLocalService.create_by_account__session({
+        account: account
+      , session: o.session
+    })
+
+    return account
+}
+
+AccountLocalService.prototype.create_by_fb_access_token = function * (o) {
+    o.extra_data = o.extra_data || {}
+
+    yield this.validate_username(o.username)
+
+    // FIXME:
+    // validate fb_access_token?
+    yield this.validate_email(o.email)
+
+    if (o.profile_image_url) {
+        yield this.validate_asset_url(o.profile_image_url, 'Profile image url')
+    }
+
+    var debug_token_response = yield FacebookHTTPClient.get_graph_debug_token({input_token: o.fb_access_token})
+      , debug_token = debug_token_response && debug_token_response.body && debug_token_response.body.data
+
+    if (!debug_token.is_valid) {
+        throw new LocalServiceError(this.ns, 'bad_request', 'Facebook access token is invalid.', 400)
+    }
+
+    var account = Account.from_create({
+            username: o.username
+          , email: o.email
+          , full_name: o.full_name
+          , profile_image_url: o.profile_image_url
+          , born_at: o.born_at
+          , fb_id: debug_token.user_id
+          , fb_access_token: o.fb_access_token
+          , extra_data: o.extra_data
+        })
+
+    try {
+        var account = (yield AccountPersistenceService.insert(account)).first()
+    } catch (e) {
+        if (e && e.type === 'db_duplicate_key_error') {
+            if (e.detail) {
+                if (e.detail.key === 'username') {
+                    throw new LocalServiceError(this.ns, 'conflict', 'Username is taken.', 409)
+                } else if (e.detail.key === 'email') {
+                    throw new LocalServiceError(this.ns, 'conflict', 'Email is taken.', 409)
+                } else if (e.detail.key === 'fb_id') {
+                    throw new LocalServiceError(this.ns, 'conflict', 'Facebook id is associated with an existing account.', 409)
+                } else {
+                    throw e
+                }
+            } else {
+                throw e
+            }
+        } else {
+            throw e
+        }
+    }
+
+    yield SessionLocalService.create_by_account__session({
+        account: account
+      , session: o.session
+    })
 
     return account
 }
@@ -153,4 +213,7 @@ AccountLocalService.prototype.get_by_query = function * (o) {
 
 module.exports = AccountLocalService
 
-var SessionLocalService = require('src/session/server/SessionLocalService').get_instance()
+var Account = require('./Account')
+  , AccountPersistenceService = require('./AccountPersistenceService').get_instance()
+  , FacebookHTTPClient = require('src/facebook/server/FacebookHTTPClient').get_instance()
+  , SessionLocalService = require('src/session/server/SessionLocalService').get_instance()

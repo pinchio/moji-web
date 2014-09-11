@@ -6,14 +6,16 @@ var Context = function Context () {
 }
 
 Context.prototype.update = function(result, fields) {
-    this.responses.unshift(result[0])
+    result.req_body = JSON.parse(result.request.body.toString())
+
+    this.responses.unshift(result)
 
     if (fields) {
         var keys = Object.keys(fields)
 
         for (var i = 0, ii = keys.length; i < ii; ++i) {
             var key = keys[i]
-            this[fields[key]] = result[1][key]
+            this[fields[key]] = result[0].body[key]
         }
     }
 }

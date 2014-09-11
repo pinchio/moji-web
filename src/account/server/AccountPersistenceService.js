@@ -15,6 +15,8 @@ var AccountPersistenceService = function AccountPersistenceService() {
       , 'password'
       , 'profile_image_url'
       , 'born_at'
+      , 'fb_id'
+      , 'fb_access_token'
       , 'extra_data'
     ]
     this.table = 'account'

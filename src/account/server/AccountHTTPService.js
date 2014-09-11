@@ -35,15 +35,27 @@ AccountHTTPService.prototype.post = function() {
 
     return function * (next) {
         try {
-            var account = yield AccountLocalService.create({
-                    username: this.request.body && this.request.body.username
-                  , password: this.request.body && this.request.body.password
-                  , email: this.request.body && this.request.body.email
-                  , full_name: this.request.body && this.request.body.full_name
-                  , profile_image_url: this.request.body && this.request.body.profile_image_url
-                  , born_at: this.request.body && this.request.body.born_at
-                  , session: this.session
-                })
+            if (this.request.body.fb_access_token) {
+                var account = yield AccountLocalService.create_by_fb_access_token({
+                        username: this.request.body && this.request.body.username
+                      , fb_access_token: this.request.body && this.request.body.fb_access_token
+                      , email: this.request.body && this.request.body.email
+                      , full_name: this.request.body && this.request.body.full_name
+                      , profile_image_url: this.request.body && this.request.body.profile_image_url
+                      , born_at: this.request.body && this.request.body.born_at
+                      , session: this.session
+                    })
+            } else {
+                var account = yield AccountLocalService.create({
+                        username: this.request.body && this.request.body.username
+                      , password: this.request.body && this.request.body.password
+                      , email: this.request.body && this.request.body.email
+                      , full_name: this.request.body && this.request.body.full_name
+                      , profile_image_url: this.request.body && this.request.body.profile_image_url
+                      , born_at: this.request.body && this.request.body.born_at
+                      , session: this.session
+                    })
+            }
 
             self.handle_success(this, {account: yield account.to_json({session: this.session})}, 'json')
         } catch(e) {

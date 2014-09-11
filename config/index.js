@@ -68,6 +68,26 @@ var config = convict({
           , 'env': 'AWS_SECRET_ACCESS_KEY'
         }
     }
+ , 'fb': {
+        'client_id': {
+            'format': function(value) {
+                if (!value || !value.length || value.length < 10) {
+                    throw new Error('Must supply env variable FB_CLIENT_ID.')
+                }
+            }
+          , 'default': ''
+          , 'env': 'FB_CLIENT_ID'
+        }
+      , 'client_secret': {
+            'format': function(value) {
+                if (!value || !value.length || value.length < 10) {
+                    throw new Error('Must supply env variable FB_CLIENT_SECRET.')
+                }
+            }
+          , 'default': ''
+          , 'env': 'FB_CLIENT_SECRET'
+        }
+    }
  , 's3': {
         'bucket': {
             'format': '*'
