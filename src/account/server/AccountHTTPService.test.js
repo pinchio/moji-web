@@ -8,10 +8,19 @@ var assert = require('chai').assert
   , uuid = require('node-uuid')
   , AccountHTTPClient = require('src/account/server/AccountHTTPClient').get_instance()
   , AccountHTTPClientFixture = require('src/account/server/AccountHTTPClientFixture').get_instance()
+  , AccountPersistenceService = require('src/account/server/AccountPersistenceService').get_instance()
   , Context = require('src/common/server/Context')
 
 describe('AccountHTTPService', function() {
-    describe.only('post', function() {
+    beforeEach(function * () {
+        // TODO: kind of hacky.
+        var old_console_log = console.log
+        console.log = function() {}
+        yield AccountPersistenceService.delete_dangerous()
+        console.log = old_console_log
+    })
+
+    describe('post', function() {
         it('should create account if username and email unique', function * () {
             var ctx = new Context()
               , result = yield AccountHTTPClientFixture.post({ctx: ctx})
@@ -38,7 +47,7 @@ describe('AccountHTTPService', function() {
             assert.isDefined(cookie_map['koa:sess.sig'])
         })
 
-        it.skip('should create account if username and fb_id unique', function * () {
+        it('should create account if username and fb_id unique', function * () {
             var ctx = new Context()
               , result = yield AccountHTTPClientFixture.post_by_fb_access_token({ctx: ctx})
 

@@ -1,213 +1,103 @@
 var assert = require('chai').assert
-  , config = require('config')
-  , host = config.get('server').host
-  , port = config.get('server').port
-  , request = require('request')
-  , path = require('path')
-  , uuid = require('node-uuid')
+  , AccountHTTPClient = require('src/account/server/AccountHTTPClient').get_instance()
+  , AccountHTTPClientFixture = require('src/account/server/AccountHTTPClientFixture').get_instance()
+  , AccountPersistenceService = require('src/account/server/AccountPersistenceService').get_instance()
+  , Context = require('src/common/server/Context')
+  , SessionHTTPClient = require('src/session/server/SessionHTTPClient').get_instance()
+  , SessionHTTPClientFixture = require('src/session/server/SessionHTTPClientFixture').get_instance()
 
-var get_url = function(args) {
-    return 'http://' + host + ':' + port + path.join.apply(path, Array.prototype.slice.call(arguments))
-}
+describe.only('SessionHTTPService', function() {
+    beforeEach(function * () {
+        var old_console_log = console.log
+        console.log = function() {}
+        yield AccountPersistenceService.delete_dangerous()
+        console.log = old_console_log
+    })
 
-describe('SessionHTTPService', function() {
     describe('post', function() {
-        var username = Math.floor(Math.random() * 1000000000)
-          , password = 'password'
-          , email = uuid.v4().substring(0, 15) + '@b.com'
-          , stored_account
-          , stored_jar
-
-        it('should create session if login correct', function(done) {
-            stored_jar = request.jar()
-
-            request(
-                {
-                    url: get_url('/_/api/account')
-                  , method: 'POST'
-                  , json: {
-                        username: username
-                      , password: password
-                      , email: email
+        it('should create session if login correct', function * () {
+            var ctx = new Context()
+              , ctx2 = new Context()
+              , account_result = yield AccountHTTPClientFixture.post({ctx: ctx})
+              , result = yield SessionHTTPClientFixture.post({
+                    ctx: ctx2
+                  , body: {
+                        username: account_result.req_body.username
+                      , password: account_result.req_body.password
                     }
-                  , jar: stored_jar
-                }
-              , function(e, d, body) {
-                    stored_account = body.account
+                })
 
-                    request(
-                        {
-                            url: get_url('/_/api/session')
-                          , method: 'POST'
-                          , json: {
-                                username: username
-                              , password: password
-                            }
-                          , jar: stored_jar
-                        }
-                      , function(e, d, body) {
-                            assert.equal(d.statusCode, 200)
-                            assert.isDefined(body.account)
-                            assert.equal(body.account.username, username)
-                            assert.equal(body.account.email, email)
+            assert.equal(result.statusCode, 200)
+            assert.isDefined(result.body.account)
+            assert.equal(result.body.account.username, account_result.req_body.username)
+            assert.equal(result.body.account.email, account_result.req_body.email)
 
-                            var cookies = stored_jar.getCookieString(get_url())
-                              , cookie_map = {}
+            var cookies = ctx2.jar.getCookieString(SessionHTTPClient.get_url())
+              , cookie_map = {}
 
-                            cookies.split('; ').forEach(function(cookie) {
-                                var key_value = cookie.split('=')
+            cookies.split('; ').forEach(function(cookie) {
+                var key_value = cookie.split('=')
 
-                                cookie_map[key_value[0]] = key_value[1]
-                            })
+                cookie_map[key_value[0]] = key_value[1]
+            })
 
-                            assert.isDefined(cookie_map['koa:sess'])
-                            assert.isDefined(cookie_map['koa:sess.sig'])
-                            done()
-                        }
-                    )
-                }
-            )
+            assert.isDefined(cookie_map['koa:sess'])
+            assert.isDefined(cookie_map['koa:sess.sig'])
         })
 
-        it('should not create session if login incorrect', function(done) {
-            stored_jar = request.jar()
-
-            request(
-                {
-                    url: get_url('/_/api/session')
-                  , method: 'POST'
-                  , json: {
+        it('should not create session if login incorrect', function * () {
+            var ctx = new Context()
+              , ctx2 = new Context()
+              , account_result = yield AccountHTTPClientFixture.post({ctx: ctx})
+              , result = yield SessionHTTPClientFixture.post({
+                    ctx: ctx2
+                  , body: {
                         username: 'badusername'
-                      , password: password
+                      , password: account_result.req_body.password
                     }
-                  , jar: stored_jar
-                }
-              , function(e, d, body) {
-                    var cookies = stored_jar.getCookieString(get_url())
+                })
 
-                    assert.equal(d.statusCode, 403)
-                    assert.lengthOf(cookies, 0)
-                    done()
-                }
-            )
+            assert.equal(result.statusCode, 403)
+            assert.lengthOf(ctx2.jar.getCookieString(AccountHTTPClient.get_url()), 0)
         })
 
-        it('should not create session if login incorrect', function(done) {
-            stored_jar = request.jar()
-
-            request(
-                {
-                    url: get_url('/_/api/session')
-                  , method: 'POST'
-                  , json: {
-                        username: username
+        it('should not create session if login incorrect', function * () {
+            var ctx = new Context()
+              , ctx2 = new Context()
+              , account_result = yield AccountHTTPClientFixture.post({ctx: ctx})
+              , result = yield SessionHTTPClientFixture.post({
+                    ctx: ctx2
+                  , body: {
+                        username: account_result.req_body.password
                       , password: 'badpassword'
                     }
-                  , jar: stored_jar
-                }
-              , function(e, d, body) {
-                    var cookies = stored_jar.getCookieString(get_url())
+                })
 
-                    assert.equal(d.statusCode, 403)
-                    done()
-                }
-            )
+            assert.equal(result.statusCode, 403)
+            assert.lengthOf(ctx2.jar.getCookieString(AccountHTTPClient.get_url()), 0)
         })
     })
 
     describe('del', function() {
-        var username = Math.floor(Math.random() * 1000000000)
-          , password = 'password'
-          , email = uuid.v4().substring(0, 15) + '@b.com'
-          , stored_account
-          , stored_jar
+        it('should delete session if session exists', function * () {
+            var ctx = new Context()
+              , account_result = yield AccountHTTPClientFixture.post({ctx: ctx})
+              , result = yield SessionHTTPClientFixture.del({ctx: ctx})
+              , cookies = ctx.jar.getCookieString(AccountHTTPClient.get_url())
 
-        it('should delete session if session exists', function(done) {
-            stored_jar = request.jar()
-
-            request(
-                {
-                    url: get_url('/_/api/account')
-                  , method: 'POST'
-                  , json: {
-                        username: username
-                      , password: password
-                      , email: email
-                    }
-                  , jar: stored_jar
-                }
-              , function(e, d, body) {
-                    stored_account = body.account
-
-                    request(
-                        {
-                            url: get_url('/_/api/session')
-                          , method: 'DELETE'
-                          , json: {}
-                          , jar: stored_jar
-                        }
-                      , function(e, d, body) {
-                            var cookies = stored_jar.getCookieString(get_url())
-
-                            assert.equal(d.statusCode, 200)
-                            assert.equal(cookies.indexOf('koa:sess=;') > -1, true)
-                            done()
-                        }
-                    )
-                }
-            )
+            assert.equal(result.statusCode, 200)
+            assert.equal(cookies.indexOf('koa:sess=;') > -1, true)
         })
 
-        it('should delete session if session does not exist', function(done) {
-            stored_jar = request.jar()
+        it('should delete session if session does not exist', function * () {
+            var ctx = new Context()
+              , account_result = yield AccountHTTPClientFixture.post({ctx: ctx})
+              , session_del_delete = yield SessionHTTPClientFixture.del({ctx: ctx})
+              , result = yield SessionHTTPClientFixture.del({ctx: ctx})
+              , cookies = ctx.jar.getCookieString(AccountHTTPClient.get_url())
 
-            request(
-                {
-                    url: get_url('/_/api/session')
-                  , method: 'POST'
-                  , json: {
-                        username: username
-                      , password: password
-                    }
-                  , jar: stored_jar
-                }
-              , function(e, d, body) {
-                    var cookies = stored_jar.getCookieString(get_url())
-                    assert.equal(cookies.indexOf('koa:sess=;') > -1, false)
-                    stored_account = body.account
-
-                    request(
-                        {
-                            url: get_url('/_/api/session')
-                          , method: 'DELETE'
-                          , json: {}
-                          , jar: stored_jar
-                        }
-                      , function(e, d, body) {
-                            var cookies = stored_jar.getCookieString(get_url())
-
-                            assert.equal(d.statusCode, 200)
-                            assert.equal(cookies.indexOf('koa:sess=;') > -1, true)
-
-                            request(
-                                {
-                                    url: get_url('/_/api/session')
-                                  , method: 'DELETE'
-                                  , json: {}
-                                  , jar: stored_jar
-                                }
-                              , function(e, d, body) {
-                                    var cookies = stored_jar.getCookieString(get_url())
-
-                                    assert.equal(d.statusCode, 200)
-                                    assert.equal(cookies.indexOf('koa:sess=;') > -1, true)
-                                    done()
-                                }
-                            )
-                        }
-                    )
-                }
-            )
+            assert.equal(result.statusCode, 200)
+            assert.equal(cookies.indexOf('koa:sess=;') > -1, true)
         })
     })
 })

@@ -186,4 +186,10 @@ QueryMixin.prototype.delete_by_id = function * (req) {
     return yield this.query({query: query, values: values})
 }
 
+QueryMixin.prototype.delete_dangerous = function * (req) {
+    var query = 'delete from ' + this.table + ' '
+
+    return yield this.query({query: query, values: []})
+}
+
 module.exports = QueryMixin
