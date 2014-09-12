@@ -25,8 +25,7 @@ SessionHTTPClientFixture.prototype.post = function * (o) {
 
 SessionHTTPClientFixture.prototype.post_by_fb_access_token = function * (o) {
     var body = _.defaults({}, o.body, {
-            username: Math.floor(Math.random() * 1000000000)
-          , fb_access_token: this.fb_access_token
+            fb_access_token: this.fb_access_token
         })
       , result = yield SessionHTTPClient.post({body: body, jar: o.ctx.jar})
 

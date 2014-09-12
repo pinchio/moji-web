@@ -6,7 +6,7 @@ var assert = require('chai').assert
   , SessionHTTPClient = require('src/session/server/SessionHTTPClient').get_instance()
   , SessionHTTPClientFixture = require('src/session/server/SessionHTTPClientFixture').get_instance()
 
-describe.only('SessionHTTPService', function() {
+describe('SessionHTTPService', function() {
     beforeEach(function * () {
         var old_console_log = console.log
         console.log = function() {}
@@ -70,6 +70,50 @@ describe.only('SessionHTTPService', function() {
                   , body: {
                         username: account_result.req_body.password
                       , password: 'badpassword'
+                    }
+                })
+
+            assert.equal(result.statusCode, 403)
+            assert.lengthOf(ctx2.jar.getCookieString(AccountHTTPClient.get_url()), 0)
+        })
+
+        it('should create session if fb login correct', function * () {
+            var ctx = new Context()
+              , ctx2 = new Context()
+              , account_result = yield AccountHTTPClientFixture.post_by_fb_access_token({ctx: ctx})
+              , result = yield SessionHTTPClientFixture.post_by_fb_access_token({
+                    ctx: ctx2
+                  , body: {
+                        fb_access_token: account_result.req_body.fb_access_token
+                    }
+                })
+
+            assert.equal(result.statusCode, 200)
+            assert.isDefined(result.body.account)
+            assert.equal(result.body.account.username, account_result.req_body.username)
+            assert.equal(result.body.account.email, account_result.req_body.email)
+
+            var cookies = ctx2.jar.getCookieString(SessionHTTPClient.get_url())
+              , cookie_map = {}
+
+            cookies.split('; ').forEach(function(cookie) {
+                var key_value = cookie.split('=')
+
+                cookie_map[key_value[0]] = key_value[1]
+            })
+
+            assert.isDefined(cookie_map['koa:sess'])
+            assert.isDefined(cookie_map['koa:sess.sig'])
+        })
+
+        it('should not create session if fb login incorrect', function * () {
+            var ctx = new Context()
+              , ctx2 = new Context()
+              , account_result = yield AccountHTTPClientFixture.post_by_fb_access_token({ctx: ctx})
+              , result = yield SessionHTTPClientFixture.post({
+                    ctx: ctx2
+                  , body: {
+                        fb_access_token: 'bad_fb_access_token'
                     }
                 })
 

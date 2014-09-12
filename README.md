@@ -95,6 +95,8 @@ D) Dedicated endpoint for Featured Packs/Moji?
 
 - should not be able to create account while logged in?
 
+- need to get user object from session to avoid deleted accounts still doing stuff due to sessions.
+
 
 CHANGELOG
 ===

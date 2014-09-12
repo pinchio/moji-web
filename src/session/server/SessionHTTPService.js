@@ -13,11 +13,18 @@ SessionHTTPService.prototype.post = function() {
 
     return function * (next) {
         try {
-            var account = yield SessionLocalService.create({
-                    username: this.request.body && this.request.body.username
-                  , password: this.request.body && this.request.body.password
-                  , session: this.session
-                })
+            if (this.request.body.fb_access_token) {
+                var account = yield SessionLocalService.create_by_fb_access_token({
+                        fb_access_token: this.request.body && this.request.body.fb_access_token
+                      , session: this.session
+                    })
+            } else {
+                var account = yield SessionLocalService.create({
+                        username: this.request.body && this.request.body.username
+                      , password: this.request.body && this.request.body.password
+                      , session: this.session
+                    })
+            }
 
             self.handle_success(this, {account: yield account.to_json({
                 session: this.session

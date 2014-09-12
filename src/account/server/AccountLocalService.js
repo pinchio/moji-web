@@ -93,7 +93,7 @@ AccountLocalService.prototype.create_by_fb_access_token = function * (o) {
       , debug_token = debug_token_response && debug_token_response.body && debug_token_response.body.data
 
     if (!debug_token.is_valid) {
-        throw new LocalServiceError(this.ns, 'bad_request', 'Facebook access token is invalid.', 400)
+        throw new LocalServiceError(this.ns, 'bad_request', 'Facebook access token is invalid.', 403)
     }
 
     var account = Account.from_create({
@@ -166,6 +166,7 @@ AccountLocalService.prototype.update = function * (o) {
           , full_name: o.full_name
           , profile_image_url: o.profile_image_url
           , born_at: o.born_at
+          , fb_access_token: o.fb_access_token
           , extra_data: o.extra_data
         })
       , updated_account = (yield AccountPersistenceService.update_by_id(account)).first()
@@ -173,6 +174,12 @@ AccountLocalService.prototype.update = function * (o) {
             account: updated_account
           , session: o.session
         })
+
+    return updated_account
+}
+
+AccountLocalService.prototype.update_fb_access_token = function * (o) {
+    var updated_account = (yield AccountPersistenceService.update_by_id(o)).first()
 
     return updated_account
 }
@@ -198,6 +205,15 @@ AccountLocalService.prototype.get_by_username_password = function * (o) {
     } else {
         return null
     }
+}
+
+AccountLocalService.prototype.get_by_fb_id = function * (o) {
+    // TODO: validate token
+    var account = (yield AccountPersistenceService.select_by_fb_id({
+            fb_id: o.fb_id
+        })).first()
+
+    return account
 }
 
 AccountLocalService.prototype.get_by_query = function * (o) {
