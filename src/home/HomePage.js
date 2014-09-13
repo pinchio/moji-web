@@ -16,6 +16,12 @@ var HomePage = React.createClass({
     }
   , render: function() {
         var itunesLink = "https://itunes.apple.com/us/app/mojigram/id912008559?ls=1&mt=8"
+        /*
+        Removed from below:
+        <a target="_blank" href={itunesLink}>
+            <div className="sprite sprite-app-store-badge-en"></div>
+        </a>
+        */
         return (
             <div className={this.state.classNames.join(' ')}>
                 <div className="page">
@@ -25,14 +31,12 @@ var HomePage = React.createClass({
                                 <div className="sprite sprite-home-icon-bg"></div>
                             </div>
                             <div className="home-cta-container">
+                                <br/>
                                 <div className="sprite-home-logo-container">
                                     <div className="sprite sprite-home-logo"></div>
                                 </div>
                                 <p>Create your own stickers</p>
                                 <br/><br/>
-                                <a target="_blank" href={itunesLink}>
-                                    <div className="sprite sprite-app-store-badge-en"></div>
-                                </a>
                             </div>
                         </div>
                     </div>
