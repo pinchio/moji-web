@@ -97,6 +97,10 @@ D) Dedicated endpoint for Featured Packs/Moji?
 
 - need to get user object from session to avoid deleted accounts still doing stuff due to sessions.
 
+- when I try to register a new user through facebook
+- it seems like priority is "username taken", then "email taken", then "FB ID is associated with another email"
+- FB ID error first
+
 
 CHANGELOG
 ===
