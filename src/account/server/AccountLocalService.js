@@ -93,7 +93,7 @@ AccountLocalService.prototype.create_by_fb_access_token = function * (o) {
       , debug_token = debug_token_response && debug_token_response.body && debug_token_response.body.data
 
     if (!debug_token.is_valid) {
-        throw new LocalServiceError(this.ns, 'bad_request', 'Facebook access token is invalid.', 403)
+        throw new LocalServiceError(this.ns, 'bad_request', 'Facebook access token is invalid.', 401)
     }
 
     var account = Account.from_create({
