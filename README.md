@@ -100,7 +100,7 @@ D) Dedicated endpoint for Featured Packs/Moji?
 - when I try to register a new user through facebook
 - it seems like priority is "username taken", then "email taken", then "FB ID is associated with another email"
 - FB ID error first
-
+- when login fail 401 instead of 403
 
 CHANGELOG
 ===

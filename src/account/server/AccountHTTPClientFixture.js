@@ -49,6 +49,14 @@ AccountHTTPClientFixture.prototype.put = function * (o) {
     return result
 }
 
+AccountHTTPClientFixture.prototype.get = function * (o) {
+    var result = yield AccountHTTPClient.get({id: o.id, jar: o.ctx.jar})
+
+    o.ctx.update(result, o.fields)
+
+    return result
+}
+
 module.exports = AccountHTTPClientFixture
 
 var AccountHTTPClient = require('./AccountHTTPClient').get_instance()

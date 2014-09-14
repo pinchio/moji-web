@@ -1,22 +1,13 @@
 var _ = require('underscore')
   , assert = require('chai').assert
   , co_mocha = require('co-mocha')
-  , config = require('config')
-  , host = config.get('server').host
-  , path = require('path')
-  , port = config.get('server').port
-  , request = require('request')
   , uuid = require('node-uuid')
   , AccountHTTPClient = require('src/account/server/AccountHTTPClient').get_instance()
   , AccountHTTPClientFixture = require('src/account/server/AccountHTTPClientFixture').get_instance()
   , AccountPersistenceService = require('src/account/server/AccountPersistenceService').get_instance()
   , Context = require('src/common/server/Context')
 
-var get_url = function(args) {
-    return 'http://' + host + ':' + port + path.join.apply(path, Array.prototype.slice.call(arguments))
-}
-
-describe('AccountHTTPService', function() {
+describe.only('AccountHTTPService', function() {
     describe('post', function() {
         beforeEach(function * () {
             // TODO: kind of hacky.
@@ -241,112 +232,72 @@ describe('AccountHTTPService', function() {
         })
     })
 
-    describe.only('get', function() {
-        var stored_jar = request.jar()
-          , stored_account
+    describe('get', function() {
+        it('should get account even if not authd', function * () {
+            var ctx = new Context()
+              , ctx2 = new Context()
+              , created_account = yield AccountHTTPClientFixture.post({ctx: ctx})
+              , get_account = yield AccountHTTPClientFixture.get({ctx: ctx2, id: created_account.body.account.id})
 
-        it('should create account', function(done) {
-            var username = Math.floor(Math.random() * 1000000000)
-              , password = 'password'
-              , email = uuid.v4().substring(0, 15) + '@b.com'
-
-            request({
-                    url: get_url('/_/api/account')
-                  , method: 'POST'
-                  , json: {
-                        username: username
-                      , password: password
-                      , email: email
-                    }
-                  , jar: stored_jar
-                }
-              , function(e, d, body) {
-                    assert.equal(d.statusCode, 200)
-                    stored_account = body.account
-                    done()
-            })
+            assert.equal(get_account.statusCode, 200)
+            assert.equal(get_account.body.account.id, created_account.body.account.id)
+            assert.isUndefined(get_account.body.account.email)
         })
 
-        it('should get account even if not authd', function(done) {
-            request({
-                    url: get_url('/_/api/account/' + stored_account.id)
-                  , method: 'GET'
-                  , json: true
-                }
-              , function(e, d, body) {
-                    assert.equal(d.statusCode, 200)
-                    assert.equal(body.account.id, stored_account.id)
-                    assert.isUndefined(body.account.email)
-                    done()
-            })
+        it('should get privileged account if authd', function * () {
+            var ctx = new Context()
+              , created_account = yield AccountHTTPClientFixture.post({ctx: ctx})
+              , get_account = yield AccountHTTPClientFixture.get({ctx: ctx, id: created_account.body.account.id})
+
+            assert.equal(get_account.statusCode, 200)
+            assert.deepEqual(get_account.body.account, created_account.body.account)
         })
 
-        it('should get privileged account if authd', function(done) {
-            request({
-                    url: get_url('/_/api/account/' + stored_account.id)
-                  , method: 'GET'
-                  , json: true
-                  , jar: stored_jar
-                }
-              , function(e, d, body) {
-                    assert.equal(d.statusCode, 200)
-                    assert.deepEqual(body.account, stored_account)
-                    done()
-            })
-        })
+        it('should get 404 if id not valid', function * () {
+            var ctx = new Context()
+              , get_account = yield AccountHTTPClientFixture.get({ctx: ctx, id: uuid.v4()})
 
-        it('should get 404 if id not valid', function(done) {
-            request({
-                    url: get_url('/_/api/account/' + 'some_invalid_id')
-                  , method: 'GET'
-                  , json: true
-                }
-              , function(e, d, body) {
-                    assert.equal(d.statusCode, 404)
-                    done()
-            })
+            assert.equal(get_account.statusCode, 404)
         })
     })
 
-    describe.skip('@mojigram user', function() {
-        // No longer valid since db is blown away during testing.
-        // Testing should probably call a bootstrap script?
-        it('should not create @mojigram user because username already exists.', function(done) {
-            stored_jar = request.jar()
-
-            request({
-                    url: get_url('/_/api/account')
-                  , method: 'POST'
-                  , json: {
-                        username: 'mojigram'
-                      , password: 'somepassword'
-                      , email: 'mojigram@gmail.com'
-                    }
-                  , jar: stored_jar
-                }
-              , function(e, d, body) {
-                    assert.equal(d.statusCode, 409)
-                    done()
-            })
+    describe('@mojigram user', function() {
+        before(function * () {
+            // TODO: kind of hacky.
+            var old_console_log = console.log
+            console.log = function() {}
+            yield AccountPersistenceService.delete_dangerous()
+            yield AccountPersistenceService.insert_mojigram()
+            console.log = old_console_log
         })
 
-        it('should not create @mojigram user because email already exists.', function(done) {
-            stored_jar = request.jar()
-
-            request({
-                    url: get_url('/_/api/account')
-                  , method: 'POST'
-                  , json: {
-                        username: Math.floor(Math.random() * 1000000000)
-                      , password: 'somepassword'
+        it('should not create @mojigram user because username already exists.', function * () {
+            var ctx = new Context()
+              , created_account = yield AccountHTTPClientFixture.post({
+                    ctx: ctx
+                  , body: {
+                        username: 'mojigram'
+                      , password: 'somepasword'
                       , email: 'mojigram@gmail.com'
                     }
-                  , jar: stored_jar
-                }
-              , function(e, d, body) {
-                    assert.equal(d.statusCode, 409)
-                    done()
-            })
+                })
+
+            assert.equal(created_account.statusCode, 409)
+            assert.equal(created_account.body.description, 'Username is taken.')
+        })
+
+        it('should not create @mojigram user because email already exists.', function * () {
+            var ctx = new Context()
+              , created_account = yield AccountHTTPClientFixture.post({
+                    ctx: ctx
+                  , body: {
+                        password: 'somepasword'
+                      , email: 'mojigram@gmail.com'
+                    }
+                })
+
+            assert.equal(created_account.statusCode, 409)
+            assert.equal(created_account.body.description, 'Email is taken.')
         })
     })
 })

@@ -6,7 +6,9 @@ var Context = function Context () {
 }
 
 Context.prototype.update = function(result, fields) {
-    result.req_body = JSON.parse(result.request.body.toString())
+    if (result.request.body) {
+        result.req_body = JSON.parse(result.request.body.toString())
+    }
 
     this.responses.unshift(result)
 
