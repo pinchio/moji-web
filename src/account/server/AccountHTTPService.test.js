@@ -1,4 +1,5 @@
-var assert = require('chai').assert
+var _ = require('underscore')
+  , assert = require('chai').assert
   , co_mocha = require('co-mocha')
   , config = require('config')
   , host = config.get('server').host
@@ -193,88 +194,54 @@ describe('AccountHTTPService', function() {
     })
 
     describe('put', function() {
-        var username = Math.floor(Math.random() * 1000000000)
-          , password = 'password'
-          , email = uuid.v4().substring(0, 15) + '@b.com'
-          , profile_image_url = 'someurl.png'
-          , stored_jar = request.jar()
+        it('should not allow update if not logged in', function * () {
+            var ctx = new Context()
+              , ctx2 = new Context()
+              , created_account = yield AccountHTTPClientFixture.post({ctx: ctx})
+              , updated_account = yield AccountHTTPClientFixture.put({
+                    ctx: ctx2
+                  , id: created_account.body.account.id
+                  , body: _.extend(created_account.body.account, {
+                        foo: 'bar'
+                    })
+                })
 
-        it('should create account if username and email unique', function(done) {
-
-            request({
-                    url: get_url('/_/api/account')
-                  , method: 'POST'
-                  , json: {
-                        username: username
-                      , password: password
-                      , email: email
-                      , profile_image_url: profile_image_url
-                    }
-                  , jar: stored_jar
-                }
-              , function(e, d, body) {
-                    assert.equal(d.statusCode, 200)
-                    stored_account = body.account
-                    done()
-            })
+            assert.equal(updated_account.statusCode, 401)
         })
 
-        it('should not allow update if not logged in', function(done) {
-            request({
-                    url: get_url('/_/api/account/' + stored_account.id)
-                  , method: 'PUT'
-                  , json: {
-                        username: username
-                      , password: password
-                      , email: email
-                    }
-                }
-              , function(e, d, body) {
-                    assert.equal(d.statusCode, 401)
-                    done()
-            })
+        it('should not allow update if account id does not exist', function * () {
+            var ctx = new Context()
+              , created_account = yield AccountHTTPClientFixture.post({ctx: ctx})
+              , updated_account = yield AccountHTTPClientFixture.put({
+                    ctx: ctx
+                  , id: uuid.v4()
+                  , body: _.extend(created_account.body.account, {
+                        password: created_account.req_body.password
+                    })
+                })
+
+
+            assert.equal(updated_account.statusCode, 404)
         })
 
-        it('should not allow update if account id does not exist', function(done) {
-            request({
-                    url: get_url('/_/api/account/' + uuid.v4())
-                  , method: 'PUT'
-                  , json: {
-                        username: username
-                      , password: password
-                      , email: email
-                    }
-                  , jar: stored_jar
-                }
-              , function(e, d, body) {
-                    assert.equal(d.statusCode, 404)
-                    done()
-            })
-        })
+        it('should allow update', function * () {
+            var ctx = new Context()
+              , created_account = yield AccountHTTPClientFixture.post({ctx: ctx})
+              , updated_account = yield AccountHTTPClientFixture.put({
+                    ctx: ctx
+                  , id: created_account.body.account.id
+                  , body: _.extend(created_account.body.account, {
+                        password: created_account.req_body.password
+                      , full_name: 'I has a better name now'
+                    })
+                })
 
-        it('should allow update', function(done) {
-            request({
-                    url: get_url('/_/api/account/' + stored_account.id)
-                  , method: 'PUT'
-                  , json: {
-                        username: username
-                      , password: 'somenewpassword'
-                      , email: email
-                      , full_name: 'I has a name now'
-                      , profile_image_url: 'Some_newurl.png'
-                    }
-                  , jar: stored_jar
-                }
-              , function(e, d, body) {
-                    assert.equal(d.statusCode, 200)
-                    assert.notEqual(body.account.full_name, stored_account.full_name)
-                    assert.notEqual(body.account.profile_image_url, stored_account.profile_image_url)
-                    done()
-            })
+            assert.equal(updated_account.statusCode, 200)
+            assert.equal(updated_account.body.account.full_name, updated_account.req_body.full_name)
         })
     })
 
-    describe('get', function() {
+    describe.only('get', function() {
         var stored_jar = request.jar()
           , stored_account
 

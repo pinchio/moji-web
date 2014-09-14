@@ -20,4 +20,16 @@ AccountHTTPClient.prototype.post = function * (o) {
     return result[0]
 }
 
+AccountHTTPClient.prototype.put = function * (o) {
+    var req = {
+            url: o.url ? this.get_url(o.url) : this.get_url('/_/api/account/' + o.id)
+          , method: 'PUT'
+          , json: o.body
+          , jar: o.jar
+        }
+      , result = yield this.request(req)
+
+    return result[0]
+}
+
 module.exports = AccountHTTPClient

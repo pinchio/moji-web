@@ -41,6 +41,14 @@ AccountHTTPClientFixture.prototype.post_by_fb_access_token = function * (o) {
     return result
 }
 
+AccountHTTPClientFixture.prototype.put = function * (o) {
+    var result = yield AccountHTTPClient.put({id: o.id, body: o.body, jar: o.ctx.jar})
+
+    o.ctx.update(result, o.fields)
+
+    return result
+}
+
 module.exports = AccountHTTPClientFixture
 
 var AccountHTTPClient = require('./AccountHTTPClient').get_instance()
