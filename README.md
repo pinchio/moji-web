@@ -102,6 +102,8 @@ D) Dedicated endpoint for Featured Packs/Moji?
 - FB ID error first
 - when login fail 401 instead of 403
 
+- top over CollectionMixin yield changes.
+
 CHANGELOG
 ===
 
