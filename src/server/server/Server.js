@@ -76,6 +76,9 @@ var Server = function Server() {
     this.app.route('/_/api/emoji_collection_follower/:id').get(EmojiCollectionFollowerHTTPService.get())
     this.app.route('/_/api/emoji_collection_follower/:id').del(EmojiCollectionFollowerHTTPService.del())
 
+    this.app.route('/tos').get(HomeHTTPService.tos())
+    this.app.route('/privacy').get(HomeHTTPService.tos())
+
     // URL routes
     routes.forEach(function(route_config) {
         self.app.route(route_config.route).get(HomeHTTPService.get())

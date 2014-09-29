@@ -104,6 +104,8 @@ D) Dedicated endpoint for Featured Packs/Moji?
 
 - top over CollectionMixin yield changes.
 
+- NODE_PATH should be ./ and required
+
 CHANGELOG
 ===
 

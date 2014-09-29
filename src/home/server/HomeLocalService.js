@@ -63,4 +63,9 @@ HomeLocalService.prototype.get_page = function * (req) {
     return base
 }
 
+HomeLocalService.prototype.get_html = function * (o) {
+    var html = fs.readFileSync(path.join(__dirname, o.file_name), 'utf8')
+    return html
+}
+
 module.exports = HomeLocalService
