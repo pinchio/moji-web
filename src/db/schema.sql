@@ -1,6 +1,3 @@
-DROP DATABASE mojigram;
-CREATE DATABASE mojigram;
-
 \c mojigram;
 
 DROP TABLE account;
@@ -16,12 +13,13 @@ CREATE TABLE account (
     born_at         timestamptz,
     fb_id           varchar(512),
     fb_access_token varchar(1024),
+    roles           integer,
     extra_data      text,
     UNIQUE(username),
     UNIQUE(email),
     UNIQUE(fb_id)
 );
-INSERT INTO account (id, created_at, updated_at, username, email, full_name, password, profile_image_url, born_at, extra_data) values ('d23cadef-bacc-43d1-a5b9-4f53185fb710', now(), now(), 'mojigram', 'mojigram@gmail.com', 'mojigram', '57sVeyJf7UVDAPwKtvdGpqXPmFewcdv4sJkcDYybkqyQbf8RaNVO2te22DfwvmZFowrX52m2kf89bFi2q18nA53SdCqTA1+8fze9c/+6uGD8RFvzUE11qBnC5rvG14p1B3m5q22+dkU0ZvrKOKHVGgcM4pyXjyDaRV61ktQV7xieFH+NNN1yRjPtxYMPBW3nycfnE8sqOnzrlmynOMyLXxLmOgX0hZvSylGJsszy6givOi+NoRQVWHJRf5FKZBQKGHmOljs0o+qlqyIpyfF7pxRNJbwwQTc2pw2co5/zfHeVajbAEwXIcyBRJvfJjUcY3mSzZLdDKiZPGo9OjwvLiQ==:2710.M474tosHIV4yjQDRANdnjsDczzrBvliC5kAr0CZEcI8=', null, null, '{}');
+INSERT INTO account (id, created_at, updated_at, username, email, full_name, password, profile_image_url, born_at, roles, extra_data) values ('d23cadef-bacc-43d1-a5b9-4f53185fb710', now(), now(), 'mojigram', 'mojigram@gmail.com', 'mojigram', '57sVeyJf7UVDAPwKtvdGpqXPmFewcdv4sJkcDYybkqyQbf8RaNVO2te22DfwvmZFowrX52m2kf89bFi2q18nA53SdCqTA1+8fze9c/+6uGD8RFvzUE11qBnC5rvG14p1B3m5q22+dkU0ZvrKOKHVGgcM4pyXjyDaRV61ktQV7xieFH+NNN1yRjPtxYMPBW3nycfnE8sqOnzrlmynOMyLXxLmOgX0hZvSylGJsszy6givOi+NoRQVWHJRf5FKZBQKGHmOljs0o+qlqyIpyfF7pxRNJbwwQTc2pw2co5/zfHeVajbAEwXIcyBRJvfJjUcY3mSzZLdDKiZPGo9OjwvLiQ==:2710.M474tosHIV4yjQDRANdnjsDczzrBvliC5kAr0CZEcI8=', null, null, 1, '{}');
 
 DROP TABLE asset;
 CREATE TABLE asset (

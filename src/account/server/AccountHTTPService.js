@@ -45,6 +45,10 @@ AccountHTTPService.prototype.post = function() {
                       , born_at: this.request.body && this.request.body.born_at
                       , session: this.session
                     })
+            } else if (this.request.query.guest === 'true') {
+                var account = yield AccountLocalService.create_guest({
+                        session: this.session
+                    })
             } else {
                 var account = yield AccountLocalService.create({
                         username: this.request.body && this.request.body.username

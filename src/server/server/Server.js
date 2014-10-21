@@ -40,6 +40,11 @@ var Server = function Server() {
         console.log('body', this.request.body)
         yield next
     })
+    this.app.use(function * (next) {
+        this.request.body = this.request.body || {}
+        this.request.query = this.request.query || {}
+        yield next
+    })
     this.app.use(koa_trie_router(this.app))
 
     // API routes

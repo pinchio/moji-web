@@ -14,6 +14,9 @@ var Account = function(o) {
 }
 _.extend(Account, ModelMixin)
 
+// Roles:
+// 0b1 = admin
+// 0b10 = guest
 Account.keys = [
     'id'
   , 'created_at'
@@ -26,6 +29,7 @@ Account.keys = [
   , 'born_at'
   , 'fb_id'
   , 'fb_access_token'
+  , 'roles'
   , 'extra_data'
 ]
 
@@ -42,6 +46,7 @@ Account.from_create = function(o) {
       , born_at: Account.to_moment(o.born_at)
       , fb_id: o.fb_id
       , fb_access_token: o.fb_access_token
+      , roles: o.roles
       , extra_data: o.extra_data
     })
 }
@@ -59,6 +64,7 @@ Account.from_update = function(o) {
       , born_at: Account.to_moment(o.born_at)
       , fb_id: o.fb_id
       , fb_access_token: o.fb_access_token
+      , roles: o.roles
       , extra_data: o.extra_data
     })
 }
@@ -76,6 +82,7 @@ Account.from_db = function(o) {
       , born_at: Account.to_moment(o.born_at)
       , fb_id: o.fb_id
       , fb_access_token: o.fb_access_token
+      , roles: o.roles
       , extra_data: Account.text_to_json(o.extra_data)
     })
 }
@@ -93,6 +100,7 @@ Account.prototype.to_db = function() {
       , born_at: Account.from_moment(this.born_at)
       , fb_id: this.fb_id
       , fb_access_token: this.fb_access_token
+      , roles: this.roles
       , extra_data: Account.json_to_text(this.extra_data)
     }
 }
@@ -123,6 +131,10 @@ Account.prototype.to_json = function * (o) {
 
     if (this.is_privileged(o.session)) {
         result.born_at = this.born_at
+    }
+
+    if (this.is_privileged(o.session)) {
+        result.roles = this.roles
     }
 
     result.extra_data = this.extra_data

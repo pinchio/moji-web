@@ -3,6 +3,7 @@ var _ = require('underscore')
   , LocalServiceError = require('src/common/server/LocalServiceError')
   , StaticMixin = require('src/common/StaticMixin')
   , thunkify = require('thunkify')
+  , uuid = require('node-uuid')
   , ValidationMixin = require('src/common/server/ValidationMixin')
 
 var AccountLocalService = function AccountLocalService() {
@@ -10,6 +11,18 @@ var AccountLocalService = function AccountLocalService() {
 }
 _.extend(AccountLocalService, StaticMixin)
 _.extend(AccountLocalService.prototype, ValidationMixin.prototype)
+
+AccountLocalService.prototype.get_roles_bitmap = function(roles) {
+    // TODO: fix.
+    var bitmap = 0
+    if (roles.ADMIN) {
+        bitmap += 1
+    } else if (roles.GUEST) {
+        bitmap += 10
+    }
+
+    return bitmap
+}
 
 AccountLocalService.prototype.create_password_hash_salt = thunkify(function(password, cb) {
     easy_pbkdf2.secureHash(password, function(err, hash, salt) {
@@ -45,6 +58,7 @@ AccountLocalService.prototype.create = function * (o) {
           , full_name: o.full_name
           , profile_image_url: o.profile_image_url
           , born_at: o.born_at
+          , roles: 0
           , extra_data: o.extra_data
         })
 
@@ -104,6 +118,7 @@ AccountLocalService.prototype.create_by_fb_access_token = function * (o) {
           , born_at: o.born_at
           , fb_id: debug_token.user_id
           , fb_access_token: o.fb_access_token
+          , roles: 0
           , extra_data: o.extra_data
         })
 
@@ -118,6 +133,41 @@ AccountLocalService.prototype.create_by_fb_access_token = function * (o) {
                     throw new LocalServiceError(this.ns, 'conflict', 'Email is taken.', 409)
                 } else if (e.detail.key === 'fb_id') {
                     throw new LocalServiceError(this.ns, 'conflict', 'Facebook id is associated with an existing account.', 409)
+                } else {
+                    throw e
+                }
+            } else {
+                throw e
+            }
+        } else {
+            throw e
+        }
+    }
+
+    yield SessionLocalService.create_by_account__session({
+        account: account
+      , session: o.session
+    })
+
+    return account
+}
+
+AccountLocalService.prototype.create_guest = function * (o) {
+    o.extra_data = o.extra_data || {}
+
+    var account = Account.from_create({
+            roles: this.get_roles_bitmap({GUEST: true})
+        })
+
+    try {
+        var account = (yield AccountPersistenceService.insert(account)).first()
+    } catch (e) {
+        if (e && e.type === 'db_duplicate_key_error') {
+            if (e.detail) {
+                if (e.detail.key === 'username') {
+                    throw new LocalServiceError(this.ns, 'conflict', 'Username is taken.', 409)
+                } else if (e.detail.key === 'email') {
+                    throw new LocalServiceError(this.ns, 'conflict', 'Email is taken.', 409)
                 } else {
                     throw e
                 }
