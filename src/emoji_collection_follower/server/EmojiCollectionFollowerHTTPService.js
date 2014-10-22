@@ -76,4 +76,27 @@ EmojiCollectionFollowerHTTPService.prototype.del = function() {
     }
 }
 
+EmojiCollectionFollowerHTTPService.prototype.list = function() {
+    var self = this
+
+    return function * (next) {
+        try {
+            var emoji_collection_followers = yield EmojiCollectionFollowerLocalService.get_by_follower({
+                    session: this.session
+                })
+              , expand = self.parse_expand(this.query.expand)
+
+
+            return self.handle_success(this, {emoji_collection_followers: yield emoji_collection_followers.to_json({
+                expand: expand && expand.emoji_collection_followers
+              , session: this.session
+            })}, 'json')
+
+            return self.handle_success(this, {}, 'json')
+        } catch(e) {
+            self.handle_exception(this, e)
+        }
+    }
+}
+
 module.exports = EmojiCollectionFollowerHTTPService

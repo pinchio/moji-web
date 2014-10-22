@@ -109,6 +109,7 @@ D) Dedicated endpoint for Featured Packs/Moji?
 - o.body || true for json in clients
 
 - move mojigram_account_id into config
+ - user different local mojigram password
 
 
 CHANGELOG

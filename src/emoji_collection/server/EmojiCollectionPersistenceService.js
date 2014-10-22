@@ -1,6 +1,5 @@
 var _ = require('underscore')
   , QueryMixin = require('src/common/server/QueryMixin')
-  , EmojiCollections = require('./EmojiCollections')
   , StaticMixin = require('src/common/StaticMixin')
 
 var EmojiCollectionPersistenceService = function EmojiCollectionPersistenceService() {
@@ -62,3 +61,5 @@ EmojiCollectionPersistenceService.prototype.select_by_query__created_by = functi
 }
 
 module.exports = EmojiCollectionPersistenceService
+
+var EmojiCollections = require('./EmojiCollections')

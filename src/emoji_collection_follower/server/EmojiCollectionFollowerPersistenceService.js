@@ -17,4 +17,14 @@ var EmojiCollectionFollowerPersistenceService = function EmojiCollectionFollower
 _.extend(EmojiCollectionFollowerPersistenceService, StaticMixin)
 _.extend(EmojiCollectionFollowerPersistenceService.prototype, QueryMixin.prototype)
 
+EmojiCollectionFollowerPersistenceService.prototype.select_by_follower = function * (req) {
+    var query = 'select * '
+              + 'from ' + this.table + ' '
+              + 'where follower = $1 '
+              + 'order by created_at desc'
+      , values = [req.follower]
+
+    return yield this.query({query: query, values: values})
+}
+
 module.exports = EmojiCollectionFollowerPersistenceService

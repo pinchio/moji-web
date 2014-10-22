@@ -175,8 +175,8 @@ AccountLocalService.prototype.create_guest = function * (o) {
 
     // Only follow mojiboard specific collections.
     var filtered_emoji_collections = yield emoji_collections.filter_for_mojiboard()
-    var filtered_emoji_collections_ids = yield filtered_emoji_collections.get_ids()
-    var gen_emoji_collection_followers = filtered_emoji_collections_ids.map(function(emoji_collection_id) {
+      , filtered_emoji_collections_ids = yield filtered_emoji_collections.get_ids()
+      , gen_emoji_collection_followers = filtered_emoji_collections_ids.map(function(emoji_collection_id) {
                 return EmojiCollectionFollowerLocalService.create({
                     session: o.session
                   , emoji_collection_id: emoji_collection_id

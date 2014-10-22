@@ -119,5 +119,3 @@ EmojiCollection.prototype.is_for_mojiboard = function() {
 }
 
 module.exports = EmojiCollection
-
-var AccountLocalService = require('src/account/server/AccountLocalService').get_instance()

@@ -6,6 +6,13 @@ var _ = require('underscore')
   , AccountHTTPClientFixture = require('src/account/server/AccountHTTPClientFixture').get_instance()
   , AccountPersistenceService = require('src/account/server/AccountPersistenceService').get_instance()
   , Context = require('src/common/server/Context')
+  , EmojiCollectionHTTPClientFixture = require('src/emoji_collection/server/EmojiCollectionHTTPClientFixture').get_instance()
+  , EmojiCollectionFollowerHTTPClientFixture = require('src/emoji_collection_follower/server/EmojiCollectionFollowerHTTPClientFixture').get_instance()
+  , SessionHTTPClientFixture = require('src/session/server/SessionHTTPClientFixture').get_instance()
+
+if (process.env.MOJIGRAM_PASSWORD) {
+    var mojigram_password = process.env.MOJIGRAM_PASSWORD
+}
 
 describe('AccountHTTPService', function() {
     describe('post', function() {
@@ -14,6 +21,8 @@ describe('AccountHTTPService', function() {
             var old_console_log = console.log
             console.log = function() {}
             yield AccountPersistenceService.delete_dangerous()
+            yield AccountPersistenceService.insert_mojigram()
+            yield EmojiCollectionPersistenceService.delete_dangerous()
             console.log = old_console_log
         })
 
@@ -69,9 +78,32 @@ describe('AccountHTTPService', function() {
             assert.isDefined(cookie_map['koa:sess.sig'])
         })
 
-        it.only('should create account if creating guest account', function * () {
+        it('should create guest account', function * () {
+            if (!mojigram_password) {
+                throw new Error('Must have mojigram password to run test.')
+            }
             var ctx = new Context()
-              , result = yield AccountHTTPClientFixture.post_by_guest({ctx: ctx})
+              , mojigram_account = yield SessionHTTPClientFixture.post({
+                    ctx: ctx
+                  , body: {
+                        username: 'mojigram'
+                      , password: mojigram_password
+                    }
+                })
+              , emoji_collection = yield EmojiCollectionHTTPClientFixture.post({
+                    ctx: ctx
+                  , body: {
+                        scopes: ['public_read']
+                      , tags: ['mojiboard']
+                    }
+                })
+              , ctx2 = new Context()
+              , result = yield AccountHTTPClientFixture.post_by_guest({ctx: ctx2})
+              , emoji_collection_followers = yield EmojiCollectionFollowerHTTPClientFixture.list({
+                    ctx: ctx2
+                  , body: {}
+                  , url: '/_/api/emoji_collection_follower?expand=emoji_collection_followers.emoji_collection_id'
+                })
 
             assert.equal(result.statusCode, 200)
             assert.isDefined(result.body)
@@ -82,7 +114,14 @@ describe('AccountHTTPService', function() {
             assert.isNull(result.body.account.full_name)
             assert.isDefined(result.body.account.id)
 
-            var cookies = ctx.jar.getCookieString(AccountHTTPClient.get_url())
+            assert.equal(emoji_collection_followers.body.emoji_collection_followers.length, 1)
+
+            assert.equal(
+                emoji_collection.body.emoji_collection.id
+              , emoji_collection_followers.body.emoji_collection_followers[0].emoji_collection_id
+            )
+
+            var cookies = ctx2.jar.getCookieString(AccountHTTPClient.get_url())
               , cookie_map = {}
 
             cookies.split('; ').forEach(function(cookie) {
@@ -327,3 +366,5 @@ describe('AccountHTTPService', function() {
         })
     })
 })
+
+var EmojiCollectionPersistenceService = require('src/emoji_collection/server/EmojiCollectionPersistenceService').get_instance()

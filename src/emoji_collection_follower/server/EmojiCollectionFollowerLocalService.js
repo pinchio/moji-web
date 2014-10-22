@@ -29,6 +29,12 @@ EmojiCollectionFollowerLocalService.prototype.get_by_id = function * (o) {
     return (yield EmojiCollectionFollowerPersistenceService.select_by_id({id: o.id})).first()
 }
 
+EmojiCollectionFollowerLocalService.prototype.get_by_follower = function * (o) {
+    yield this.validate_uuid(o.session.account_id, 'Account ids')
+
+    return yield EmojiCollectionFollowerPersistenceService.select_by_follower({follower: o.session.account_id})
+}
+
 EmojiCollectionFollowerLocalService.prototype.delete_by_id = function * (o) {
     yield this.validate_session(o.session)
     yield this.validate_uuid(o.id, 'Emoji collection follower ids')

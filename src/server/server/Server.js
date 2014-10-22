@@ -78,6 +78,7 @@ var Server = function Server() {
     this.app.route('/_/api/event').post(EventHTTPService.post())
 
     this.app.route('/_/api/emoji_collection_follower').post(EmojiCollectionFollowerHTTPService.post())
+    this.app.route('/_/api/emoji_collection_follower').get(EmojiCollectionFollowerHTTPService.list())
     this.app.route('/_/api/emoji_collection_follower/:id').get(EmojiCollectionFollowerHTTPService.get())
     this.app.route('/_/api/emoji_collection_follower/:id').del(EmojiCollectionFollowerHTTPService.del())
 

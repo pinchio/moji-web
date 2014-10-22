@@ -19,6 +19,15 @@ EmojiCollectionFollowerHTTPClientFixture.prototype.post = function * (o) {
     return result
 }
 
+EmojiCollectionFollowerHTTPClientFixture.prototype.list = function * (o) {
+    var body = _.defaults({}, o.body, {})
+      , result = yield EmojiCollectionFollowerHTTPClient.list({body: body, jar: o.ctx.jar, url: o.url})
+
+    o.ctx.update(result, o.fields)
+
+    return result
+}
+
 module.exports = EmojiCollectionFollowerHTTPClientFixture
 
 var EmojiCollectionFollowerHTTPClient = require('./EmojiCollectionFollowerHTTPClient').get_instance()
