@@ -30,4 +30,13 @@ CollectionMixin.prototype.to_json = function * (o) {
     return result
 }
 
+CollectionMixin.prototype.get_ids = function * () {
+    var ids = []
+    for (var i = 0, ii = this.list.length; i < ii; ++i) {
+        ids.push(this.list[i].id)
+    }
+
+    return ids
+}
+
 module.exports = CollectionMixin

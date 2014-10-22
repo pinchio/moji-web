@@ -7,7 +7,7 @@ var _ = require('underscore')
   , AccountPersistenceService = require('src/account/server/AccountPersistenceService').get_instance()
   , Context = require('src/common/server/Context')
 
-describe.only('AccountHTTPService', function() {
+describe('AccountHTTPService', function() {
     describe('post', function() {
         beforeEach(function * () {
             // TODO: kind of hacky.
@@ -55,6 +55,32 @@ describe.only('AccountHTTPService', function() {
             assert.equal(result.body.account.email, result.req_body.email)
             assert.isUndefined(result.body.account.password)
             assert.equal(result.body.account.profile_image_url, result.req_body.profile_image_url)
+
+            var cookies = ctx.jar.getCookieString(AccountHTTPClient.get_url())
+              , cookie_map = {}
+
+            cookies.split('; ').forEach(function(cookie) {
+                var key_value = cookie.split('=')
+
+                cookie_map[key_value[0]] = key_value[1]
+            })
+
+            assert.isDefined(cookie_map['koa:sess'])
+            assert.isDefined(cookie_map['koa:sess.sig'])
+        })
+
+        it.only('should create account if creating guest account', function * () {
+            var ctx = new Context()
+              , result = yield AccountHTTPClientFixture.post_by_guest({ctx: ctx})
+
+            assert.equal(result.statusCode, 200)
+            assert.isDefined(result.body)
+            assert.isObject(result.body)
+            assert.isDefined(result.body.account)
+            assert.isNull(result.body.account.username)
+            assert.isNull(result.body.account.email)
+            assert.isNull(result.body.account.full_name)
+            assert.isDefined(result.body.account.id)
 
             var cookies = ctx.jar.getCookieString(AccountHTTPClient.get_url())
               , cookie_map = {}

@@ -8,6 +8,7 @@ var _ = require('underscore')
 
 var AccountLocalService = function AccountLocalService() {
     this.ns = 'AccountLocalService'
+    this.mojigram_account_id = 'd23cadef-bacc-43d1-a5b9-4f53185fb710'
 }
 _.extend(AccountLocalService, StaticMixin)
 _.extend(AccountLocalService.prototype, ValidationMixin.prototype)
@@ -158,33 +159,32 @@ AccountLocalService.prototype.create_guest = function * (o) {
     var account = Account.from_create({
             roles: this.get_roles_bitmap({GUEST: true})
         })
-
-    try {
-        var account = (yield AccountPersistenceService.insert(account)).first()
-    } catch (e) {
-        if (e && e.type === 'db_duplicate_key_error') {
-            if (e.detail) {
-                if (e.detail.key === 'username') {
-                    throw new LocalServiceError(this.ns, 'conflict', 'Username is taken.', 409)
-                } else if (e.detail.key === 'email') {
-                    throw new LocalServiceError(this.ns, 'conflict', 'Email is taken.', 409)
-                } else {
-                    throw e
-                }
-            } else {
-                throw e
-            }
-        } else {
-            throw e
-        }
-    }
+      , created_account = (yield AccountPersistenceService.insert(account)).first()
 
     yield SessionLocalService.create_by_account__session({
-        account: account
+        account: created_account
       , session: o.session
     })
 
-    return account
+    // Follow some of the existing collections owned by @mojigram.
+    var emoji_collections = yield EmojiCollectionLocalService.get_by_created_by__scopes({
+        created_by: this.mojigram_account_id
+      , scopes: ['public_read']
+      , session: o.session
+    })
+
+    // Only follow mojiboard specific collections.
+    var filtered_emoji_collections = yield emoji_collections.filter_for_mojiboard()
+    var filtered_emoji_collections_ids = yield filtered_emoji_collections.get_ids()
+    var gen_emoji_collection_followers = filtered_emoji_collections_ids.map(function(emoji_collection_id) {
+                return EmojiCollectionFollowerLocalService.create({
+                    session: o.session
+                  , emoji_collection_id: emoji_collection_id
+                })
+            })
+      , followed_emoji_collections = yield gen_emoji_collection_followers
+
+    return created_account
 }
 
 AccountLocalService.prototype.update = function * (o) {
@@ -280,6 +280,9 @@ AccountLocalService.prototype.get_by_query = function * (o) {
 module.exports = AccountLocalService
 
 var Account = require('./Account')
+  , EmojiCollections = require('../../emoji_collection/server/EmojiCollections')
   , AccountPersistenceService = require('./AccountPersistenceService').get_instance()
+  , EmojiCollectionLocalService = require('../../emoji_collection/server/EmojiCollectionLocalService').get_instance()
+  , EmojiCollectionFollowerLocalService = require('../../emoji_collection_follower/server/EmojiCollectionFollowerLocalService').get_instance()
   , FacebookHTTPClient = require('src/facebook/server/FacebookHTTPClient').get_instance()
   , SessionLocalService = require('src/session/server/SessionLocalService').get_instance()

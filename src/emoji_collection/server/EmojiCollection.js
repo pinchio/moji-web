@@ -114,6 +114,10 @@ EmojiCollection.prototype.to_db = function() {
     }
 }
 
+EmojiCollection.prototype.is_for_mojiboard = function() {
+    return this.tags.indexOf('mojiboard') > -1
+}
+
 module.exports = EmojiCollection
 
 var AccountLocalService = require('src/account/server/AccountLocalService').get_instance()

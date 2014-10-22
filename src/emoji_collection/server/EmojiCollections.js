@@ -14,4 +14,17 @@ EmojiCollections.model = EmojiCollection
 _.extend(EmojiCollections, CollectionMixin)
 _.extend(EmojiCollections.prototype, CollectionMixin.prototype)
 
+EmojiCollections.prototype.filter_for_mojiboard = function * () {
+    var filtered_emoji_collections = []
+    for (var i = 0, ii = this.list.length; i < ii; ++i) {
+        var emoji_collection = this.list[i]
+        if (emoji_collection.is_for_mojiboard()) {
+            filtered_emoji_collections.push(emoji_collection)
+        }
+    }
+
+    filtered_emoji_collections = new EmojiCollections({list: filtered_emoji_collections})
+    return filtered_emoji_collections
+}
+
 module.exports = EmojiCollections

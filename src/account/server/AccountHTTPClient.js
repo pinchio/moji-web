@@ -12,7 +12,7 @@ AccountHTTPClient.prototype.post = function * (o) {
     var req = {
             url: o.url ? this.get_url(o.url) : this.get_url('/_/api/account')
           , method: 'POST'
-          , json: o.body
+          , json: o.body || true
           , jar: o.jar
         }
       , result = yield this.request(req)
@@ -24,7 +24,7 @@ AccountHTTPClient.prototype.put = function * (o) {
     var req = {
             url: o.url ? this.get_url(o.url) : this.get_url('/_/api/account/' + o.id)
           , method: 'PUT'
-          , json: o.body
+          , json: o.body || true
           , jar: o.jar
         }
       , result = yield this.request(req)
@@ -36,7 +36,7 @@ AccountHTTPClient.prototype.get = function * (o) {
     var req = {
             url: o.url ? this.get_url(o.url) : this.get_url('/_/api/account/' + o.id)
           , method: 'GET'
-          , json: true
+          , json: true || true
           , jar: o.jar
         }
       , result = yield this.request(req)

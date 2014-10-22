@@ -133,9 +133,7 @@ Account.prototype.to_json = function * (o) {
         result.born_at = this.born_at
     }
 
-    if (this.is_privileged(o.session)) {
-        result.roles = this.roles
-    }
+    // Never return roles.
 
     result.extra_data = this.extra_data
 

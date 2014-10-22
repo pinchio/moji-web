@@ -5,7 +5,7 @@ var config = require('config')
 
 var ClientMixin = function() {}
 
-ClientMixin.prototype.get_url = function(args) {
+ClientMixin.prototype.get_url = function() {
     return 'http://' + config.get('server').host + ':' + config.get('server').port
          + path.join.apply(path, Array.prototype.slice.call(arguments))
 }

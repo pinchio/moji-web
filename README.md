@@ -106,6 +106,11 @@ D) Dedicated endpoint for Featured Packs/Moji?
 
 - NODE_PATH should be ./ and required
 
+- o.body || true for json in clients
+
+- move mojigram_account_id into config
+
+
 CHANGELOG
 ===
 
