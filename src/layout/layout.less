@@ -62,19 +62,21 @@ body {
 .landing-page-body {
 }
 
-@landing-page-side-width: 320px;
+@landing-page-body-side-width: 320px;
+@landing-page-body-padding: 25px;
+@landing-page-body-main-left: @landing-page-body-side-width + 2 * @landing-page-body-padding;
 
 .landing-page-body-side-container {
     float: left;
-    width: @landing-page-side-width;
+    width: @landing-page-body-side-width;
 }
 
 .landing-page-body-side {
-    padding: 10px;
 }
 
 .landing-page-body-main-container {
-    margin-left: @landing-page-side-width;
+    padding-top: @landing-page-body-padding;
+    margin-left: @landing-page-body-main-left;
 }
 
 .landing-page-body-main {
@@ -98,7 +100,22 @@ body {
 .landing-page-footer {
 }
 
+.landing-page-section-container {
+    margin-top: 20px;
+    padding: 25px;
+    .border-radius(10px);
+    .box-shadow(0px 0px 20px #c8c8c8);
 
+    background-color: white;
+}
+
+.landing-h1 {
+    .font-24-regular(@color: #242a2e);
+}
+
+.landing-p {
+    .font-16-regular(@color: #242a2e);
+}
 
 .body-container {
 }

@@ -31,7 +31,33 @@ var HomePage = React.createClass({
                             <div className="landing-page-body-main-container">
                                 <div className="landing-page-body-main">
                                     <div className="sprite sprite-brand-header"></div>
-                                    Some copy here
+                                    <div className="landing-page-section-container">
+                                        <div className="landing-page-section">
+                                            <h1 className="landing-h1">Publish Stickers on the StickerStore for iMessage, Facebook and more</h1>
+                                            <br/>
+                                            <br/>
+                                            <p className="landing-p">
+                                                Mojigram StickerStore is a fast and fun way to share your sticker and emoji creations with the world.
+                                            </p>
+                                            <br/>
+                                            <p className="landing-p">
+                                                Billions of users around the world could be using your stickers.
+                                            </p>
+                                            <br/>
+                                            <p className="landing-p">
+                                                It will always be free to publish stickers and you can make money doing it too!
+                                            </p>
+                                            <br/>
+                                            <br/>
+                                            <h1 className="landing-h1">Register Now</h1>
+                                            <br/>
+                                            <br/>
+                                            <input type="email" placeholder="Email address" />
+                                            <p className="landing-p">
+                                                We will contact you through email.
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

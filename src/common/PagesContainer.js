@@ -51,7 +51,7 @@ var PagesContainer = React.createClass({
                 <div className="page">
                     {this.state.pages.map(function(page, i) {
                         return (
-                            <div key={page.get_key()}>
+                            <div>
                                 {page}
                             </div>
                         )
