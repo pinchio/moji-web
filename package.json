@@ -8,7 +8,7 @@
     "build": "node ./node_modules/gulp/bin/gulp.js build",
     "stop": "pm2 stop all",
     "start": "node services | sh",
-    "server:start:development": "node --harmony ./server.js",
+    "server:start:development": "NODE_PATH=./ node --harmony ./server.js",
     "server:start:production": "NODE_ENV=production NODE_PATH=./ node --harmony ./server.js",
     "test": "NODE_PATH=./ mocha -b --harmony --reporter spec src/**/*.test.js",
     "deploy-production": "git push production1 HEAD:master",

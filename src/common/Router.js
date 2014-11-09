@@ -1,5 +1,6 @@
 var $ = require('jquery')
   , HomePage = require('../home/HomePage')
+  , StoreArtistPage = require('../store/StoreArtistPage')
   , EmojiCollectionEditPage = require('../emoji_collection/EmojiCollectionEditPage')
   , app = require('./App').get_instance()
   , routes = require('./routes')
@@ -40,6 +41,14 @@ Router.prototype.home = function(ctx) {
 
     var state = JSON.parse(JSON.stringify(ctx.state))
     var page = new HomePage(state)
+    app.go(page)
+}
+
+Router.prototype.artist = function(ctx) {
+    this.current_ctx = ctx
+
+    var state = JSON.parse(JSON.stringify(ctx.state))
+    var page = new StoreArtistPage(state)
     app.go(page)
 }
 

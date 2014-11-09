@@ -24,7 +24,7 @@ var HomePage = React.createClass({
         */
         return (
             <div className={this.state.classNames.join(' ')}>
-                <div className="page">
+                <div className="page home-page">
                     <div className="page-body-container">
                         <div className="page-body">
                             <div className="sprite-home-icon-bg-container">

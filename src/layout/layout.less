@@ -5,8 +5,8 @@
 
 @page-body-top: @header-height;
 @standalone-page-body-top: @standalone-header-height;
-@bg-color: #fe7053;
 @font-family: "HelveticaNeue-Light";
+@primary-color: #fe7053;
 
 .hide {
     display: none !important;
@@ -15,10 +15,90 @@
 html,
 body {
     height: 100%;
-    background: @bg-color;
     -webkit-text-size-adjust: none;
     font-family: @font-family;
+    background-color: @primary-color;
 }
+
+.landing-page-container {
+    background-color: #fff;
+}
+
+.landing-page {
+}
+
+.landing-page-background-container {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+
+    width: 100%;
+    height: 280px;
+}
+
+.landing-page-background {
+    width: 100%;
+    height: 100%;
+
+    background-color: @primary-color;
+}
+
+// .landing-page-header-container {
+// }
+
+// .landing-page-header {
+// }
+
+.landing-page-body-container {
+    position: relative;
+
+    width: 900px;
+    height: 200px;
+    padding: 0 10px;
+    margin: 90px auto 0 auto;
+}
+
+.landing-page-body {
+}
+
+@landing-page-side-width: 320px;
+
+.landing-page-body-side-container {
+    float: left;
+    width: @landing-page-side-width;
+}
+
+.landing-page-body-side {
+    padding: 10px;
+}
+
+.landing-page-body-main-container {
+    margin-left: @landing-page-side-width;
+}
+
+.landing-page-body-main {
+}
+
+.landing-page-body-footer {
+}
+
+.landing-page-footer-container {
+    .clearfix();
+    clear: both;
+
+    position: relative;
+
+    width: 900px;
+    height: 200px;
+    padding: 0 10px;
+    margin: 90px auto 0 auto;
+}
+
+.landing-page-footer {
+}
+
+
 
 .body-container {
 }
@@ -27,7 +107,6 @@ body {
 }
 
 .page-header-container {
-
 }
 
 .page-header {
