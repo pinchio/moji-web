@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-gulp precommit
+./node_modules/gulp/bin/gulp.js precommit
 
 git add public/_/file_hashes.json
 git add public/_/css/all.min.css

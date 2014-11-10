@@ -162,3 +162,4 @@ CHANGELOG
 - endpoint to save user's profile image on account creation. POST /_/api/account with profile_image_url
 
 - endpoint to delete user's profile image. POST /_/api/account with a new profile_image_url
+
