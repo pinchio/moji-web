@@ -52,7 +52,7 @@ describe('AccountHTTPService', function() {
             assert.isDefined(cookie_map['koa:sess.sig'])
         })
 
-        it('should create account if username and fb_id unique', function * () {
+        it.skip('should create account if username and fb_id unique', function * () {
             var ctx = new Context()
               , result = yield AccountHTTPClientFixture.post_by_fb_access_token({ctx: ctx})
 

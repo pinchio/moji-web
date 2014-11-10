@@ -77,7 +77,7 @@ describe('SessionHTTPService', function() {
             assert.lengthOf(ctx2.jar.getCookieString(AccountHTTPClient.get_url()), 0)
         })
 
-        it('should create session if fb login correct', function * () {
+        it.skip('should create session if fb login correct', function * () {
             var ctx = new Context()
               , ctx2 = new Context()
               , account_result = yield AccountHTTPClientFixture.post_by_fb_access_token({ctx: ctx})
