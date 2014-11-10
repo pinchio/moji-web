@@ -60,7 +60,7 @@ var HomePage = React.createClass({
                                                 </div>
                                                 <div className="landing-email-button-container">
                                                     <div className="landing-email-button button button-success">
-                                                        Submit :)
+                                                        Submit
                                                     </div>
                                                 </div>
                                             </div>
