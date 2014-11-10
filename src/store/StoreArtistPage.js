@@ -1,6 +1,7 @@
 /** @jsx React.DOM */
 var React = require('react/addons')
   , PageMixin = require('../common/PageMixin')
+  , $ = require('jquery')
 
 var HomePage = React.createClass({
     mixins: [PageMixin]
@@ -10,8 +11,30 @@ var HomePage = React.createClass({
           , ns: 'HomePage'
         }
     }
-  , get_key: function() {
-        return 'store_artist'
+  , handleEmailChange: function(e) {
+        this.setState({email: e.target.value})
+    }
+  , handleSubmit: function(e) {
+        var self = this
+          , email = this.state.email
+
+        $.ajax({
+            url: '/_/api/event'
+          , type: 'POST'
+          , dataType: 'json'
+          , data: {
+                event: 'artist_email'
+              , properties: {
+                    email: email
+                }
+            }
+          , success: function(data) {
+                self.setState({email: '', msg: 'Thanks your email was received!'})
+            }
+          , error: function(xhr, status, err) {
+                self.setState({email: '', msg: 'An error has occurred, please try again.'})
+            }
+        })
     }
   , render: function() {
         return (
@@ -56,13 +79,17 @@ var HomePage = React.createClass({
                                             <br/>
                                             <div className="landing-email-form-container">
                                                 <div className="landing-email-input-container">
-                                                    <input className="input" type="email" placeholder="Email address" />
+                                                    <input className="input" type="email" placeholder="Email address" value={this.state.email} onChange={this.handleEmailChange} />
                                                 </div>
                                                 <div className="landing-email-button-container">
-                                                    <div className="landing-email-button button button-success">
+                                                    <div className="landing-email-button button button-success" onClick={this.handleSubmit}>
                                                         Submit
                                                     </div>
                                                 </div>
+                                                <br/>
+                                                <p className="landing-p">
+                                                    &nbsp;&nbsp;{this.state.msg}
+                                                </p>
                                             </div>
                                         </div>
                                     </div>

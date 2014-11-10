@@ -13,7 +13,7 @@ _.extend(EventLocalService.prototype, ValidationMixin.prototype)
 EventLocalService.prototype.create = function * (o) {
     o.properties = o.properties || {}
 
-    yield this.validate_session(o.session)
+    // yield this.validate_session(o.session)
     yield this.validate_event(o.event)
     yield this.validate_json_object(o.properties, 'Properties')
 
@@ -28,6 +28,8 @@ EventLocalService.prototype.create = function * (o) {
           , session: o.session
         })
     } else if (o.event === 'emoji_saved') {
+        // Just save the event.
+    } else if (o.event === 'artist_email') {
         // Just save the event.
     } else {
         throw new LocalServiceError(this.ns, 'bad_request', '`event` is not supported.', 400)
