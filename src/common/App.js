@@ -1,9 +1,7 @@
 /** @jsx React.DOM */
 var React = require('react/addons')
   , $ = require('jquery')
-  // , MenuComponent = require('../menu/MenuComponent')
   , PagesContainer = require('./PagesContainer')
-  , db = require('./Db').get_instance()
   , StaticMixin = require('./StaticMixin')
   , _ = require('underscore')
 
@@ -17,7 +15,7 @@ var App = React.createClass({
     }
   , render: function() {
         // The menu used to be in body.
-        this.pages_container = <PagesContainer db={db}/>
+        this.pages_container = <PagesContainer/>
         return (
             <div className="body">
                 {this.pages_container}

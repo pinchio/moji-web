@@ -31,31 +31,39 @@ var HomePage = React.createClass({
                             <div className="landing-page-body-main-container">
                                 <div className="landing-page-body-main">
                                     <div className="sprite sprite-brand-header"></div>
+                                    <div className="landing-page-section-background-container">
+                                        <div className="landing-page-section-background">
+                                        </div>
+                                    </div>
                                     <div className="landing-page-section-container">
                                         <div className="landing-page-section">
-                                            <h1 className="landing-h1">Publish Stickers on the StickerStore for iMessage, Facebook and more</h1>
-                                            <br/>
+                                            <h1 className="landing-h1">Publish Stickers for iMessage, Facebook and more</h1>
                                             <br/>
                                             <p className="landing-p">
-                                                Mojigram StickerStore is a fast and fun way to share your sticker and emoji creations with the world.
+                                                The Mojigram StickerStore is a <span className="emphasis">fast</span> and <span className="emphasis">fun</span> way to share your sticker and emoji creations with the world.
                                             </p>
                                             <br/>
                                             <p className="landing-p">
-                                                Billions of users around the world could be using your stickers.
+                                                Millions of people around the world could be using your stickers.
                                             </p>
                                             <br/>
                                             <p className="landing-p">
-                                                It will always be free to publish stickers and you can make money doing it too!
+                                                It will always be free to publish stickers and you can make money doing it too :)
                                             </p>
                                             <br/>
                                             <br/>
-                                            <h1 className="landing-h1">Register Now</h1>
+                                            <h1 className="landing-h1">Sign Up</h1>
                                             <br/>
-                                            <br/>
-                                            <input type="email" placeholder="Email address" />
-                                            <p className="landing-p">
-                                                We will contact you through email.
-                                            </p>
+                                            <div className="landing-email-form-container">
+                                                <div className="landing-email-input-container">
+                                                    <input className="input" type="email" placeholder="Email address" />
+                                                </div>
+                                                <div className="landing-email-button-container">
+                                                    <div className="landing-email-button button button-success">
+                                                        Submit :)
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -63,7 +71,17 @@ var HomePage = React.createClass({
                         </div>
                     </div>
                     <div className="landing-page-footer-container">
-                        footer
+                        <div className="landing-page-footer">
+                            <ul className="footer-items">
+                                <a href="mailto:contact@mojigram.com">
+                                    <li className="footer-item">CONTACT US</li>
+                                </a>
+                                <a href="/tos">
+                                    <li className="footer-item">TERMS</li>
+                                </a>
+                                <li className="footer-item copyright">&copy; 2014 MOJIGRAM</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
